@@ -1,0 +1,5 @@
+functools32==3.2.3.post2
+jsl==0.2.4
+jsonref==0.1
+jsonschema==2.5.1
+pycountry==1.20

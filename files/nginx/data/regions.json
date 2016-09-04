@@ -1,0 +1,29 @@
+{
+  "@metadata": {
+    "authors": [
+      "r.hofmann@sap.com"
+    ],
+    "last-modified": "2016-08-20",
+    "version": "0.1.0"
+  },
+  "regions": {
+    "us": {
+      "id": "us",
+      "name": "YaaS US Region",
+      "description": "SAP-Hybris YaaS US Region",
+      "domain": "us.yaas.io"
+    },
+    "eu": {
+      "id": "eu",
+      "name": "YaaS EU Region",
+      "description": "SAP-Hybris YaaS EU Region",
+      "domain": "eu.yaas.io"
+    },
+    "beta": {
+      "id": "beta",
+      "name": "YaaS BETA Region",
+      "description": "SAP-Hybris YaaS BETA Region",
+      "domain": "beta.yaas.io"
+    }
+  }
+}

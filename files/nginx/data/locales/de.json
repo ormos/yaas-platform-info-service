@@ -1,0 +1,32 @@
+{
+  "@metadata": {
+    "authors": [
+      "r.hofmann@sap.com"
+    ],
+    "last-modified": "2016-08-03",
+    "version": "0.1.0",
+    "locale": "de"
+  },
+  "YaaS US Region": "YaaS US Region",
+  "SAP-Hybris YaaS US Region": "SAP-Hybris YaaS US Region",
+  "YaaS EU Region": "YaaS EU Region",
+  "SAP-Hybris YaaS EU Region": "SAP-Hybris YaaS EU Region",
+  "YaaS BETA Region": "YaaS BETA Region",
+  "SAP-Hybris YaaS BETA Region": "SAP-Hybris YaaS BETA Region",
+  "YaaS US Market": "YaaS Markt USA",
+  "SAP-Hybris YaaS Market North America": "SAP-Hybris YaaS USA Markt",
+  "YaaS German Market": "YaaS Markt Deutschland",
+  "SAP-Hybris YaaS Market Germany": "SAP-Hybris YaaS Deutschland Markt",
+  "YaaS BETA Market": "YaaS Markt BETA",
+  "SAP-Hybris YaaS Market BETA": "SAP-Hybris YaaS BETA Markt",
+  "API requests": "API Aufrufe",
+  "API requests (read)": "API Aufrufe (lesend)",
+  "API requests (write)":  "API Aufrufe (schreibend)",
+  "formats": {
+    "/units/items": "{0}",
+    "/units/count": "{0} pro Monat",
+    "/units/storage": "{0} GB",
+    "/units/memory": "{0} MB",
+    "/units/time": "{0|mm:ss}"
+  }
+}

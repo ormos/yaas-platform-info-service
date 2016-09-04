@@ -1,0 +1,96 @@
+{
+  "@metadata": {
+    "authors": [
+      "r.hofmann@sap.com"
+    ],
+    "last-modified": "2016-08-03",
+    "version": "0.1.0"
+  },
+  "regions": {
+    "us": {
+      "id": "us",
+      "name": "YaaS US Region",
+      "description": "SAP-Hybris YaaS US Region",
+      "domain": "us.yaas.io"
+    },
+    "eu": {
+      "id": "eu",
+      "name": "YaaS EU Region",
+      "description": "SAP-Hybris YaaS EU Region",
+      "domain": "eu.yaas.io"
+    },
+    "beta": {
+      "id": "beta",
+      "name": "YaaS BETA Region",
+      "description": "SAP-Hybris YaaS BETA Region",
+      "domain": "beta.yaas.io"
+    }
+  },
+  "markets": {
+    "us": {
+      "name": "YaaS US Market",
+      "description": "SAP-Hybris YaaS Market North America",
+      "url": "https://yaas.io/us",
+      "region": "us",
+      "locale": {
+        "official": "en-US",
+        "default": "en-US",
+        "supported": [
+          "en-US"
+        ]
+      },
+      "links": {
+        "api": "https://api.us.yaas.io",
+        "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
+        "privacy": "http://go.sap.com/about/legal/privacy.html",
+        "impressum": "http://go.sap.com/about/legal/impressum.html",
+        "copyright": "http://go.sap.com/about/legal/copyright.html"
+      }
+    },
+    "de": {
+      "name": "YaaS German Market",
+      "description": "SAP-Hybris YaaS Market Germany",
+      "url": "https://yaas.io/de",
+      "region": "eu",
+      "locale": {
+        "official": "de-DE",
+        "default": "de-DE",
+        "supported": [
+          "de-DE"
+        ]
+      },
+      "links": {
+        "api": "https://api.eu.yaas.io",
+        "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
+        "privacy": "http://go.sap.com/about/legal/privacy.html",
+        "impressum": "http://go.sap.com/about/legal/impressum.html",
+        "copyright": "http://go.sap.com/about/legal/copyright.html"
+      }
+    },
+    "beta": {
+      "name": "YaaS BETA Market",
+      "description": "SAP-Hybris YaaS Market BETA",
+      "url": "https://yaas.io/beta",
+      "region": "beta",
+      "locale": {
+        "official": "en-US",
+        "default": "en-US",
+        "supported": [
+          "en-US",
+          "de-DE"
+        ]
+      },
+      "links": {
+        "api": "https://api.beta.yaas.io",
+        "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
+        "privacy": "http://go.sap.com/about/legal/privacy.html",
+        "impressum": "http://go.sap.com/about/legal/impressum.html",
+        "copyright": "http://go.sap.com/about/legal/copyright.html"
+      }
+    }
+  },
+  "mapping": {
+    "*-US": "us",
+    "*": "beta"
+  }
+}

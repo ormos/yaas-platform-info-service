@@ -1,0 +1,82 @@
+{
+  "@metadata": {
+    "authors": [
+      "r.hofmann@sap.com"
+    ],
+    "last-modified": "2016-08-03",
+    "version": "0.1.0"
+  },
+  "units": {
+    "items": "{0}",
+    "count": "{0}/month",
+    "storage": "{0} GB",
+    "memory": "{0} MB",
+    "time": "{0|mm:ss}"
+  },
+  "metrics": {
+    "request": {
+      "name": "API requests",
+      "unit": "/units/count"
+    },
+    "request-read": {
+      "name": "API requests (read)",
+      "unit": "/units/count"
+    },
+    "request-write": {
+      "name": "API requests (write)",
+      "unit": "/units/count"
+    },
+    "categories": {
+      "name": "Categories",
+      "unit": "/units/items"
+    },
+    "contacts": {
+      "name": "Contacts",
+      "unit": "/units/items"
+    },
+    "coupons": {
+      "name": "Coupons",
+      "unit": "/units/count"
+    },
+    "emails": {
+      "name": "Emails",
+      "unit": "/units/count"
+    },
+    "events": {
+      "name": "Events",
+      "unit": "/units/count"
+    },
+    "storage": {
+      "name": "Storage",
+      "unit": "/units/storage"
+    },
+    "interactions": {
+      "name": "Interactions",
+      "unit": "/units/count"
+    },
+    "orders": {
+      "name": "Orders",
+      "unit": "/units/count"
+    },
+    "products": {
+      "name": "Products",
+      "unit": "/units/items"
+    },
+    "registrations": {
+      "name": "Registrations",
+      "unit": "/units/count"
+    },
+    "sites": {
+      "name": "Sites",
+      "unit": "/units/items"
+    },
+    "tickets": {
+      "name": "Tickets",
+      "unit": "/units/count"
+    },
+    "transactions": {
+      "name": "Transactions",
+      "unit": "/units/count"
+    }
+  }
+}

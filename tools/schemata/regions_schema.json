@@ -1,0 +1,755 @@
+{
+    "type": "object", 
+    "properties": {
+        "gw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gs": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gq": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gp": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gy": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ge": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gd": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gb": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ga": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gi": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "gh": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lb": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "la": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tv": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "li": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lv": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "to": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "lr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ls": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "th": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "td": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ly": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "do": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "dm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "dj": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "dk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "um": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "de": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ye": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "dz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "uy": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "yt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "vu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "qa": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "eh": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "wf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ee": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "eg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "za": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ec": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sj": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "us": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "et": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "zw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "es": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "er": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ru": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "rw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "rs": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "re": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "it": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ro": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bd": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "be": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "vg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ba": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bb": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bo": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bh": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bi": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bj": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "jm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bv": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ws": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bq": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "br": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bs": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "je": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "by": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "bz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "om": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "_beta_": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "zm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ua": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "jo": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ck": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ci": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ch": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "co": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ca": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cd": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cy": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cx": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cv": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "cu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ve": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ps": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sa": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "py": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "iq": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pa": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pe": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ph": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "pm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "hr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ht": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "hu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "hk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "hn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "vn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "hm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "jp": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "me": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "md": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ma": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "uz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ml": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mo": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mh": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mt": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mv": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mq": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mp": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ms": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "im": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ug": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "my": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "mx": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "il": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "va": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "vc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ae": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ad": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ag": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "af": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ai": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "vi": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "is": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ir": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "am": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "al": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ao": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "aq": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "as": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ar": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "au": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "at": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "aw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "in": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ax": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "az": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ie": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "id": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ni": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "nl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "no": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "na": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "nc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ne": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "nf": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ng": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "nz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sh": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "np": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "so": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "nr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "nu": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "fr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "io": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sb": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "fi": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "fj": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "fk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "fm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "fo": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "tj": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sy": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sx": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ke": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ss": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ki": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kh": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sv": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "km": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "st": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sk": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kr": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "si": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kp": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kw": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sn": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sm": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sl": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sc": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "kz": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "ky": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sg": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "se": {
+            "$ref": "regions_schema.json#"
+        }, 
+        "sd": {
+            "$ref": "regions_schema.json#"
+        }
+    }
+}

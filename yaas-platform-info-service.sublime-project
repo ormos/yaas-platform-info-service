@@ -1,0 +1,32 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "Docker Build",
+			"shell_cmd": "docker build -t yaas/yaas-info-service \"${project_path:${folder}}\"",
+			"variants":
+			[
+				{
+					"name": "Dockerfile run",
+					"shell_cmd": "docker build -t yaas/yaas-info-service \"${project_path:${folder}}\" && docker run -d --name yaas-info-service -p 8089:80 yaas/yaas-info-service"
+				},
+				{
+					"name": "Dockerfile stop",
+					"shell_cmd": "docker ps -f name=yaas-info-service -q | xargs docker rm -f"
+				}
+			]
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	]
+}
