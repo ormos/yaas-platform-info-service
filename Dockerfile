@@ -1,4 +1,4 @@
-FROM elvido/alpine-nginx-lua
+FROM elvido/alpine-nginx-geoip
 
 MAINTAINER elvido <ralf.hofmann@elvido.net>
 

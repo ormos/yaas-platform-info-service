@@ -3,24 +3,24 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2016-08-20",
-    "version": "0.1.0"
+    "last-modified": "2016-09-07",
+    "version": "0.2.1"
   },
   "regions": {
-    "us": {
-      "id": "us",
-      "name": "YaaS US Region",
-      "description": "SAP-Hybris YaaS US Region",
+    "NA": {
+      "id": "NA",
+      "name": "YaaS North America Region",
+      "description": "SAP-Hybris YaaS North America Region",
       "domain": "us.yaas.io"
     },
-    "eu": {
-      "id": "eu",
-      "name": "YaaS EU Region",
-      "description": "SAP-Hybris YaaS EU Region",
+    "EU": {
+      "id": "EU",
+      "name": "YaaS Europe Region",
+      "description": "SAP-Hybris YaaS Europe Region",
       "domain": "eu.yaas.io"
     },
-    "beta": {
-      "id": "beta",
+    "_beta_": {
+      "id": "_beta_",
       "name": "YaaS BETA Region",
       "description": "SAP-Hybris YaaS BETA Region",
       "domain": "beta.yaas.io"

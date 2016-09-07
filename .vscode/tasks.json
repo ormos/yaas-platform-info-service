@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "bash",
+    "args": ["-c"],
+    "isShellCommand": true,
+    "showOutput": "always",
+    "suppressTaskName": true,
+    "tasks": [
+        {
+            "taskName": "Dockerfile build",
+            "isBuildCommand": true,
+            "args": ["docker build -t yaas/yaas-platform-info-service ${workspaceRoot}"]
+        },
+        {
+            "taskName": "Dockerfile run",
+            "args": ["docker build -t yaas/yaas-platform-info-service ${workspaceRoot} && docker run -d --name yaas-platform-info-service -p 8089:80 yaas/yaas-platform-info-service"]
+        },
+        {
+            "taskName": "Dockerfile stop",
+            "args": ["docker ps -f name=yaas-platform-info-service -q | xargs docker rm -f"]
+        }
+    ]
+}

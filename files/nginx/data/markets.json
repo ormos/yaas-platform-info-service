@@ -3,25 +3,29 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2016-08-03",
-    "version": "0.1.0"
+    "last-modified": "2016-09-07",
+    "version": "0.2.0"
   },
   "markets": {
-    "us": {
+    "US": {
       "name": "YaaS US Market",
       "description": "SAP-Hybris YaaS Market North America",
       "url": "https://yaas.io/us",
-      "region": "us",
+      "region": {
+          "id": "NA",
+          "link": "/regions/NA"
+      },
       "locale": {
         "official": "en-US",
         "default": "en-US",
-        "supported": [
-          "en-US"
-        ],
-        "timezone": "Europe/Berlin",
-        "currency": "EUR",
-        "vendor": "SAPAmerica"
+        "languages": [
+          "en",
+          "de"
+        ]
       },
+      "timezone": "EDT",
+      "currency": "USD",
+      "vendor": "SAPAmerica",
       "links": {
         "api": "https://api.us.yaas.io",
         "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
@@ -30,18 +34,25 @@
         "copyright": "http://go.sap.com/about/legal/copyright.html"
       }
     },
-    "de": {
+    "DE": {
       "name": "YaaS German Market",
       "description": "SAP-Hybris YaaS Market Germany",
       "url": "https://yaas.io/de",
-      "region": "eu",
+      "region": {
+          "id": "EU",
+          "link": "/regions/EU"
+      },
       "locale": {
         "official": "de-DE",
         "default": "de-DE",
-        "supported": [
-          "de-DE"
+        "languages": [
+          "de",
+          "en"
         ]
       },
+      "timezone": "CEST",
+      "currency": "EUR",
+      "vendor": "SAPGermany",
       "links": {
         "api": "https://api.eu.yaas.io",
         "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
@@ -50,15 +61,18 @@
         "copyright": "http://go.sap.com/about/legal/copyright.html"
       }
     },
-    "beta": {
+    "_beta_": {
       "name": "YaaS BETA Market",
       "description": "SAP-Hybris YaaS Market BETA",
       "url": "https://yaas.io/beta",
-      "region": "beta",
+      "region": {
+          "id": "_beta_",
+          "link": "/regions/_beta_"
+      },
       "locale": {
         "official": "en-US",
         "default": "en-US",
-        "supported": [
+        "languages": [
           "en",
           "de"
         ]
