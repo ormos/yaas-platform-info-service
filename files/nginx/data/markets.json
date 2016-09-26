@@ -97,7 +97,7 @@
         "_offset_": "-500"
       },
       "billing": {
-        "vendor": "SAPAmerica",
+        "vendor": "_SAPBeta_",
         "pricing": "betaPriceGroup",
         "currency": "USD"
       },
