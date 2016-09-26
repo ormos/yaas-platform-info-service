@@ -13,7 +13,7 @@
       "url": "https://yaas.io/us",
       "region": {
           "id": "NA",
-          "link": "/regions/NA"
+          "_link_": "/regions/NA"
       },
       "locale": {
         "official": "en-US",
@@ -23,9 +23,16 @@
           "de"
         ]
       },
-      "timezone": "EDT",
-      "currency": "USD",
-      "vendor": "SAPAmerica",
+      "timezone": {
+        "name": "America/New_York",
+        "_zone_": "EST",
+        "_offset_": "-5s00"
+      },
+      "billing": {
+        "vendor": "SAPAmerica",
+        "pricing": "usPriceGroup",
+        "currency": "USD"
+      },
       "links": {
         "api": "https://api.us.yaas.io",
         "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
@@ -40,7 +47,7 @@
       "url": "https://yaas.io/de",
       "region": {
           "id": "EU",
-          "link": "/regions/EU"
+          "_link_": "/regions/EU"
       },
       "locale": {
         "official": "de-DE",
@@ -50,9 +57,16 @@
           "en"
         ]
       },
-      "timezone": "CEST",
-      "currency": "EUR",
-      "vendor": "SAPGermany",
+      "timezone": {
+        "name": "Europe/Berlin",
+        "_zone_": "CET",
+        "_offset_":"+100"
+      },
+      "billing": {
+        "vendor": "SAPGermany",
+        "pricing": "dePriceGroup",
+        "currency": "EUR"
+      },
       "links": {
         "api": "https://api.eu.yaas.io",
         "terms": "http://go.sap.com/corporate/en/legal/terms-of-use.html",
@@ -67,7 +81,7 @@
       "url": "https://yaas.io/beta",
       "region": {
           "id": "_beta_",
-          "link": "/regions/_beta_"
+          "_link_": "/regions/_beta_"
       },
       "locale": {
         "official": "en-US",
@@ -76,6 +90,16 @@
           "en",
           "de"
         ]
+      },
+      "timezone": {
+        "name": "America/New_York",
+        "_zone_": "EST",
+        "_offset_": "-500"
+      },
+      "billing": {
+        "vendor": "SAPAmerica",
+        "pricing": "betaPriceGroup",
+        "currency": "USD"
       },
       "links": {
         "api": "https://api.beta.yaas.io",
