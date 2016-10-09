@@ -7,10 +7,10 @@
     "version": "0.2.1"
   },
   "regions": {
-    "NA": {
-      "id": "NA",
-      "name": "YaaS North America Region",
-      "description": "SAP-Hybris YaaS North America Region",
+    "US": {
+      "id": "US",
+      "name": "YaaS United States Region",
+      "description": "SAP-Hybris YaaS United States of America Region",
       "domain": "us.yaas.io"
     },
     "EU": {
