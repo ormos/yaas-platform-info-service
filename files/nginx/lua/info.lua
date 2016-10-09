@@ -1,4 +1,6 @@
--- if we got an request parameter ip just capture the complex
+require('mobdebug').start('10.0.2.15')
+
+-- if we got an request parameter ip just capture it
 if ngx.var.arg_ip ~= nil then
     local res = ngx.location.capture("/info/" .. ngx.var.arg_ip)
     if res.status == 200 then
@@ -77,4 +79,7 @@ info['yaas'] = add_yaas_info(ngx.var.geoip_city_country_code,
                                 ngx.req.get_headers()['Hybris-External-Url'])
 
 local json = cjson.encode(info)
+
 ngx.say(json)
+
+require('mobdebug').done()
