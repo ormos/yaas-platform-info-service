@@ -1,9 +1,3 @@
-
-DEBUG_HOST_ADDR = os.getenv("DEBUG_HOST_ADDR")
-if DEBUG_HOST_ADDR ~= nil then
-    DEBUG = require('mobdebug').start(os.getenv("DEBUG_HOST_ADDR"))
-end
-
 utils = require('utils')
 
 -- if we got an request parameter ip just capture it
@@ -60,6 +54,8 @@ function add_yaas_info(country, language, base_url)
     return yaas_info
 end
 
+utils.debug.start()
+
 local info = {
     ip = ngx.var.remote_addr
 }
@@ -88,6 +84,5 @@ local json = cjson.encode(info)
 
 ngx.say(json)
 
-if DEBUG ~= nil then
-    DEBUG.done()
-end
+utils.debug.stop()
+
