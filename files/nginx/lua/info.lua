@@ -1,4 +1,10 @@
-require('mobdebug').start('10.0.2.15')
+
+DEBUG_HOST_ADDR = os.getenv("DEBUG_HOST_ADDR")
+if DEBUG_HOST_ADDR ~= nil then
+    DEBUG = require('mobdebug').start(os.getenv("DEBUG_HOST_ADDR"))
+end
+
+utils = require('utils')
 
 -- if we got an request parameter ip just capture it
 if ngx.var.arg_ip ~= nil then
@@ -76,10 +82,12 @@ end
 
 info['yaas'] = add_yaas_info(ngx.var.geoip_city_country_code,
                                 ngx.req.get_headers()['Accept-Language'],
-                                ngx.req.get_headers()['Hybris-External-Url'])
+                                utils.base_url())
 
 local json = cjson.encode(info)
 
 ngx.say(json)
 
-require('mobdebug').done()
+if DEBUG ~= nil then
+    DEBUG.done()
+end
