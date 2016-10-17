@@ -1,4 +1,4 @@
-require('mobdebug').start('10.0.2.15')
+utils = require('utils')
 
 -- if we got an request parameter ip just capture it
 if ngx.var.arg_ip ~= nil then
@@ -54,6 +54,8 @@ function add_yaas_info(country, language, base_url)
     return yaas_info
 end
 
+utils.debug.start()
+
 local info = {
     ip = ngx.var.remote_addr
 }
@@ -76,10 +78,11 @@ end
 
 info['yaas'] = add_yaas_info(ngx.var.geoip_city_country_code,
                                 ngx.req.get_headers()['Accept-Language'],
-                                ngx.req.get_headers()['Hybris-External-Url'])
+                                utils.base_url())
 
 local json = cjson.encode(info)
 
 ngx.say(json)
 
-require('mobdebug').done()
+utils.debug.stop()
+
