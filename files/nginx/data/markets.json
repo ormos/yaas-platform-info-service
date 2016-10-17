@@ -35,8 +35,8 @@
       },
       "links": {
         "api": "https://api.us.yaas.io",
-        "terms": "https://www.yaas.io/legal/terms-of-use.html",
-        "contract": "https://www.yaas.io/legal/yaas-framecontract-commercial.html",
+        "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
+        "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
         "privacy": "https://go.sap.com/about/legal/privacy.html",
         "impressum": "https://go.sap.com/about/legal/impressum.html",
         "copyright": "https://go.sap.com/about/legal/copyright.html"
@@ -70,8 +70,8 @@
       },
       "links": {
         "api": "https://api.eu.yaas.io",
-        "terms": "https://www.yaas.io/germany/legal/terms-of-use.html",
-        "contract": "https://www.yaas.io/legal/yaas-framecontract-commercial.html",
+        "terms": "https://www.yaas.io/germany/legal/sap-hybris-as-a-service-account-terms-of-use_v1.html",
+        "contract": "https://www.yaas.io/germany/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
         "privacy": "https://go.sap.com/germany/about/legal/privacy.html",
         "impressum": "https://go.sap.com/germany/about/legal/impressum.html",
         "copyright": "https://go.sap.com/germany/about/legal/copyright.html"
