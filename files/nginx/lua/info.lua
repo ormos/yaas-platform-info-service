@@ -1,4 +1,4 @@
-utils = require('utils')
+-- utils = require('utils')
 
 -- if we got an request parameter ip just capture it
 if ngx.var.arg_ip ~= nil then
@@ -54,7 +54,7 @@ function add_yaas_info(country, language, base_url)
     return yaas_info
 end
 
-utils.debug.start()
+-- utils.debug.start()
 
 local info = {
     ip = ngx.var.remote_addr
@@ -84,5 +84,5 @@ local json = cjson.encode(info)
 
 ngx.say(json)
 
-utils.debug.stop()
+-- utils.debug.stop()
 
