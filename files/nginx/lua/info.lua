@@ -1,8 +1,8 @@
--- utils = require('utils')
+local utils = require('utils')
 
 -- if we got an request parameter ip just capture it
 if ngx.var.arg_ip ~= nil then
-    local res = ngx.location.capture("/info/" .. ngx.var.arg_ip)
+    local res = ngx.location.capture('/info/' .. ngx.var.arg_ip)
     if res.status == 200 then
         ngx.say(res.body)
     end

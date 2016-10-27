@@ -1,4 +1,4 @@
-local function base_url()
+local function _base_url()
 
     -- check if we have a global server variable
     local url = ngx.var.base_url
@@ -42,5 +42,5 @@ local function base_url()
 end
 
 return {
-    base_url = base_url
+    base_url = _base_url
 }
