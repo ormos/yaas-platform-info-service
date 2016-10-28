@@ -14,8 +14,10 @@ if markets == nil then
     markets = cjson.encode(data.markets)
 
     markets = utils.substitute(markets, { URL = base_url })
-
     ngx.shared.cache:set('markets-'..base_url, markets, 3600)
+
+    local mapping = data.mapping
+    ngx.shared.cache:set('markets-mapping', mapping, 3600)
 end
 
 ngx.say(markets)

@@ -3,8 +3,8 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2016-10-10",
-    "version": "0.2.2"
+    "last-modified": "2016-10-28",
+    "version": "0.2.3"
   },
   "markets": {
     "US": {
@@ -40,6 +40,7 @@
         "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
         "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
         "privacy": "https://go.sap.com/about/legal/privacy.html",
+        "dpa": "https://www.yaas.io/germany/legal/sap-hybris-as-a-service-cloud-data-processing-agreement_v1.html",
         "impressum": "https://go.sap.com/about/legal/impressum.html",
         "copyright": "https://go.sap.com/about/legal/copyright.html"
        }
@@ -121,7 +122,8 @@
     }
   },
   "mapping": {
-    "*-US": "US",
+    "US": "US",
+    "DE": "DE",
     "*": "_beta_"
   }
 }

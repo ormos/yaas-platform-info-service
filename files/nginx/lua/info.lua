@@ -9,7 +9,59 @@ if ngx.var.arg_ip ~= nil then
     ngx.exit(res.status)
 end
 
-function add_info(var, table, section, item)
+-- analyze the accepted language set by the 'Accept-Language' header
+local function get_accepted_languages()
+
+    local accepted_languages_scores = {}
+
+    if not ngx.req.get_headers()['Accept-Language'] then
+        accepted_languages_scores['*'] = 1.0
+    else
+        for range in ngx.req.get_headers()["Accept-Language"]:gmatch(" *([^,]+) *") do
+            accepted_languages_scores[range:match("([^;]+)")] = range:match("q *= *([0-9.]+)") or 1.0
+        end
+    end
+
+    -- Hack for user agents which don't send quality values for wildcards
+    if ngx.req.get_headers()["Accept-Language"] and not ngx.req.get_headers()["Accept-Language"]:find("q=") then
+        for language, score in pairs(accepted_languages_scores) do
+            if language == '*' then
+                accepted_languages_scores[language] = 0.01
+            end
+        end
+    end
+
+    return accepted_languages_scores
+end
+
+-- get the prefered language language based on the 'Accept-Language' header
+local function get_prefered_language(provided_languages, accepted_languages)
+
+    -- analyze the accept-language header
+    if accepted_languages == nil then
+        accepted_languages = get_accepted_languages()
+    end
+
+    -- default if we can find nothing
+    local prefered_language = provided_languages[1]
+    local highest_score = 0
+
+    -- iterate through the provided languages and select the one with the highest score
+    for _ , language in ipairs(provided_languages) do
+        local s1 = accepted_languages[language] or accepted_languages["*"] or 0.0
+        -- for language-country combination let's try a second run with the language only
+        local s2 = accepted_languages[language:match("^([^-]+)")] or accepted_languages["*"] or 0.0
+        if math.max(s1, s2) > highest_score then
+            prefered_language = language
+            highest_score = math.max(s1, s2)
+        end
+    end
+
+    return prefered_language
+end
+
+-- add optional location information
+local function add_location_info(table, var, section, item)
     if var ~=  nil and var ~= '' then
         if table[section] == nil then
             table[section] = {}
@@ -18,55 +70,63 @@ function add_info(var, table, section, item)
     end
 end
 
-function add_yaas_info(country, language, base_url)
-    local yaas_info_de = {
-        market = { id = 'DE',
-                    _link_ = base_url .. '/markets/DE',
-                    _redirect_='https://yaas.io/de'
-                    },
-        language = language
-    }
+-- map from a country to the market
+local function map_country_to_market(country, markets)
 
-    local yaas_info_us = {
-        market = { id = 'US',
-                    _link_ = base_url .. '/markets/US',
-                    _redirect_='https://yaas.io/us'
-                    },
-        language = language
-    }
+    local market_id = country
 
-    local yaas_info = {
-        market = { id = '_beta_',
-                    _link_ = base_url .. '/markets/_beta_',
-                    _redirect_='https://yaas.io/beta'
-                    },
-        language = language
-    }
+    local mapping = ngx.shared.cache:get('markets-mapping')
 
-    if country == 'DE' then
-        yaas_info = yaas_info_de
+    -- use the mapping if we got one
+    if mapping ~= nil then
+        market_id = mapping[country] or markets[country] or mapping['*'] or market_id
     end
 
-    if country == 'US' then
-        yaas_info = yaas_info_us
-    end
-
-    return yaas_info
+    return markets[market_id]
 end
 
--- utils.debug.start()
+-- load the market data
+local res = ngx.location.capture('/markets')
+if res.status ~= 200 then
+    ngx.exit(res.status)
+end
+local markets = cjson.decode(res.body)
 
+-- prepare the country information (uppercase 2-letter)
+local country = ngx.var.geoip_city_country_code
+if country ~= nil and country:len() >= 2 then
+    country = country:gsub(' *(%S%S)', upper)
+else
+    country = '??'
+end
+
+-- get the market based on the country
+local market = markets[map_country_to_market(country, markets)] or markets['_beta_']
+
+-- the default information structure
 local info = {
-    ip = ngx.var.remote_addr
+    ip = ngx.var.remote_addr,
+    yaas = { language = {
+                preferred = get_prefered_language(market['locale']['languages']),
+                official  = market['locale']['official'],
+                default   = market['locale']['default']
+             },
+             market = {
+                 id         = market['id'],
+                 _redirect_ = market['url'],
+                 _link_     = market['_link_']
+             }
+    }
 }
 
-add_info(ngx.var.geoip_city_country_code, info, 'country', 'code')
-add_info(ngx.var.geoip_city_country_name, info, 'country', 'name')
-add_info(ngx.var.geoip_region_code,       info, 'region',  'code')
-add_info(ngx.var.geoip_region_name,       info, 'region',  'name')
-add_info(ngx.var.geoip_timezone,          info, 'region',  'timezone')
-add_info(ngx.var.geoip_city,              info, 'city',    'name')
-add_info(ngx.var.geoip_postal_code,       info, 'city',    'postal')
+-- add optional location specific information
+add_location_info(info, ngx.var.geoip_city_country_code, 'country', 'code')
+add_location_info(info, ngx.var.geoip_city_country_name, 'country', 'name')
+add_location_info(info, ngx.var.geoip_region_code,       'region',  'code')
+add_location_info(info, ngx.var.geoip_region_name,       'region',  'name')
+add_location_info(info, ngx.var.geoip_timezone,          'region',  'timezone')
+add_location_info(info, ngx.var.geoip_city,              'city',    'name')
+add_location_info(info, ngx.var.geoip_postal_code,       'city',    'postal')
 
 -- Convert latitude and longitude to numeric values
 if ngx.var.geoip_latitude ~= nil and ngx.var.geoip_longitude ~= nil then
@@ -76,13 +136,8 @@ if ngx.var.geoip_latitude ~= nil and ngx.var.geoip_longitude ~= nil then
     }
 end
 
-info['yaas'] = add_yaas_info(ngx.var.geoip_city_country_code,
-                                ngx.req.get_headers()['Accept-Language'],
-                                utils.base_url())
-
 local json = cjson.encode(info)
 
 ngx.say(json)
 
--- utils.debug.stop()
 
