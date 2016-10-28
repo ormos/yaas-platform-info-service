@@ -75,10 +75,10 @@ local function map_country_to_market(country, markets)
 
     local market_id = country
 
-    local mapping = ngx.shared.cache:get('markets-mapping')
-
     -- use the mapping if we got one
-    if mapping ~= nil then
+    local res = ngx.location.capture('/mapping')
+    if res.status == 200 then
+        local mapping = cjson.decode(res.body)
         market_id = mapping[country] or markets[country] or mapping['*'] or market_id
     end
 
@@ -95,13 +95,13 @@ local markets = cjson.decode(res.body)
 -- prepare the country information (uppercase 2-letter)
 local country = ngx.var.geoip_city_country_code
 if country ~= nil and country:len() >= 2 then
-    country = country:gsub(' *(%S%S)', upper)
+    country = country:gsub(' *(%S%S)', string.upper)
 else
     country = '??'
 end
 
 -- get the market based on the country
-local market = markets[map_country_to_market(country, markets)] or markets['_beta_']
+local market = map_country_to_market(country, markets) or markets['_beta_']
 
 -- the default information structure
 local info = {
