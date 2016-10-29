@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title":"markets_collection",
+  "type":"object",
+  "properties":
+  {
+    "id":
+    {
+      "type":"string"
+    },
+    "url":
+    {
+      "type":"string",
+      "format":"uri"
+    },
+    "owner":
+    {
+      "type":"string",
+      "pattern":"^.+"
+    },
+    "title":
+    {
+      "type":"string",
+      "pattern":"^.+"
+    },
+    "description":
+    {
+      "type":"string"
+    },
+    "createdAt":
+    {
+      "type":"string",
+      "format":"date-time"
+    },
+    "items":
+    {
+      "type":"array",
+      "items":
+      {
+        "$ref":"market_entity"
+      }
+    }
+  },
+  "required":["id","owner","title"]
+}

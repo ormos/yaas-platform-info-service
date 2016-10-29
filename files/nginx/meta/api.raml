@@ -1,0 +1,69 @@
+#%RAML 0.8
+title: YaaS-Platform-Info-Service
+baseUri: http://localhost/
+version: v1
+mediaType:  application/json
+
+schemas:
+  - regions_collection: !include schemata/regions_collection.json
+  - region_entity: !include schemata/region_entity.json
+  - markets_collection: !include schemata/markets_collection.json
+  - market_entity: !include schemata/market_entity.json
+  - error: !include https://api.yaas.io/patterns/v1/schema-error-message.json
+
+traits:
+  - !include https://api.yaas.io/patterns/v2/trait-yaas-aware.yaml
+
+resourceTypes:
+  - !include https://api.yaas.io/patterns/v2/resource-type-element.yaml
+  - !include https://api.yaas.io/patterns/v1/resource-type-collection.yaml
+
+/regions:
+  type: collection
+  get:
+    description: Gets all YaaS regions
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/regions.json
+
+  /{regiontId}:
+    type: element
+    uriParameters:
+      regiontId:
+        description: the id of the wishlist to work on
+        example: 784hti8ey
+        type: string
+    get:
+      description: Gets a wishlist
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/region.json
+
+/markets:
+  type: collection
+  get:
+    description: Gets all wishlists
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/wishlists-example.json
+
+  /{market_entityId}:
+    type: element
+    uriParameters:
+      marketId:
+        description: the id of the wishlist to work on
+        example: 784hti8ey
+        type: string
+    get:
+      description: Gets a wishlist
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/wishlist-example.json

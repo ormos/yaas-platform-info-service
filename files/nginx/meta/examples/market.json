@@ -1,0 +1,38 @@
+{
+    "timezone": {
+        "_zone_": "EST",
+        "name": "America\/New_York",
+        "_offset_": "-05:00"
+    },
+    "region": {
+        "_link_": "http:\/\/localhost:8089\/regions\/US",
+        "id": "US"
+    },
+    "description": "SAP-Hybris YaaS Market United States of America",
+    "locale": {
+        "languages": [
+            "en",
+            "de"
+        ],
+        "official": "en-US",
+        "default": "en"
+    },
+    "_link_": "http:\/\/localhost:8089\/markets\/US",
+    "links": {
+        "api": "https:\/\/api.us.yaas.io",
+        "dpa": "https:\/\/www.yaas.io\/germany\/legal\/sap-hybris-as-a-service-cloud-data-processing-agreement_v1.html",
+        "privacy": "https:\/\/go.sap.com\/about\/legal\/privacy.html",
+        "terms": "https:\/\/www.yaas.io\/legal\/sap-hybris-as-a-service-account-terms-of-use_v2.html",
+        "copyright": "https:\/\/go.sap.com\/about\/legal\/copyright.html",
+        "impressum": "https:\/\/go.sap.com\/about\/legal\/impressum.html",
+        "contract": "https:\/\/www.yaas.io\/legal\/sap-hybris-as-a-service-organization-terms-of-use_v1.html"
+    },
+    "url": "https:\/\/market.yaas.io\/us",
+    "id": "US",
+    "name": "YaaS United States Market",
+    "billing": {
+        "currency": "USD",
+        "pricing": "usPriceGroup",
+        "vendor": "sapamerica"
+    }
+}
