@@ -1,2 +1,10 @@
 *
-
+files/
+tools/
+.vscode
+.cfignore
+.dockerignore
+.gitignore
+.git/
+Dockerfile
+README.md
