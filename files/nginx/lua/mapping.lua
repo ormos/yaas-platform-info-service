@@ -8,9 +8,11 @@ if mapping == nil then
     end
 
     local data = cjson.decode(res.body)
-    local mapping = cjson.encode(data.mapping)
+    mapping = cjson.encode(data.mapping)
 
     ngx.shared.cache:set('markets-mapping', mapping, 3600)
+else
+    ngx.log(ngx.INFO, 'Cache hit for mapping')
 end
 
-ngx.say(mapping)
+ngx.print(mapping)

@@ -1,8 +1,9 @@
 local utils = require('utils')
 
-local base_url = utils.base_url()
+local base_url  = utils.base_url()
+local server_id = ngx.md5(base_url)
 
-local markets = ngx.shared.cache:get('markets-'..base_url)
+local markets = ngx.shared.cache:get('markets-'..server_id)
 
 if markets == nil then
     local res = ngx.location.capture('/data/markets')
@@ -15,7 +16,9 @@ if markets == nil then
 
     markets = utils.substitute(markets, { URL = base_url })
 
-    ngx.shared.cache:set('markets-'..base_url, markets, 3600)
+    ngx.shared.cache:set('markets-'..server_id, markets, 3600)
+else
+    ngx.log(ngx.INFO, 'Cache hit for markets at URL: '..base_url)
 end
 
-ngx.say(markets)
+ngx.print(markets)

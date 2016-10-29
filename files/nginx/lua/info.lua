@@ -4,7 +4,7 @@ local utils = require('utils')
 if ngx.var.arg_ip ~= nil then
     local res = ngx.location.capture('/info/' .. ngx.var.arg_ip)
     if res.status == 200 then
-        ngx.say(res.body)
+        ngx.print(res.body)
     end
     ngx.exit(res.status)
 end
@@ -79,8 +79,10 @@ local function map_country_to_market(country, markets)
     local res = ngx.location.capture('/mapping')
     if res.status == 200 then
         local mapping = cjson.decode(res.body)
-        market_id = mapping[country] or markets[country] or mapping['*'] or market_id
+        market_id = mapping[country] or (markets[country] and markets[country].id) or mapping['*'] or market_id
     end
+
+    ngx.log(ngx.INFO, 'Detected '..country..' market: '..market_id)
 
     return markets[market_id]
 end
@@ -102,6 +104,8 @@ end
 
 -- get the market based on the country
 local market = map_country_to_market(country, markets) or markets['_beta_']
+
+ngx.log(ngx.INFO, 'Detected country='..country..':market='..market['id']..' for IP-address:'..ngx.var.remote_addr)
 
 -- the default information structure
 local info = {
@@ -138,6 +142,6 @@ end
 
 local json = cjson.encode(info)
 
-ngx.say(json)
+ngx.print(json)
 
 

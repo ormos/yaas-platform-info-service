@@ -1,10 +1,11 @@
 local utils = require('utils')
 
-local base_url = utils.base_url()
+local base_url  = utils.base_url()
+local server_id = ngx.md5(base_url)
 
 local country = ngx.var.request_uri:match('^.+/(.+)$')
 
-local market = ngx.shared.cache:get('market.'..country..'-'..base_url)
+local market = ngx.shared.cache:get('market.'..country..'-'..server_id)
 
 if market == nil then
     local res = ngx.location.capture('/markets')
@@ -19,7 +20,9 @@ if market == nil then
 
     market = cjson.encode(markets[country])
 
-    ngx.shared.cache:set('market.'..country..'-'..base_url, market, 3600)
+    ngx.shared.cache:set('market.'..country..'-'..server_id, market, 3600)
+else
+    ngx.log(ngx.INFO, 'Cache hit for market='..country..' at URL: '..base_url)
 end
 
-ngx.say(market)
+ngx.print(market)

@@ -3,8 +3,8 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2016-10-28",
-    "version": "0.2.3"
+    "last-modified": "2016-10-29",
+    "version": "0.3.0"
   },
   "markets": {
     "US": {
@@ -12,14 +12,14 @@
       "_link_": "${URL}/markets/US",
       "name": "YaaS United States Market",
       "description": "SAP-Hybris YaaS Market United States of America",
-      "url": "https://yaas.io/us",
+      "url": "https://market.yaas.io/us",
       "region": {
           "id": "US",
           "_link_": "${URL}/regions/US"
       },
       "locale": {
         "official": "en-US",
-        "default": "en-US",
+        "default": "en",
         "languages": [
           "en",
           "de"
@@ -50,14 +50,14 @@
       "_link_": "${URL}/markets/DE",
       "name": "YaaS German Market",
       "description": "SAP-Hybris YaaS Market Germany",
-      "url": "https://yaas.io/de",
+      "url": "https://market.yaas.io/de",
       "region": {
           "id": "EU",
           "_link_": "${URL}/regions/EU"
       },
       "locale": {
         "official": "de-DE",
-        "default": "de-DE",
+        "default": "de",
         "languages": [
           "de",
           "en"
@@ -88,14 +88,14 @@
       "_link_": "${URL}/markets/_beta_",
       "name": "YaaS BETA Market",
       "description": "SAP-Hybris YaaS Market BETA",
-      "url": "https://yaas.io/beta",
+      "url": "https://market.yaas.io/beta",
       "region": {
           "id": "_beta_",
           "_link_": "${URL}/regions/_beta_"
       },
       "locale": {
         "official": "en-US",
-        "default": "en-US",
+        "default": "en",
         "languages": [
           "en",
           "de"
@@ -122,7 +122,6 @@
     }
   },
   "mapping": {
-    "CN": "DE",
     "*": "_beta_"
   }
 }

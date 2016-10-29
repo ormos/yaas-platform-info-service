@@ -1,11 +1,12 @@
 
 local utils = require('utils')
 
-local base_url = utils.base_url()
+local base_url  = utils.base_url()
+local server_id = ngx.md5(base_url)
 
 local continent = ngx.var.request_uri:match('^.+/(.+)$')
 
-local region = ngx.shared.cache:get('region.'..continent..'-'..base_url)
+local region = ngx.shared.cache:get('region.'..continent..'-'..server_id)
 
 if region == nil then
     local res = ngx.location.capture('/regions')
@@ -20,7 +21,9 @@ if region == nil then
 
     region = cjson.encode(regions[continent])
 
-    ngx.shared.cache:set('region.'..continent..'-'..base_url, region, 3600)
+    ngx.shared.cache:set('region.'..continent..'-'..server_id, region, 3600)
+else
+    ngx.log(ngx.INFO, 'Cache hit for region='..continent..' at URL: '..base_url)
 end
 
-ngx.say(region)
+ngx.print(region)

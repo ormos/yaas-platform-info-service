@@ -1,0 +1,7 @@
+---
+# cf push -f ypi-stage-manifest.yml --docker-image elvido/yaas-platform-info-service:1.x
+
+inherit: ypi-base-manifest.yml
+applications:
+- name: yaas-platform-info-service
+  docker-image: elvido/yaas-platform-info-service

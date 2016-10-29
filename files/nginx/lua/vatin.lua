@@ -46,4 +46,4 @@ local result = {
 
 local json = cjson.encode(result)
 
-ngx.say(json)
+ngx.print(json)
