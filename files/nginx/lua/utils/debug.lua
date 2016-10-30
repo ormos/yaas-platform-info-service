@@ -1,6 +1,6 @@
 
 local _debug = {
-    Host_Addr = os.getenv("DEBUG_HOST_ADDR")
+    Host_Addr = os.getenv('DEBUG_HOST_ADDR')
 }
 
 function _debug.start()

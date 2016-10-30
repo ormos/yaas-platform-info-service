@@ -1,49 +1,84 @@
+local country, vatin = ngx.unescape_uri(ngx.var.request_uri):match('^.+/(.+)/(.+)$')
 
-
-local country, vatin = ngx.var.request_uri:match("^.+/(.+)/(.+)$")
-
-function check_vatin(vatin, country)
-
-  local soap_client = require('soap.client')
-
-  local request = {
-    url = 'http://ec.europa.eu/taxation_customs/vies/services/checkVatService',
-    soapaction = 'None',
-    namespace = 'urn:ec.europa.eu:taxud:vies:services:checkVat:types',
-    method = "checkVat",
-    entries = {
-        { tag = 'countryCode' , country },
-        { tag = 'vatNumber'   , vatin   }
-    }
-  }
-
-  local ns, method, entries = soap_client.call(request)
-
-  local id = nil
-  local valid = false
-
-  if (method == 'checkVatResponse') then
-    local tags  = {
-      vatNumber = function(element) id = element[1] end,
-      valid     = function(element) if element[1]:lower() == 'true' then valid = true end end
-    }
-
-    for i, element in ipairs(entries) do
-      local f = tags[element['tag']]
-      if f ~= nil then f(element) end
-  	end
-  end
-
-  return valid, id
+if country == nil or vatin == nil or string.len(country) ~= 2 then
+    ngx.exit(ngx.HTTP_FORBIDDEN)
 end
 
-local valid, id = check_vatin(vatin, country)
+function validate_vatin(vatin, country)
 
-local result = {
-    vatin = id,
-    status = valid
-}
+    -- TO do
+    if vatin ~= nil and string.len(vatin) == 11 and string.upper(string.sub(vatin, 1, 2)) == 'DE' then
+        return true
+    end
 
-local json = cjson.encode(result)
+    return false
+end
+
+function verify_vatin(vatin, country)
+
+    local status = ngx.shared.cache:get('vatin-'..country..'.'..vatin)
+
+    if status == nil then
+        local soap_client = require('soap.client')
+
+        local request = {
+            url = 'http://ec.europa.eu/taxation_customs/vies/services/checkVatService',
+            soapaction = 'None',
+            namespace = 'urn:ec.europa.eu:taxud:vies:services:checkVat:types',
+            method = 'checkVat',
+            entries = {
+                { tag = 'countryCode' , country },
+                { tag = 'vatNumber'   , vatin   }
+            }
+        }
+
+        local ns, method, entries = soap_client.call(request)
+
+        local idn = nil
+        local valid = 'valid'
+
+        if (method == 'checkVatResponse') then
+            local tags  = {
+                vatNumber = function(element) idn = element[1] end,
+                valid     = function(element) if element[1]:lower() == 'true' then valid = 'verified' end end
+            }
+
+            for i, element in ipairs(entries) do
+                local f = tags[element['tag']]
+                if f ~= nil then f(element) end
+            end
+
+            ngx.log(ngx.INFO, 'Successfully verfified vatin='..vatin..', country='..country..' with status: ('..idn..'='..valid..')')
+
+            ngx.shared.cache:set('vatin-'..country..'.'..vatin, idn..'='..valid, 3600)
+        else
+            ngx.log(ngx.INFO, 'Failed to verify vatin for vatin='..vatin..', country='..country)
+        end
+
+        return valid, idn
+    else
+        local idn, valid = status:match('^([^=]+)=([^⁼]+)$')
+
+        ngx.log(ngx.INFO, 'Cache hit for vatin='..vatin..', country='..country..' with status: ('..idn..'='..valid..')')
+
+        return valid, idn
+    end
+end
+
+local info = {}
+
+info['country']  = country
+info['vatin']    = vatin
+info['status']   = 'invalid'
+
+if validate_vatin(vatin, country) then
+  info['status']   = 'valid'
+
+  local verified, idn = verify_vatin(string.sub(vatin,3), country)
+  info['status'] = verified
+  info['vatin']  = idn
+end
+
+local json = cjson.encode(info)
 
 ngx.print(json)

@@ -2,7 +2,7 @@ local utils = require('utils')
 
 -- if we got an request parameter ip just capture it
 if ngx.var.arg_ip ~= nil then
-    local res = ngx.location.capture('/info/' .. ngx.var.arg_ip)
+    local res = ngx.location.capture('/info/'..ngx.var.arg_ip)
     if res.status == 200 then
         ngx.print(res.body)
     end
@@ -17,13 +17,13 @@ local function get_accepted_languages()
     if not ngx.req.get_headers()['Accept-Language'] then
         accepted_languages_scores['*'] = 1.0
     else
-        for range in ngx.req.get_headers()["Accept-Language"]:gmatch(" *([^,]+) *") do
-            accepted_languages_scores[range:match("([^;]+)")] = range:match("q *= *([0-9.]+)") or 1.0
+        for range in ngx.req.get_headers()['Accept-Language']:gmatch(' *([^,]+) *') do
+            accepted_languages_scores[range:match('([^;]+)')] = range:match('q *= *([0-9.]+)') or 1.0
         end
     end
 
     -- Hack for user agents which don't send quality values for wildcards
-    if ngx.req.get_headers()["Accept-Language"] and not ngx.req.get_headers()["Accept-Language"]:find("q=") then
+    if ngx.req.get_headers()['Accept-Language'] and not ngx.req.get_headers()['Accept-Language']:find('q=') then
         for language, score in pairs(accepted_languages_scores) do
             if language == '*' then
                 accepted_languages_scores[language] = 0.01
@@ -48,9 +48,9 @@ local function get_prefered_language(provided_languages, accepted_languages)
 
     -- iterate through the provided languages and select the one with the highest score
     for _ , language in ipairs(provided_languages) do
-        local s1 = accepted_languages[language] or accepted_languages["*"] or 0.0
+        local s1 = accepted_languages[language] or accepted_languages['*'] or 0.0
         -- for language-country combination let's try a second run with the language only
-        local s2 = accepted_languages[language:match("^([^-]+)")] or accepted_languages["*"] or 0.0
+        local s2 = accepted_languages[language:match('^([^-]+)')] or accepted_languages['*'] or 0.0
         if math.max(s1, s2) > highest_score then
             prefered_language = language
             highest_score = math.max(s1, s2)

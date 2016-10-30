@@ -5,10 +5,10 @@ version: v1
 mediaType:  application/json
 
 schemas:
-  - regions_collection: !include schemata/regions_collection.json
-  - region_entity: !include schemata/region_entity.json
-  - markets_collection: !include schemata/markets_collection.json
-  - market_entity: !include schemata/market_entity.json
+  - regions: !include schemata/regions_collection.json
+  - region: !include schemata/region_entity.json
+  - markets: !include schemata/markets_collection.json
+  - market: !include schemata/market_entity.json
   - error: !include https://api.yaas.io/patterns/v1/schema-error-message.json
 
 traits:
@@ -33,8 +33,13 @@ resourceTypes:
     uriParameters:
       regiontId:
         description: the id of the wishlist to work on
-        example: 784hti8ey
+        example: EU
         type: string
+        minLength: 2
+        enum:
+          - US
+          - EU
+          - _beta_
     get:
       description: Gets a wishlist
       responses:
@@ -46,24 +51,30 @@ resourceTypes:
 /markets:
   type: collection
   get:
-    description: Gets all wishlists
+    description: Gets all YaaS markets
     responses:
       200:
         body:
           application/json:
-            example: !include examples/wishlists-example.json
+            example: !include examples/markets.json
 
-  /{market_entityId}:
+  /{marketId}:
     type: element
     uriParameters:
       marketId:
-        description: the id of the wishlist to work on
-        example: 784hti8ey
+        example: US
         type: string
+        displayName: Market Identifier
+        minLength: 2
+        description: id of the market to retrieve information for
+        enum:
+          - US
+          - DE
+          - _beta_
     get:
-      description: Gets a wishlist
+      description: Gets a market information
       responses:
         200:
           body:
             application/json:
-              example: !include examples/wishlist-example.json
+              example: !include examples/market.json

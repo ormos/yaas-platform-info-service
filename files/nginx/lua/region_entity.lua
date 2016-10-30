@@ -4,7 +4,7 @@ local utils = require('utils')
 local base_url  = utils.base_url()
 local server_id = ngx.md5(base_url)
 
-local continent = ngx.var.request_uri:match('^.+/(.+)$')
+local continent = ngx.unescape_uri(ngx.var.request_uri):match('^.+/(.+)$')
 
 local region = ngx.shared.cache:get('region.'..continent..'-'..server_id)
 

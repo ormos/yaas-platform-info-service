@@ -3,7 +3,7 @@ local utils = require('utils')
 local base_url  = utils.base_url()
 local server_id = ngx.md5(base_url)
 
-local country = ngx.var.request_uri:match('^.+/(.+)$')
+local country = ngx.unescape_uri(ngx.var.request_uri):match('^.+/(.+)$')
 
 local market = ngx.shared.cache:get('market.'..country..'-'..server_id)
 
