@@ -4,7 +4,6 @@ local function _is_callable(obj)
 end
 
 local function _substitute(s, tbl)
-
     local subst
 
     if _is_callable(tbl) then
