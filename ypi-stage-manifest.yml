@@ -4,4 +4,7 @@
 inherit: ypi-base-manifest.yml
 applications:
 - name: yaas-platform-info-service
+  routes:
+  - route: yaas-platform-info-service.us-east.stage.cf.yaas.io
+  - route: yaas-platform-info-service.us-east.stage.internal.yaas.io
   docker-image: elvido/yaas-platform-info-service
