@@ -39,9 +39,9 @@
         "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
         "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
         "privacy": "https://go.sap.com/about/legal/privacy.html",
-        "dpa": "https://www.yaas.io/germany/legal/sap-hybris-as-a-service-cloud-data-processing-agreement_v1.html",
         "impressum": "https://go.sap.com/about/legal/impressum.html",
-        "copyright": "https://go.sap.com/about/legal/copyright.html"
+        "copyright": "https://go.sap.com/about/legal/copyright.html",
+        "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
        }
     },
     "DE": {
