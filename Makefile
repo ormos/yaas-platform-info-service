@@ -12,7 +12,39 @@ REPO = yaas-platform-info-service
 NAME = yaas-platform-info-service
 INSTANCE = default
 
-.PHONY: build push shell run start stop rm release tag $(TAGS)
+API_CONSOLE = ./files/nginx/assets/api-console
+DATA_CONSOLE = ./files/nginx/assets/data-console
+
+.PHONY: clean build push shell run start stop rm release tag api-console data-console $(TAGS)
+
+default: build
+
+api-console: $(API_CONSOLE)
+
+$(API_CONSOLE): TMP_FOLDER := $(shell mktemp -d)
+$(API_CONSOLE):
+	mkdir -p $@
+	cd $(TMP_FOLDER) ; wget -qO- https://github.com/mulesoft/api-console/archive/master.zip | bsdtar -xvf- api-console-master/dist/
+	cp -r $(TMP_FOLDER)/api-console-master/dist/* $@
+	rm -rf $(TMP_FOLDER)
+	uglifyjs --compress --source-map $@/scripts/api-console.min.js.map --output $@/scripts/api-console.min.js -- $@/scripts/api-console.js
+	uglifyjs --compress --source-map $@/scripts/api-console-vendor.min.js.map --output $@/scripts/api-console-vendor.min.js -- $@/scripts/api-console-vendor.js
+	sed -e 's|<raml-initializer></raml-initializer>|<raml-console-loader src="../meta-data/api.raml" options="{ disableRamlClientGenerator: true, resourcesCollapsed: true}"></raml-console-loader>|' -i $@/index.html
+	sed -e 's|api-console.js|api-console.min.js|' -i $@/index.html
+	sed -e 's|api-console-vendor.js|api-console-vendor.min.js|' -i $@/index.html
+
+data-console: $(DATA_CONSOLE)
+
+$(DATA_CONSOLE): TMP_FOLDER := $(shell mktemp -d)
+$(DATA_CONSOLE):
+	mkdir -p $@
+	cd $(TMP_FOLDER) ; wget -qO- https://github.com/jdorn/json-editor/archive/master.zip | bsdtar -xvf- json-editor-master/dist/
+	cp -r $(TMP_FOLDER)/json-editor-master/dist/* $@
+	rm -rf $(TMP_FOLDER)
+
+clean:
+	rm -rf $(API_CONSOLE)
+	rm -rf $(DATA_CONSOLE)
 
 build:
 	docker build -t $(NS)/$(REPO):$(VERSION) .
@@ -44,4 +76,4 @@ tag: $(TAGS)
 $(TAGS):
 	docker tag $(NS)/$(REPO):$(VERSION) $(NS)/$(REPO):$@
 
-default: build
+

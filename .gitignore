@@ -1,4 +1,7 @@
+files/nginx/assets/api-console
+files/nginx/assets/data-console
 .DS_Store
 keys/*
 *.pyc
 *.sublime-workspace
+*.vscode
