@@ -15,6 +15,6 @@ RUN echo "Deploying optional LUA packages..." >&2 && \
     echo "Cleaning up temporary files..." >&2 && \
     rm -rf /tmp/* /var/cache/apk/*
 
-COPY files/nginx ${DEPLOYMENT_FOLDER}/
+COPY rootfs/var/nginx ${DEPLOYMENT_FOLDER}/
 
 EXPOSE 80
