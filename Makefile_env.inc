@@ -8,12 +8,12 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PORTS = -p $(HOST_PORT):80
 
 VOLUMES = \
-  -v $(ROOT_DIR)/files/nginx/data:/var/nginx/data \
-  -v $(ROOT_DIR)/files/nginx/lua:/var/nginx/lua \
-  -v $(ROOT_DIR)/files/nginx/meta:/var/nginx/meta \
-  -v $(ROOT_DIR)/files/nginx/assets:/var/nginx/assets \
-  -v $(ROOT_DIR)/files/nginx/html:/var/nginx/html \
-  -v $(ROOT_DIR)/files/nginx/config/nginx.conf:/var/nginx/config/nginx.conf
+  -v $(ROOT_DIR)/rootfs/var/nginx/data:/var/nginx/data \
+  -v $(ROOT_DIR)/rootfs/var/nginx/lua:/var/nginx/lua \
+  -v $(ROOT_DIR)/rootfs/var/nginx/meta:/var/nginx/meta \
+  -v $(ROOT_DIR)/rootfs/var/nginx/assets:/var/nginx/assets \
+  -v $(ROOT_DIR)/rootfs/var/nginx/html:/var/nginx/html \
+  -v $(ROOT_DIR)/rootfs/var/nginx/config/nginx.conf:/var/nginx/config/nginx.conf
 
 ENV = \
   -e DEBUG_HOST_ADDR="$(HOST_IP)" \
