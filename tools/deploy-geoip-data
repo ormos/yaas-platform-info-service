@@ -1,0 +1,821 @@
+#!/usr/bin/env bash
+
+readonly VERSION='1.0.0'
+readonly AUTHOR='Ralf Hofmann'
+readonly CONTACT='<r.hofmann@sap.com>'
+
+readonly GEOIP_NETWORKS_DB='geoip-networks.db'
+
+readonly GEOIP_DATA_ARCHIVE='http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip'
+readonly GEOIP_DATA_SUBFOLDER='GeoLite2-Country-CSV_*'
+readonly GEOIP_DATA_COUNTRY='GeoLite2-Country-Locations-en.csv'
+readonly GEOIP_DATA_IPV4='GeoLite2-Country-Blocks-IPv4.csv'
+readonly GEOIP_DATA_IPV6='GeoLite2-Country-Blocks-IPv6.csv'
+
+
+###########################################################################
+# main functionality of the script
+###########################################################################
+function main()
+{
+  # initialize all global variables
+  _initialize
+
+  # Process command line arguments
+  # Options followed by one colon indicate having required argument
+  OPTERR=0
+  while getopts hva:r:-: arg
+  do
+    case $arg in
+      h )  _help    ; exit ;;
+      v )  _version ; exit ;;
+      - )  # shellcheck disable=SC2034
+           LONG_OPTARG="${OPTARG#*=}"
+           case $OPTARG in
+             help )    _help    ; exit ;;
+             version ) _version ; exit ;;
+             help* | version* ) _error_exit "option '--$OPTARG' doesn't allow an argument" ;;
+             '' )  break ;; # "--" terminates argument processing
+             * )   _error_exit "illegal option '--$OPTARG'" ;;
+           esac ;;
+      : )  _error_exit "option '-$OPTARG' requires an argument" ;;
+      \? ) _error_exit "illegal command line parameter" ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+#  if [[ $# -lt 2 ]]; then
+#    _usage; _error_exit "missing command line parameter"
+#  fi
+
+#  ENVIRON="$(_tolower "${1:-}")"
+#  if [[ -z "${ENVIRON}" ]]; then
+#    _error_exit "environment not specified"
+#  fi
+#  shift
+
+#  provide_provisioning_key
+#  check_ssh_keyfiles
+
+
+  #[ -e "${GEOIP_DATA_TIMESTAMP}" ] || touch -t 197001010000 "${GEOIP_DATA_TIMESTAMP}"
+
+  provide_data_files
+
+
+#  exec "${SCRIPT_PATH}/aws-run" "${ENVIRON}" "${SCRIPT_NAME#aws-}" "$@"
+}
+
+function import_data_files()
+{
+  # shellcheck disable=SC2119
+  local ECHO_DIRECTIVE='.echo'
+
+  if [[ ${VERBOSE:-0} -gt 4 ]]; then
+    ECHO_DIRECTIVE="${ECHO_DIRECTIVE} on"
+  else
+    ECHO_DIRECTIVE="${ECHO_DIRECTIVE} off"
+  fi
+
+  # shellcheck disable=SC2119
+  _trim << -SQL- | sqlite3 "${GEOIP_NETWORKS_DB}"
+
+    -- SQL commands begin ------------------------------------------------------
+
+    ${ECHO_DIRECTIVE}
+
+    -- create country if not existing
+
+    DROP TABLE IF EXISTS Countries;
+
+    CREATE TABLE Countries(id INTEGER PRIMARY KEY,
+                           continent_code TEXT NOT NULL CHECK(length(continent_code) = 2),
+                           continent_name TEXT NOT NULL,
+                           country_iso_code TEXT CHECK(length(country_iso_code) = 2 OR country_name IS NULL),
+                           country_name TEXT CHECK(country_name IS NULL OR length(country_name) > 3)
+                          );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS countries_import(geoname_id,
+                                                         locale_code,
+                                                         continent_code,
+                                                         continent_name,
+                                                         country_iso_code,
+                                                         country_name
+                                                        ) AS SELECT id,
+                                                                    "en" AS locale_code,
+                                                                    continent_code,
+                                                                    continent_name,
+                                                                    country_iso_code,
+                                                                    country_name
+                                                             FROM Countries;
+
+    CREATE TRIGGER IF NOT EXISTS insert_country INSTEAD OF
+      INSERT ON countries_import WHEN NEW.geoname_id GLOB '[0-9]*'
+      BEGIN
+        INSERT INTO Countries(id, continent_code, continent_name, country_iso_code, country_name)
+          VALUES(NEW.geoname_id,
+                 NEW.continent_code,
+                 NEW.continent_name,
+                 CASE NEW.country_iso_code WHEN '' THEN NULL ELSE NEW.country_iso_code END,
+                 CASE NEW.country_name     WHEN '' THEN NULL ELSE NEW.country_name     END
+                );
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${TMP_FOLDER}${GEOIP_DATA_COUNTRY}" countries_import
+
+    DROP VIEW IF EXISTS countries_import;
+
+    -- SQL commands end --------------------------------------------------------
+
+-SQL-
+
+  # shellcheck disable=SC2119
+  _trim << -SQL- | sqlite3 "${GEOIP_NETWORKS_DB}"
+
+    -- SQL commands begin ------------------------------------------------------
+
+    ${ECHO_DIRECTIVE}
+
+    DROP TABLE IF EXISTS IPv4;
+    CREATE TABLE IPv4(network TEXT NOT NULL CHECK(length(network) > 3),
+                      country_id INTEGER DEFAULT 0 REFERENCES Countries(id),
+                      registered_country_id INTEGER NOT NULL DEFAULT 0,
+                      represented_country_id INTEGER NOT NULL DEFAULT 0,
+                      is_anonymous_proxy INTEGER NOT NULL DEFAULT 0 CHECK(is_anonymous_proxy = 0 OR is_anonymous_proxy = 1),
+                      is_satellite_provider INTEGER NOT NULL DEFAULT 0 CHECK(is_satellite_provider = 0 OR is_satellite_provider = 1)
+                     );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS ipv4_import(network,
+                                                    geoname_id,
+                                                    registered_country_geoname_id,
+                                                    represented_country_geoname_id,
+                                                    is_anonymous_proxy,
+                                                    is_satellite_provider
+                                                   ) AS SELECT network,
+                                                               country_id,
+                                                               registered_country_id,
+                                                               represented_country_id,
+                                                               is_anonymous_proxy,
+                                                               is_satellite_provider
+                                                        FROM IPv4;
+
+    CREATE TRIGGER IF NOT EXISTS insert_ipv4 INSTEAD OF
+      INSERT ON ipv4_import WHEN NEW.geoname_id GLOB '[0-9]*'
+      BEGIN
+        INSERT INTO IPv4(network, country_id,
+                        registered_country_id, represented_country_id,
+                        is_anonymous_proxy, is_satellite_provider
+                       )
+          VALUES(NEW.network,
+                 NEW.geoname_id,
+                 CASE NEW.registered_country_geoname_id  WHEN '' THEN 0 ELSE NEW.registered_country_geoname_id  END,
+                 CASE NEW.represented_country_geoname_id WHEN '' THEN 0 ELSE NEW.represented_country_geoname_id END,
+                 CASE NEW.is_anonymous_proxy    WHEN '' THEN 0 ELSE NEW.is_anonymous_proxy    END,
+                 CASE NEW.is_satellite_provider WHEN '' THEN 0 ELSE NEW.is_satellite_provider END
+                );
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${TMP_FOLDER}${GEOIP_DATA_IPV4}" ipv4_import
+
+    DROP VIEW IF EXISTS ipv4_import;
+
+    DROP TABLE IF EXISTS IPv6;
+    CREATE TABLE IPv6(network TEXT NOT NULL CHECK(length(network) > 3),
+                      country_id INTEGER DEFAULT 0 REFERENCES Countries(id),
+                      registered_country_id INTEGER NOT NULL DEFAULT 0,
+                      represented_country_id INTEGER NOT NULL DEFAULT 0,
+                      is_anonymous_proxy INTEGER NOT NULL DEFAULT 0 CHECK(is_anonymous_proxy = 0 OR is_anonymous_proxy = 1),
+                      is_satellite_provider INTEGER NOT NULL DEFAULT 0 CHECK(is_satellite_provider = 0 OR is_satellite_provider = 1)
+                     );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS ipv6_import(network,
+                                                    geoname_id,
+                                                    registered_country_geoname_id,
+                                                    represented_country_geoname_id,
+                                                    is_anonymous_proxy,
+                                                    is_satellite_provider
+                                                   ) AS SELECT network,
+                                                               country_id,
+                                                               registered_country_id,
+                                                               represented_country_id,
+                                                               is_anonymous_proxy,
+                                                               is_satellite_provider
+                                                        FROM IPv6;
+
+    CREATE TRIGGER IF NOT EXISTS insert_ipv6 INSTEAD OF
+      INSERT ON ipv6_import WHEN NEW.geoname_id GLOB '[0-9]*'
+      BEGIN
+        INSERT INTO IPv6(network, country_id,
+                        registered_country_id, represented_country_id,
+                        is_anonymous_proxy, is_satellite_provider
+                       )
+          VALUES(NEW.network,
+                 NEW.geoname_id,
+                 CASE NEW.registered_country_geoname_id  WHEN '' THEN 0 ELSE NEW.registered_country_geoname_id  END,
+                 CASE NEW.represented_country_geoname_id WHEN '' THEN 0 ELSE NEW.represented_country_geoname_id END,
+                 CASE NEW.is_anonymous_proxy    WHEN '' THEN 0 ELSE NEW.is_anonymous_proxy    END,
+                 CASE NEW.is_satellite_provider WHEN '' THEN 0 ELSE NEW.is_satellite_provider END
+                );
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${TMP_FOLDER}${GEOIP_DATA_IPV6}" ipv6_import
+
+    DROP VIEW IF EXISTS ipv6_import;
+
+    -- SQL commands end --------------------------------------------------------
+
+-SQL-
+}
+
+
+function provide_data_files()
+{
+  # shellcheck disable=SC2119,SC2155
+  local DATA_FILE="$(_make_temp)"
+
+  command -v curl >/dev/null 2>&1 || _error_exit "curl needs to be installed for downloading GeoIP data"
+
+  if curl -jksSLz "${GEOIP_NETWORKS_DB}" -o "${DATA_FILE}" "${GEOIP_DATA_ARCHIVE}"; then
+    if [[ -s "${DATA_FILE}" ]]; then
+      command -v bsdtar >/dev/null 2>&1 || _error_exit "bsdtar needs to be installed for extracting GeoIP data"
+      if bsdtar -xf "${DATA_FILE}" --strip-components=1 -C "${TMP_FOLDER}" \
+          "${GEOIP_DATA_SUBFOLDER}/${GEOIP_DATA_COUNTRY}" \
+          "${GEOIP_DATA_SUBFOLDER}/${GEOIP_DATA_IPV4}"    \
+          "${GEOIP_DATA_SUBFOLDER}/${GEOIP_DATA_IPV6}"    ; then
+
+        import_data_files
+
+        # remove data files
+        [[ ${VERBOSE:-0} -lt 4 ]] && \
+          (rm -f "${TMP_FOLDER}${GEOIP_DATA_COUNTRY}" \
+                 "${TMP_FOLDER}${GEOIP_DATA_IPV4}"    \
+                 "${TMP_FOLDER}${GEOIP_DATA_IPV6}"    \
+           >/dev/null 2>&1 || :)
+
+      else
+        _error_exit "failed to extract GeoIP data files"
+      fi
+    else
+      _message -i -x 4 "geoip network database already up-to-date..."
+    fi
+  else
+    _error_exit "failed to download GeoIP data from url: %s" "${GEOIP_DATA_ARCHIVE}"
+  fi
+
+  # remove data archive
+  [[ ${VERBOSE:-0} -lt 4 ]] && (rm -rf "${DATA_FILE}" >/dev/null 2>&1 || :)
+}
+
+
+###########################################################################
+# customized functions
+###########################################################################
+function _usage()
+{
+  #####
+  # Function to display usage message (does not exit).
+  # No arguments.
+  #####
+
+  # shellcheck disable=SC2155,SC2034
+  local tab=$(echo -en "\t\t")
+
+cat <<- -EOF-
+
+  Usage: ${SCRIPT_NAME} <environment> <playfile> ...
+-EOF-
+}
+
+function _help()
+{
+  #####
+  # Function to display help message for program
+  # No arguments
+  #####
+
+  # shellcheck disable=SC2155,SC2034
+  local tab=$(echo -en "\t\t")
+
+cat <<- -EOF-
+
+  ${SCRIPT_NAME} Version ${VERSION}
+  by ${AUTHOR} ${CONTACT}
+
+  This is a simple script to automate the ansible aws deployment scripts.
+
+  $(_usage)
+
+    <environemnt>  the enviroment to use (e.g. 'prod', 'play', 'stage', ...)
+    <playfile>     the playfile to execute (e.g. 'myplaybook.yml')
+
+  Options:
+
+    -h, --help     Display this help message and exit.
+    -v, --version  Display version and exit.
+
+-EOF-
+}
+
+###########################################################################
+# utility functions
+###########################################################################
+function _version()
+{
+  #####
+  # Function to display version.
+  # No arguments.
+  #####
+
+  _message -f "%s Version %s by %s %s\n" "${SCRIPT_NAME}" "${VERSION}" "${AUTHOR}" "${CONTACT}"
+}
+
+function _initialize()
+{
+  set -o nounset -o errexit -o errtrace
+
+  # Set file creation mask so that all files are created with 600 permissions.
+  # This will help protect temp files.
+  umask 066
+
+  # the full qualified path of the script
+  readonly SCRIPT_NAME=$(basename -- "$0")
+  readonly SCRIPT_PATH=$(dirname -- "$(_readlink "$0")")
+  readonly TMP_FOLDER="${TMPDIR:-/tmp/$(id -u)}/${SCRIPT_NAME}-$$/"
+
+  # make sure temp folder exists
+  [[ -d "${TMP_FOLDER}" ]] || mkdir -p "${TMP_FOLDER}"
+
+  readonly MESSAGE_FORMAT="${SCRIPT_NAME}: %s\n"
+
+  readonly LOG_TARGET='/dev/null'
+  readonly LOG_TIMEFMT='%b %e %H:%M:%S'
+  #readonly LOG_SYSLOG_TAG="${SCRIPT_NAME}[$$]"
+  #readonly LOG_SYSLOG_PRIO='user.info'
+
+  readonly EDITOR_DEFAULT='nano'
+
+  # some visual color effects
+  readonly VISUAL_FAILED=$(tput setaf 1)
+  readonly VISUAL_SUCCESS=$(tput setaf 2)
+  readonly VISUAL_WARNING=$(tput setaf 3)
+  readonly VISUAL_DEFAULT=$(tput sgr0)
+
+  # verbose level
+  VERBOSE=${VERBOSE:-0}
+
+  # array holding cleanup commands
+  CLEANUP=()
+
+  # Trap TERM, HUP, and INT signals and properly exit
+  trap -- '__exit_handler' EXIT
+  trap -- '__terminate_handler' TERM HUP
+  trap -- '__abort_handler' INT
+#  trap -- '__error_handler' ERR
+}
+
+function _message()
+{
+  local _ IDNX CATG LEN MRK FMT MSG TXT_IDNX TXT_CATG TXT_PRFX LEN_PRFX=0
+
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -s ) IDNX="${SCRIPT_NAME}"; shift ;;
+      -e ) CATG='ERROR'
+           COLR="$VISUAL_FAILED"
+           _="$VISUAL_DEFAULT"  ; shift ;;
+      -w ) CATG='WARNING'
+           COLR="$VISUAL_WARNING"
+           _="$VISUAL_DEFAULT"  ; shift ;;
+      -i ) CATG='INFO'
+           COLR="$VISUAL_SUCCESS"
+           _="$VISUAL_DEFAULT"  ; shift ;;
+      -x ) LEN=$2 ; shift       ; shift ;;
+      -m ) MRK=$2 ; shift       ; shift ;;
+      -f ) FMT=$2 ; shift       ; shift ;;
+      -- ) break                ; shift ;;
+      * )  break                          ;;
+    esac
+  done
+
+  if [[ -n "${IDNX:-}" ]]; then
+    printf -v TXT_IDNX '%s - ' "$IDNX"
+#    LEN_PRFX=$(expr ${#IDNX} + 3)
+    LEN_PRFX=$((${#IDNX} + 3))
+    TXT_PRFX="$TXT_IDNX"
+  fi
+  if [[ -n "${CATG:-}" ]]; then
+    printf -v TXT_CATG '%b%s:%b ' "$COLR" "$CATG" "$VISUAL_DEFAULT"
+#    LEN_PRFX=$(expr ${#CATG} + 2)
+    LEN_PRFX=$((${#CATG} + 2))
+    TXT_PRFX="${TXT_PRFX:-}$TXT_CATG"
+  fi
+
+  # check if we should indent
+  [[ ${LEN:-0} -lt $LEN_PRFX ]] || LEN_PRFX=${LEN:-0}
+
+  # get the right escape code
+  case ${MRK:-} in
+    'R' ) MRK="${VISUAL_FAILED}"  ; _="$VISUAL_DEFAULT" ;;
+    'Y' ) MRK="${VISUAL_WARNING}" ; _="$VISUAL_DEFAULT" ;;
+    'G' ) MRK="${VISUAL_SUCCESS}" ; _="$VISUAL_DEFAULT" ;;
+    *)    MRK='' ;;
+  esac
+
+  if [[ $# -eq 0 ]] || [[ $# -eq 1 && "$1" == '-' ]]; then
+    MSG="$(cat -)"
+  else
+    MSG="$*"
+  fi
+
+  # format the output using the format string or default
+  # shellcheck disable=SC2059
+  if [[ -n "${FMT:-}" ]]; then
+    printf -v TXT_MSG "${FMT}" "${MSG:-unknown message}" "$@"
+  else
+    printf -v TXT_MSG "${MSG:-unknown message}" "$@"
+  fi
+
+  # check fo makered colorization
+  if [[ -n "$MRK" ]]; then
+    printf '%*s%b%s%b\n' "$LEN_PRFX" "${TXT_PRFX:-}" "$MRK" "$TXT_MSG" "$VISUAL_DEFAULT"
+  else
+    printf '%*s%s\n' "$LEN_PRFX" "${TXT_PRFX:-}" "$TXT_MSG"
+  fi
+}
+
+# shellcheck disable=SC2120
+function _indent()
+{
+  local INDENT='    '
+
+  if [[ $# -eq 0 ]] || [[ $# -eq 1 && "$1" == '-' ]]; then
+    sed -e "s/^/${INDENT}/g"
+  else
+    # shellcheck disable=SC2001
+    echo "$@" | sed -e "s/^/${INDENT}/g"
+  fi
+}
+
+#
+# returns lowercase string
+#
+# shellcheck disable=SC2120
+function _tolower()
+{
+  if [[ $# -eq 0 ]] || [[ $# -eq 1 && "$1" == '-' ]]; then
+    tr '[:upper:]' '[:lower:]'
+  else
+    echo "$@" | tr '[:upper:]' '[:lower:]'
+  fi
+}
+
+#
+# returns uppercase string
+#
+# shellcheck disable=SC2120
+function _toupper()
+{
+  if [[ $# -eq 0 ]] || [[ $# -eq 1 && "$1" == '-' ]]; then
+    tr '[:lower:]' '[:upper:]'
+  else
+    echo "$@" | tr '[:lower:]' '[:upper:]'
+  fi
+}
+
+#
+# Trims any leading and trailing tabs or spaces
+#
+# shellcheck disable=SC2120
+function _trim()
+{
+  # local VAR="$@"
+  # VAR="${VAR#"${VAR%%[![:space:]]*}"}" # remove leading whitespace characters
+  # VAR="${VAR%"${VAR##*[![:space:]]}"}" # remove trailing whitespace characters
+  # echo "${VAR}"
+
+  if [[ $# -eq 0 ]] || [[ $# -eq 1 && "$1" == '-' ]]; then
+    sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//'
+  else
+    echo "$@" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//'
+  fi
+}
+
+function _escape_regex()
+{
+  # shellcheck disable=SC2016
+  local REGEX_ESCAPE='s/[.[\*^$()+?{|]/\\&/g'
+
+  if [[ -n "$1" ]]; then
+    echo "$1" | sed "${REGEX_ESCAPE}"
+  else
+    sed "${REGEX_ESCAPE}"
+  fi
+}
+
+function _time_stamp()
+{
+  #####
+  # Function for outputting a time stamp
+  # No arguments
+  #####
+
+  date -u +%Y-%m-%dT%H:%M:%S%z
+}
+
+function _visual_edit()
+{
+  # shellcheck disable=SC2119,SC2155
+  local TMP_FILE="$(_make_temp)"
+
+  if [[ $# -eq 0 ]] || [[ $# -eq 1 && "$1" == '-' ]]; then
+    cat - >"${TMP_FILE}"
+  else
+    echo "$*" >"${TMP_FILE}"
+  fi
+
+  # redirect stdin and stdout back to tty in case we are running redirect or as sub shell
+  (exec >/dev/tty 2>&1 </dev/tty; ${VISUAL:-${EDITOR:-${EDITOR_DEFAULT}}} "${TMP_FILE}")
+
+  cat "${TMP_FILE}"
+
+  rm -rf "${TMP_FILE}" >/dev/null 2>&1
+}
+
+function _execute()
+{
+  local LOG_TMP LOG_MSG LOG_TMP STATUS_CODE TIME_START TIME_STOP TIME_ELAPSED
+
+  # shellcheck disable=SC2119,SC2155
+  LOG_TMP="$(_make_temp)"
+
+  # print some status message
+  [[ -z "$2" ]] || printf '%s...' "$2"
+
+  # execute the command and log the messages
+  printf -v LOG_MSG '%c Executing: "%s"' '+' "$1"
+  TIME_START=$(date +%s)
+  STATUS_CODE=0
+  ${1} 2>&1 | tee -- "${LOG_TMP}" | log "${LOG_MSG}" '-' || :
+  STATUS_CODE=${PIPESTATUS[0]}
+  TIME_STOP=$(date +%s)
+  TIME_ELAPSED=$(( TIME_STOP - TIME_START ))
+
+  if [[ ${STATUS_CODE} -ne 0 ]]; then
+    printf -v LOG_MSG '%c Execution failed with exit code %d - (%d seconds elapsed)' '-' "${STATUS_CODE}" ${TIME_ELAPSED}
+  else
+    printf -v LOG_MSG '%c Execution succeeded in %d seconds' '-' ${TIME_ELAPSED}
+  fi
+  _log "${LOG_MSG}"
+
+  # show status
+  if [[ -n "$2" ]]; then
+    if [[ ${STATUS_CODE} -eq 0 ]]; then
+      printf "%ssuccess%s\n" "${VISUAL_SUCCESS}" "${VISUAL_DEFAULT}"
+    else
+      printf "%sfailed%s\n" "${VISUAL_FAILED}" "${VISUAL_DEFAULT}"
+      tail -n5 -- "${LOG_TMP}" | indent
+    fi
+  fi
+  # remove the log file
+  [[ ${VERBOSE:-0} -ge 1 ]] || rm -rf "${LOG_TMP}"
+
+  return "${STATUS_CODE}"
+}
+
+function _log()
+{
+  [[ -n "$1" ]] || return 0
+
+  if [[ -n "${LOG_SYSLOG_TAG-}" && -n "${LOG_SYSLOG_PRIO-}" ]]; then
+    logger -p "${LOG_SYSLOG_PRIO}" -t "${LOG_SYSLOG_TAG}" -- "$1"
+  fi
+
+  if [[ "${LOG_TARGET}" != '/dev/null' ]]; then
+    printf "%s %s\n" "$(date +"${LOG_TIMEFMT}")" "$1" >>"${LOG_TARGET}"
+
+    # if we have any remaining argument process them as additional
+    # indented information to the log entry
+    if [[ $# -gt 1 ]]; then
+      local MSG
+      shift
+      for MSG in "$@"; do
+        # if argument is -' process input from stdin
+        if [[ "${MSG}" == '-' ]]; then
+          indent >>"${LOG_TARGET}"
+        else
+          echo "${MSG}" | indent >>"${LOG_TARGET}"
+        fi
+      done
+    fi
+  fi
+
+  return 0
+}
+
+function _error_exit()
+{
+  #####
+  # Function for exit due to fatal program error
+  # Accepts 1 argument:
+  #   - string containing descriptive error message
+  #####
+  local MESSAGE
+
+  if [[ "${1:-}" == '-' ]]; then
+    MESSAGE="$(cat -)"
+  else
+    MESSAGE="${1:-}"
+  fi
+
+  _message -s -e "${MESSAGE:-Unknown Error}"  >&2
+
+  exit "${2:-1}"
+}
+
+function __exit_handler()
+{
+  #####
+  # Function to perform action on script exit
+  # No arguments
+  #####
+
+  __do_cleanup
+}
+
+function __terminate_handler()
+{
+  #####
+  # Function to perform exit if termination signal is trapped
+  # No arguments
+  #####
+
+  _message -s -w "Terminated" >&2
+
+  exit
+}
+
+function __abort_handler()
+{
+  #####
+  # Function to perform exit if interrupt signal is trapped
+  # No arguments
+  #####
+
+  _message -s -w "Aborted by user" >&2
+
+  exit
+}
+
+function __error_handler()
+{
+  local LAST_COMMAND="${BASH_COMMAND}" LAST_STATUS=$?
+
+  local OPTIONS=$-; set +o xtrace +o errtrace +o functrace +o nounset
+  shopt -q extdebug && EXTDEBUG=true && shopt -u extdebug
+
+  if [[ ${VERBOSE:-0} -lt 1 ]]; then
+    _error_exit "A serious error has occurred. Exiting.... - Command '${LAST_COMMAND}' failed with code '${LAST_STATUS}' at ${BASH_SOURCE[0]}:${BASH_LINENO[0]}"
+  else
+    local CALLER_INFO=( $(caller 0) )
+    printf "Command %b'${LAST_COMMAND}'%b failed with code %b'${LAST_STATUS}'%b at %b${CALLER_INFO[2]}:${CALLER_INFO[0]}:%b${CALLER_INFO[1]}()%b\n" \
+           "$MARK_CMD" "$MARK_CLR" "$MARK_CMD" "$MARK_CLR" "$MARK_LOC" "$MARK_FNC" "$MARK_CLR" | show_message
+    _stack_trace 2 1 >&2
+  fi
+
+  set -${OPTIONS}
+  [[ ${EXTDEBUG} ]] && shopt -s extdebug
+
+  exit 1
+}
+
+function __do_cleanup()
+{
+  #####
+  # Function to remove temporary files and other housekeeping
+  # No arguments
+  #####
+
+  # run the custom cleanup commands
+  local CMD
+  for CMD in "${CLEANUP[@]-}"; do
+    [[ -n "${CMD}" ]] && (${CMD} >/dev/null 2>&1 || :)
+  done
+
+  # remove the temp folder
+  [[ ${VERBOSE:-0} -lt 3 && -d "${TMP_FOLDER}" ]] && \
+    (rm -rf "${TMP_FOLDER}" >/dev/null 2>&1 || :)
+
+  return 0
+}
+
+function _on_cleanup()
+{
+  local CMD
+
+  for CMD in "$@"; do
+    CLEANUP+=("${CMD}")
+  done
+}
+
+# shellcheck disable=SC2120
+function _make_temp()
+{
+  local TMPMASK="${1:-${SCRIPT_NAME}-XXXXX}"
+
+  mktemp "${TMP_FOLDER}${TMPMASK}"
+}
+
+# platform independent replacement of "readlink -f"
+function _readlink()
+{
+  local link target="$1"
+  [[ -e "$target" ]] || return 1 # no nofile
+  while [[ -L "$target" ]]; do
+    link="$(readlink "$target")"
+    if [[ "${link::1}" == '/' ]]; then
+      target="$link" # absolute path
+    else
+      target="$(cd "$(dirname -- "$target")"; echo "$(pwd -P)/$(readlink "$(basename -- "$target")")")"
+    fi
+  done
+  echo "$(cd "$(dirname -- "$target")"; pwd -P)/$(basename -- "$target")"
+}
+
+function _stack_trace()
+{
+  local FRAME_NO=${2:-0} FRAME_OFFSET=0 CALLER_INFO=()
+
+  printf "Execution stack trace:\n"
+  while CALLER_INFO=( $(caller "${FRAME_NO}") )
+  do
+    local i ARGV=() ARGC=${BASH_ARGC[FRAME_NO-${2:-0}]} FUNCTION_CALL
+    if [[ -n ${ARGC} ]]; then
+      for (( i=0; i < ARGC; i++ ))
+      do
+        # shellcheck disable=SC2001
+        ARGV[i]="$(echo "${BASH_ARGV[FRAME_OFFSET+ARGC-1-i]}" | sed -e 's/\(.*[[:space:]].*\)/"\1"/g')"
+      done
+      FUNCTION_CALL="${FUNCNAME[FRAME_NO]} ${ARGV[*]}"
+      FRAME_OFFSET=$(( FRAME_OFFSET + ARGC ))
+    else
+      FUNCTION_CALL=$(sed -n "${CALLER_INFO[0]}{s/^[[:space:]]*//;p}" "${CALLER_INFO[2]}")
+    fi
+    if [[ ${FRAME_NO} -ge ${1:-0} ]]; then
+      printf "    %b${CALLER_INFO[1]}():%b'${FUNCTION_CALL}' at %b${CALLER_INFO[2]}:${CALLER_INFO[0]}%b\n" \
+             "$MARK_FNC" "$MARK_CLR" "$MARK_LOC" "$MARK_CLR"
+    fi
+    FRAME_NO=$(( FRAME_NO + 1 ))
+  done
+
+  # simpler implementation
+  # local i FRAMES=${#BASH_LINENO[@]} FUNCTION_CALL
+  # #  FRAMES-1 skips main, the last one in arrays
+  # for (( i=${1:-0}; i < FRAMES-1; i++ ))
+  # do
+  #   FUNCTION_CALL=$(sed -n "${BASH_LINENO[i]}{s/^[[:space:]]*//;p}" "${BASH_SOURCE[i]}")
+  #   printf "    %b${FUNCNAME[i+1]}():%b'${FUNCTION_CALL}' at %b${BASH_SOURCE[i]}:${BASH_LINENO[i]}%b\n" \
+  #          $MARK_FNC $MARK_CLR $MARK_LOC $MARK_CLR
+  # done
+}
+
+# semantic version comparison
+function _version_compare()
+{
+  [[ "$1" != "$2" ]] || return 0
+
+  local VER_SPLIT='s/\./ /g;s/\([[:digit:]]\)\([^[:digit:] ]\)/\1 \2/g;s/\([^[:digit:] ]\)\([[:digit:]]\)/\1 \2/g'
+  local A B i=0
+  A=($(sed "$VER_SPLIT" <<< "$1"))
+  B=($(sed "$VER_SPLIT" <<< "$2"))
+
+  while (( i < ${#A[@]} )) || (( i < ${#B[@]}))
+  do
+    [[ -n "${A[i]}" ]] || A[i]=0
+    [[ -n "${B[i]}" ]] || B[i]=0
+    if [[ -z "${A[i]//[[:digit:]]/}" ]] && [[ -z "${B[i]//[[:digit:]]/}" ]]
+    then
+      # Both A[i] and B[i] are numbers -> use arithmetic comparison
+      (( 10#${A[i]} > 10#${B[i]} )) && return 1
+      (( 10#${A[i]} < 10#${B[i]} )) && return 2
+    else
+      # Either or both are not numbers, containing non-digit characters
+      [[ "${A[i]}" > "${B[i]}" ]] && return 1
+      [[ "${A[i]}" < "${B[i]}" ]] && return 2
+    fi
+    let i++
+  done
+
+  return 0
+}
+
+###########################################################################
+# Execution starts here
+###########################################################################
+main "$@"
+
