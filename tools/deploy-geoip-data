@@ -4,8 +4,6 @@ readonly VERSION='1.0.0'
 readonly AUTHOR='Ralf Hofmann'
 readonly CONTACT='<r.hofmann@sap.com>'
 
-readonly GEOIP_NETWORKS_DB='geoip-networks.db'
-
 readonly GEOIP_DATA_ARCHIVE='http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip'
 readonly GEOIP_DATA_SUBFOLDER='GeoLite2-Country-CSV_*'
 readonly GEOIP_DATA_COUNTRY='GeoLite2-Country-Locations-en.csv'
@@ -44,26 +42,17 @@ function main()
   done
   shift $((OPTIND-1))
 
-#  if [[ $# -lt 2 ]]; then
-#    _usage; _error_exit "missing command line parameter"
-#  fi
+  if [[ $# -lt 1 ]]; then
+    _usage; _error_exit "missing command line parameter"
+  fi
 
-#  ENVIRON="$(_tolower "${1:-}")"
-#  if [[ -z "${ENVIRON}" ]]; then
-#    _error_exit "environment not specified"
-#  fi
-#  shift
-
-#  provide_provisioning_key
-#  check_ssh_keyfiles
-
-
-  #[ -e "${GEOIP_DATA_TIMESTAMP}" ] || touch -t 197001010000 "${GEOIP_DATA_TIMESTAMP}"
+  GEOIP_NETWORKS_DB="${1:-}"
+  if [[ -z "${GEOIP_NETWORKS_DB}" ]]; then
+    _error_exit "database filename not specified"
+  fi
+  shift
 
   provide_data_files
-
-
-#  exec "${SCRIPT_PATH}/aws-run" "${ENVIRON}" "${SCRIPT_NAME#aws-}" "$@"
 }
 
 function import_data_files()
@@ -76,6 +65,8 @@ function import_data_files()
   else
     ECHO_DIRECTIVE="${ECHO_DIRECTIVE} off"
   fi
+
+  command -v sqlite3 >/dev/null 2>&1 || _error_exit "sqlite3 needs to be installed for creating GeoIP network database"
 
   # shellcheck disable=SC2119
   _trim << -SQL- | sqlite3 "${GEOIP_NETWORKS_DB}"
@@ -262,7 +253,7 @@ function provide_data_files()
         _error_exit "failed to extract GeoIP data files"
       fi
     else
-      _message -i -x 4 "geoip network database already up-to-date..."
+      _message -i -x 4 "geoip network database '${GEOIP_NETWORKS_DB}' is already up-to-date..."
     fi
   else
     _error_exit "failed to download GeoIP data from url: %s" "${GEOIP_DATA_ARCHIVE}"

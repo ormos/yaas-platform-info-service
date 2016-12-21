@@ -60,13 +60,35 @@ local function get_prefered_language(provided_languages, accepted_languages)
     return prefered_language
 end
 
+-- check if access should be blocked because of export restrictions
+local function get_access_status(country)
+
+    -- use the access information if we got one
+    local res = ngx.location.capture('/access')
+    if res.status == 200 then
+        local blocked_countries = cjson.decode(res.body)
+        for _ , entry in ipairs(blocked_countries) do
+            if entry['id'] == country then
+                ngx.log(ngx.INFO, 'Network access blocked for country: '..entry['id']..' - '..entry['country'])
+                return "blocked"
+            end
+        end
+    end
+
+    return "unrestricted"
+end
+
 -- add optional location information
 local function add_location_info(table, var, section, item)
     if var ~=  nil and var ~= '' then
         if table[section] == nil then
             table[section] = {}
         end
-        table[section][item] = cd:iconv(var)
+        if type(var) == 'string' then
+            table[section][item] = cd:iconv(var)
+        else
+            table[section][item] = var
+        end
     end
 end
 
@@ -109,7 +131,10 @@ ngx.log(ngx.INFO, 'Detected country='..country..':market='..market['id']..' for 
 
 -- the default information structure
 local info = {
-    ip = ngx.var.remote_addr,
+    network = {
+        ip     = ngx.var.remote_addr,
+        access = get_access_status(country)
+    },
     yaas = { language = {
                 preferred = get_prefered_language(market['locale']['languages']),
                 official  = market['locale']['official'],
@@ -128,9 +153,16 @@ add_location_info(info, ngx.var.geoip_city_country_code, 'country', 'code')
 add_location_info(info, ngx.var.geoip_city_country_name, 'country', 'name')
 add_location_info(info, ngx.var.geoip_region_code,       'region',  'code')
 add_location_info(info, ngx.var.geoip_region_name,       'region',  'name')
-add_location_info(info, ngx.var.geoip_timezone,          'region',  'timezone')
 add_location_info(info, ngx.var.geoip_city,              'city',    'name')
 add_location_info(info, ngx.var.geoip_postal_code,       'city',    'postal')
+
+if ngx.var.geoip_timezone ~= nil and ngx.var.geoip_timezone ~= '' then
+    local time_zone_info = {
+        name   = ngx.var.geoip_timezone,
+        _link_ = utils.base_url() .. '/timezone/' .. ngx.var.geoip_timezone
+    }
+    add_location_info(info, time_zone_info, 'region', 'timezone')
+end
 
 -- Convert latitude and longitude to numeric values
 if ngx.var.geoip_latitude ~= nil and ngx.var.geoip_longitude ~= nil then

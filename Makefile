@@ -5,17 +5,19 @@ include $(ENV_FILE)
 endif
 
 NS = elvido
-VERSION ?= 1.4.2
+VERSION ?= 1.4.3
 TAGS ?= latest
 
 REPO = yaas-platform-info-service
 NAME = yaas-platform-info-service
 INSTANCE = default
 
-API_CONSOLE = ./files/nginx/assets/api-console
-DATA_CONSOLE = ./files/nginx/assets/data-console
+API_CONSOLE = ./rootfs/var/nginx/assets/api-console
+DATA_CONSOLE = ./rootfs/var/nginx/assets/data-console
 
-.PHONY: clean build push shell run start stop rm release tag api-console data-console $(TAGS)
+GEOIP_NETWORKS = ./rootfs/var/nginx/data/geoip-networks.db
+
+.PHONY: clean build push shell run start stop rm release tag api-console data-console geoip-networks $(TAGS)
 
 default: build
 
@@ -42,9 +44,15 @@ $(DATA_CONSOLE):
 	cp -r $(TMP_FOLDER)/json-editor-master/dist/* $@
 	rm -rf $(TMP_FOLDER)
 
+geoip-networks: $(GEOIP_NETWORKS)
+
+$(GEOIP_NETWORKS):
+	./tools/deploy-geoip-data $(GEOIP_NETWORKS)
+
 clean:
 	rm -rf $(API_CONSOLE)
 	rm -rf $(DATA_CONSOLE)
+	rm -rf $(GEOIP_NETWORKS)
 
 build:
 	docker build -t $(NS)/$(REPO):$(VERSION) .

@@ -1,0 +1,29 @@
+{
+  "@metadata": {
+    "authors": [
+      "r.hofmann@sap.com"
+    ],
+    "last-modified": "2016-12-20",
+    "version": "0.1.0"
+  },
+  "blocked": [
+    {
+      "id": "KP",
+      "_link_": "${URL}/access/KP",
+      "name": "North Korea",
+      "comment": "Access block due to export control policies"
+    },
+    {
+      "id": "SY",
+      "_link_": "${URL}/access/SY",
+      "country": "Syria",
+      "comment": "Access block due to export control policies"
+    },
+    {
+      "id": "CU",
+      "_link_": "${URL}/access/CU",
+      "country": "Cuba",
+      "comment": "Access block due to export control policies"
+    }
+  ]
+}
