@@ -84,6 +84,117 @@
         "agreement_terms": "https://www.yaas.io/germany/legal/SAP_Hybris_as_a_Service_Vertragsbestandteile_deDE_v10-2016.pdf"
       }
     },
+    "GB": {
+      "id": "GB",
+      "_link_": "${URL}/markets/GB",
+      "name": "YaaS United Kingdom Market",
+      "description": "SAP-Hybris YaaS Market United Kingdom",
+      "url": "https://market.yaas.io/gb",
+      "region": {
+          "id": "EU",
+          "_link_": "${URL}/regions/EU"
+      },
+      "locale": {
+        "official": "en-GB",
+        "default": "en",
+        "languages": [
+          "en",
+          "de"
+        ]
+      },
+      "timezone": {
+        "name": "Europe/London",
+        "_link_": "${URL}/timezone/Europe/London"
+      },
+      "billing": {
+        "vendor": "sapuk",
+        "pricing": "gbPriceGroup",
+        "currency": "GBP"
+      },
+      "links": {
+        "api": "https://api.eu.yaas.io",
+        "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
+        "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
+        "privacy": "https://go.sap.com/about/legal/privacy.html",
+        "impressum": "https://go.sap.com/about/legal/impressum.html",
+        "copyright": "https://go.sap.com/about/legal/copyright.html",
+        "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
+       }
+    },
+    "CH": {
+      "id": "CH",
+      "_link_": "${URL}/markets/CH",
+      "name": "YaaS Switzerland Market",
+      "description": "SAP-Hybris YaaS Market Switzerland",
+      "url": "https://market.yaas.io/ch",
+      "region": {
+          "id": "EU",
+          "_link_": "${URL}/regions/EU"
+      },
+      "locale": {
+        "official": "de-CH",
+        "default": "de",
+        "languages": [
+          "de",
+          "en"
+        ]
+      },
+      "timezone": {
+        "name": "Europe/Zurich",
+        "_link_": "${URL}/timezone/Europe/Zurich"
+      },
+      "billing": {
+        "vendor": "sapswiss",
+        "pricing": "chPriceGroup",
+        "currency": "SFR"
+      },
+      "links": {
+        "api": "https://api.eu.yaas.io",
+        "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
+        "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
+        "privacy": "https://go.sap.com/about/legal/privacy.html",
+        "impressum": "https://go.sap.com/about/legal/impressum.html",
+        "copyright": "https://go.sap.com/about/legal/copyright.html",
+        "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
+       }
+    },
+    "AT": {
+      "id": "AT",
+      "_link_": "${URL}/markets/AT",
+      "name": "YaaS Austria Market",
+      "description": "SAP-Hybris YaaS Market Austria",
+      "url": "https://market.yaas.io/at",
+      "region": {
+          "id": "EU",
+          "_link_": "${URL}/regions/EU"
+      },
+      "locale": {
+        "official": "de-AT",
+        "default": "de",
+        "languages": [
+          "de",
+          "en"
+        ]
+      },
+      "timezone": {
+        "name": "Europe/Vienna",
+        "_link_": "${URL}/timezone/Europe/Vienna"
+      },
+      "billing": {
+        "vendor": "sapaustria",
+        "pricing": "atPriceGroup",
+        "currency": "EUR"
+      },
+      "links": {
+        "api": "https://api.eu.yaas.io",
+        "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
+        "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
+        "privacy": "https://go.sap.com/about/legal/privacy.html",
+        "impressum": "https://go.sap.com/about/legal/impressum.html",
+        "copyright": "https://go.sap.com/about/legal/copyright.html",
+        "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
+       }
+    },
     "_beta_": {
       "id": "_beta_",
       "_link_": "${URL}/markets/_beta_",

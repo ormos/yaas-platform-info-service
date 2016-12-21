@@ -48,6 +48,7 @@ geoip-networks: $(GEOIP_NETWORKS)
 
 $(GEOIP_NETWORKS):
 	./tools/deploy-geoip-data $(GEOIP_NETWORKS)
+	chmod g+r,o+r $(GEOIP_NETWORKS)
 
 clean:
 	rm -rf $(API_CONSOLE)
