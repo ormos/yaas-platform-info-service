@@ -22,6 +22,10 @@ if vendors == nil then
             info['_link_'] = utils.base_url()..'/vendors/'..market['billing']['vendor']
             info['market'] = market['_link_']
 
+            if market['region'] ~= nil then
+                info['region'] = market['region']['_link_']
+            end
+            
             data[info['id']] = info
         end
     end
