@@ -124,7 +124,7 @@
     "CH": {
       "id": "CH",
       "_link_": "${URL}/markets/CH",
-      "name": "YaaS Switzerland Market",
+      "name": "YaaS Swiss Market",
       "description": "SAP-Hybris YaaS Market Switzerland",
       "url": "https://market.yaas.io/ch",
       "region": {
@@ -144,7 +144,7 @@
         "_link_": "${URL}/timezone/Europe/Zurich"
       },
       "billing": {
-        "vendor": "sapswiss",
+        "vendor": "sapswitzerland",
         "pricing": "chPriceGroup",
         "currency": "SFR"
       },

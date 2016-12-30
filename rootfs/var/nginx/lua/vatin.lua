@@ -43,7 +43,7 @@ function verify_vatin(vatin, country)
                 valid     = function(element) if element[1]:lower() == 'true' then valid = 'verified' end end
             }
 
-            for i, element in ipairs(entries) do
+            for _, element in ipairs(entries) do
                 local f = tags[element['tag']]
                 if f ~= nil then f(element) end
             end

@@ -159,7 +159,7 @@ add_location_info(info, ngx.var.geoip_postal_code,       'city',    'postal')
 if ngx.var.geoip_timezone ~= nil and ngx.var.geoip_timezone ~= '' then
     local time_zone_info = {
         name   = ngx.var.geoip_timezone,
-        _link_ = utils.base_url() .. '/timezone/' .. ngx.var.geoip_timezone
+        _link_ = utils.base_url()..'/timezone/'..ngx.var.geoip_timezone
     }
     add_location_info(info, time_zone_info, 'region', 'timezone')
 end
