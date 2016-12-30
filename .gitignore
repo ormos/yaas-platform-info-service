@@ -1,5 +1,6 @@
-files/nginx/assets/api-console
-files/nginx/assets/data-console
+rootfs/var/nginx/assets/api-console
+rootfs/var/nginx/assets/data-console
+rootfs/var/nginx/data/geoip-networks.db
 .DS_Store
 keys/*
 *.pyc

@@ -1,5 +1,5 @@
 *
-files/
+rootfs/
 tools/
 .vscode
 .cfignore
