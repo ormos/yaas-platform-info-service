@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema", 
+    "required": [
+        "status", 
+        "country", 
+        "vatin"
+    ], 
+    "type": "object", 
+    "properties": {
+        "status": {
+            "type": "string"
+        }, 
+        "country": {
+            "type": "string"
+        }, 
+        "vatin": {
+            "type": "string"
+        }
+    }
+}

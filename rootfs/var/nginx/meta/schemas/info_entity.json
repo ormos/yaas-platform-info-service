@@ -1,0 +1,148 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema", 
+    "required": [
+        "city", 
+        "network", 
+        "country", 
+        "region", 
+        "position", 
+        "yaas"
+    ], 
+    "type": "object", 
+    "properties": {
+        "city": {
+            "required": [
+                "postal", 
+                "name"
+            ], 
+            "type": "object", 
+            "properties": {
+                "postal": {
+                    "type": "string"
+                }, 
+                "name": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "network": {
+            "required": [
+                "access", 
+                "ip"
+            ], 
+            "type": "object", 
+            "properties": {
+                "access": {
+                    "type": "string"
+                }, 
+                "ip": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "country": {
+            "required": [
+                "code", 
+                "name"
+            ], 
+            "type": "object", 
+            "properties": {
+                "code": {
+                    "type": "string"
+                }, 
+                "name": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "region": {
+            "required": [
+                "timezone", 
+                "name"
+            ], 
+            "type": "object", 
+            "properties": {
+                "timezone": {
+                    "required": [
+                        "_link_", 
+                        "name"
+                    ], 
+                    "type": "object", 
+                    "properties": {
+                        "_link_": {
+                            "type": "string"
+                        }, 
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                }, 
+                "name": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "position": {
+            "required": [
+                "latitude", 
+                "longitude"
+            ], 
+            "type": "object", 
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                }, 
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        }, 
+        "yaas": {
+            "required": [
+                "language", 
+                "market"
+            ], 
+            "type": "object", 
+            "properties": {
+                "market": {
+                    "required": [
+                        "_link_", 
+                        "_redirect_", 
+                        "id"
+                    ], 
+                    "type": "object", 
+                    "properties": {
+                        "_link_": {
+                            "type": "string"
+                        }, 
+                        "_redirect_": {
+                            "type": "string"
+                        }, 
+                        "id": {
+                            "type": "string"
+                        }
+                    }
+                }, 
+                "language": {
+                    "required": [
+                        "default", 
+                        "official", 
+                        "preferred"
+                    ], 
+                    "type": "object", 
+                    "properties": {
+                        "default": {
+                            "type": "string"
+                        }, 
+                        "official": {
+                            "type": "string"
+                        }, 
+                        "preferred": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

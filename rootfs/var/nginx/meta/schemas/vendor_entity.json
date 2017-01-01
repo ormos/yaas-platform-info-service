@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema", 
+    "required": [
+        "_link_", 
+        "region", 
+        "id", 
+        "market"
+    ], 
+    "type": "object", 
+    "properties": {
+        "_link_": {
+            "type": "string"
+        }, 
+        "region": {
+            "type": "string"
+        }, 
+        "id": {
+            "type": "string"
+        }, 
+        "market": {
+            "type": "string"
+        }
+    }
+}

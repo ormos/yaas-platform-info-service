@@ -1,7 +1,7 @@
 rootfs/var/nginx/assets/api-console
 rootfs/var/nginx/assets/data-console
 rootfs/var/nginx/data/geoip-networks.db
-tags/
+tags/*
 .DS_Store
 keys/*
 *.pyc

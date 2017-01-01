@@ -1,0 +1,139 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema", 
+    "required": [
+        "description", 
+        "billing", 
+        "url", 
+        "region", 
+        "links", 
+        "locale", 
+        "_link_", 
+        "timezone", 
+        "id", 
+        "name"
+    ], 
+    "type": "object", 
+    "properties": {
+        "billing": {
+            "required": [
+                "currency", 
+                "vendor", 
+                "pricing"
+            ], 
+            "type": "object", 
+            "properties": {
+                "currency": {
+                    "type": "string"
+                }, 
+                "vendor": {
+                    "type": "string"
+                }, 
+                "pricing": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "description": {
+            "type": "string"
+        }, 
+        "links": {
+            "required": [
+                "terms", 
+                "copyright", 
+                "privacy", 
+                "contract", 
+                "agreement_terms", 
+                "api", 
+                "impressum"
+            ], 
+            "type": "object", 
+            "properties": {
+                "terms": {
+                    "type": "string"
+                }, 
+                "copyright": {
+                    "type": "string"
+                }, 
+                "privacy": {
+                    "type": "string"
+                }, 
+                "contract": {
+                    "type": "string"
+                }, 
+                "agreement_terms": {
+                    "type": "string"
+                }, 
+                "api": {
+                    "type": "string"
+                }, 
+                "impressum": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "url": {
+            "type": "string"
+        }, 
+        "region": {
+            "required": [
+                "_link_", 
+                "id"
+            ], 
+            "type": "object", 
+            "properties": {
+                "_link_": {
+                    "type": "string"
+                }, 
+                "id": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "locale": {
+            "required": [
+                "languages", 
+                "default", 
+                "official"
+            ], 
+            "type": "object", 
+            "properties": {
+                "languages": {
+                    "items": {
+                        "type": "string"
+                    }, 
+                    "type": "array"
+                }, 
+                "default": {
+                    "type": "string"
+                }, 
+                "official": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "_link_": {
+            "type": "string"
+        }, 
+        "timezone": {
+            "required": [
+                "_link_", 
+                "name"
+            ], 
+            "type": "object", 
+            "properties": {
+                "_link_": {
+                    "type": "string"
+                }, 
+                "name": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "id": {
+            "type": "string"
+        }, 
+        "name": {
+            "type": "string"
+        }
+    }
+}

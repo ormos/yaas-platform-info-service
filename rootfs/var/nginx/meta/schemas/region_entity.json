@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema", 
+    "required": [
+        "_link_", 
+        "description", 
+        "id", 
+        "domain", 
+        "name"
+    ], 
+    "type": "object", 
+    "properties": {
+        "_link_": {
+            "type": "string"
+        }, 
+        "domain": {
+            "type": "string"
+        }, 
+        "description": {
+            "type": "string"
+        }, 
+        "name": {
+            "type": "string"
+        }, 
+        "id": {
+            "type": "string"
+        }
+    }
+}

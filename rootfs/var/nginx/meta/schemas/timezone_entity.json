@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema", 
+    "required": [
+        "name", 
+        "zone", 
+        "offset", 
+        "daylight_saving", 
+        "time", 
+        "local"
+    ], 
+    "type": "object", 
+    "properties": {
+        "name": {
+            "type": "string"
+        }, 
+        "zone": {
+            "type": "string"
+        }, 
+        "offset": {
+            "type": "string"
+        }, 
+        "daylight_saving": {
+            "type": "boolean"
+        }, 
+        "time": {
+            "type": "string"
+        }, 
+        "local": {
+            "type": "string"
+        }
+    }
+}
