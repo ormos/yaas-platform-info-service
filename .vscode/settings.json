@@ -1,5 +1,9 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     // When enabled, will trim trailing whitespace when you save a file.
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "python.linting.enabled": false,
+    "python.pythonPath": "/home/ralf/.pyenv/versions/yaas-platform-info-service/bin/python",
+    "python.autoComplete.extraPaths": [ "/home/ralf/.pyenv/versions/yaas-platform-info-service/lib/python2.7",
+                                        "/home/ralf/.pyenv/versions/yaas-platform-info-service/lib/python2.7/site-packages" ]
 }

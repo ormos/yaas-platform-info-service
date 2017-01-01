@@ -1,25 +1,38 @@
 #%RAML 0.8
 title: YaaS-Platform-Info-Service
+# baseUri: /hybris/ypi/v1
 baseUri: /
 version: v1
 mediaType:  application/json
+protocols:
+  - HTTPS
 
 schemas:
-  - regions: !include ./schemata/regions_collection.json
+  - regions: !include schemata/regions_collection.json
   - region: !include schemata/region_entity.json
   - markets: !include schemata/markets_collection.json
   - market: !include schemata/market_entity.json
+  - vendors: !include schemata/vendors_collection.json
+  - vendor: !include schemata/vendor_entity.json
+  - networks: !include schemata/networks_collection.json
+  - network: !include schemata/network_entity.json
+  - info: !include schemata/info_entity.json
+  - email: !include schemata/email_entity.json
+  - vatin: !include schemata/vatin_entity.json
   - error: !include https://api.yaas.io/patterns/v1/schema-error-message.json
 
 traits:
   - !include https://api.yaas.io/patterns/v2/trait-yaas-aware.yaml
 
 resourceTypes:
-  - !include https://api.yaas.io/patterns/v2/resource-type-element.yaml
+  - !include https://api.yaas.io/patterns/v3/resource-type-element.yaml
   - !include https://api.yaas.io/patterns/v1/resource-type-collection.yaml
 
 /regions:
   type: collection
+  is:
+    - yaasAware
+  displayName: YaaS region information data
   get:
     description: Gets all YaaS regions
     responses:
@@ -27,21 +40,19 @@ resourceTypes:
         body:
           application/json:
             example: !include examples/regions.json
-
   /{regiontId}:
     type: element
     uriParameters:
       regiontId:
-        description: the id of the wishlist to work on
-        example: EU
+        displayName: Region Identifier
+        description: id of the region to retrieve information for
         type: string
         minLength: 2
-        enum:
-          - US
-          - EU
-          - _beta_
+        maxLength: 6
+        pattern: ^[A-Z][A-Z]|_beta_$
+        example: EU
     get:
-      description: Gets a wishlist
+      description: Gets information about a region
       responses:
         200:
           body:
@@ -49,6 +60,10 @@ resourceTypes:
               example: !include examples/region.json
 
 /markets:
+  is:
+    - yaasAware
+  displayName: YaaS market information data
+  type: collection
   get:
     description: Gets all YaaS markets
     responses:
@@ -56,77 +71,201 @@ resourceTypes:
         body:
           application/json:
             example: !include examples/markets.json
-
   /{marketId}:
     uriParameters:
       marketId:
         displayName: Market Identifier
         description: id of the market to retrieve information for
-        example: US
         type: string
         minLength: 2
-        enum:
-          - US
-          - DE
-          - _beta_
+        maxLength: 6
+        pattern: ^[A-Z][A-Z]|_beta_$
+        example: US
     get:
-      description: Gets a market information
+      description: Gets information about market
       responses:
         200:
           body:
             application/json:
               example: !include examples/market.json
 
-/info:
+/vendors:
+  is:
+    - yaasAware
+  type: collection
+  displayName: YaaS vendor information data
   get:
-    queryParameters:
-      ip:
-        type: string
-    responses:
-      200:
-
-  /{ip}:
-    uriParameters:
-      ip:
-        displayName: IP address
-    get:
-      responses:
-        200:
-
-/email:
-  displayName: Email check
-  get:
-    queryParameters:
-      address:
-        type: string
-        displayName: Email address
+    description: Gets all YaaS markets
     responses:
       200:
         body:
           application/json:
-
-  /{address}:
+            example: !include examples/vendors.json
+  /{vendorId}:
     uriParameters:
-      address:
-        example: john_smith@abc.com
+      vendorId:
+        displayName: Market Identifier
+        description: id of the market to retrieve information for
+        type: string
+        minLength: 2
+        maxLength: 32
+        pattern: ^[A-z_]+$
+        example: sapaustria
+    get:
+      description: Gets a market information
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/vendor.json
+
+/timezone/{timezoneName}:
+  is:
+    - yaasAware
+  displayName: Timezone information data
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/timezone.json
+  uriParameters:
+    timezoneName:
+      displayName: Timezone Name
+      description: timezone to retrieve information for
+      type: string
+      minLength: 2
+      maxLength: 128
+      pattern: ^[A-z]+/[A-z]+$
+      example: Europe/Berlin
+
+/info:
+  is:
+    - yaasAware
+  displayName: YaaS autotected information
+  get:
+    queryParameters:
+      ip:
+        displayName: IP address
+        description: IP for geo location
         minLength: 3
-        maxLength: 254
-        pattern: ^[^@]+@[^@]+.[a-z]$
-        displayName: Email adress
+        maxLength: 15
+        pattern: ^[0-9.]+$
+        example: 123.45.67.89
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/info.json
+  /{ip}:
+    uriParameters:
+      ip:
+        displayName: IP address
+        description: IP for geo location
+        type: string
+        minLength: 3
+        maxLength: 15
+        pattern: ^[0-9.]+$
+        example: 123.45.67.89
     get:
       responses:
         200:
+          body:
+            application/json:
+              example: !include examples/info.json
+
+/email:
+  displayName: Email address check
+  is:
+    - yaasAware
+  get:
+    queryParameters:
+      address:
+        displayName: Email address
+        description: Email address to check
+        type: string
+        minLength: 3
+        maxLength: 254
+        pattern: ^[^@]+@[^@]+.[A-z]$
+        example: john_smith@abc.com
+    responses:
+      200:
+        body:
+          application/json:
+              example: !include examples/email.json
+  /{address}:
+    uriParameters:
+      address:
+        displayName: Email address
+        description: Email address to check
+        type: string
+        minLength: 3
+        maxLength: 254
+        pattern: ^[^@]+@[^@]+.[A-z]$
+        example: john_smith@abc.com
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+                example: !include examples/email.json
 
 /vatin/{country}/{vatin}:
-  displayName: Vatin check
+  displayName: VAT identification number verification
+  is:
+    - yaasAware
   get:
+    responses:
+      200:
+        body:
+          application/json:
+              example: !include examples/vatin.json
   uriParameters:
    country:
      displayName: Country
+     description: Country code to retrieve VATIN information for
      enum:
        - DE
+       - AT
      maxLength: 2
      minLength: 2
+     pattern: ^[A-Z][A-Z]$
+     example: DE
    vatin:
      displayName: VAT Identification Number
-     minLength: 2
+     description: The VATIN in the country specific format
+     minLength: 8
+     example: DE210157578
+
+/networks:
+ is:
+   - yaasAware
+ displayName: YaaS network adresss information data
+ type: collection
+ get:
+   description: |
+      Provide a list of world network address ranges categorized by country.
+      Networks are categorized as 'blocked' are not allow to access YaaS services
+      due to company policies or legal obligations.
+   responses:
+     200:
+       body:
+         application/json:
+           example: !include examples/networks.json
+ /{countryId}:
+   type: element
+   uriParameters:
+     countryId:
+       displayName: ISO Country Code
+       description: Country code to retrieve network information for
+       type: string
+       minLength: 2
+       maxLength: 2
+       pattern: ^[A-Z][A-Z]$
+       example: US
+   get:
+     responses:
+       200:
+         body:
+           application/json:
+             example: !include examples/network.json

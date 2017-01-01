@@ -1,0 +1,38 @@
+{
+  "sapswitzerland": {
+    "id": "sapswitzerland",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/sapswitzerland",
+    "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+    "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/CH"
+  },
+  "sapamerica": {
+    "id": "sapamerica",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/sapamerica",
+    "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/US",
+    "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/US"
+  },
+  "sapaustria": {
+    "id": "sapaustria",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/sapaustria",
+    "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+    "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/AT"
+  },
+  "sapgermany": {
+    "id": "sapgermany",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/sapgermany",
+    "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+    "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/DE"
+  },
+  "sapuk": {
+    "id": "sapuk",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/sapuk",
+    "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+    "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/GB"
+  },
+  "_sapbeta_": {
+    "id": "_sapbeta_",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/_sapbeta_",
+    "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/_beta_",
+    "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/_beta_"
+  }
+}

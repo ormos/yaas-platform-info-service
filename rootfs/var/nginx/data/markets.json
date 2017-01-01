@@ -9,13 +9,13 @@
   "markets": {
     "US": {
       "id": "US",
-      "_link_": "${URL}/markets/US",
+      "_link_": "{URL}/markets/US",
       "name": "YaaS United States Market",
       "description": "SAP-Hybris YaaS Market United States of America",
       "url": "https://market.yaas.io/us",
       "region": {
           "id": "US",
-          "_link_": "${URL}/regions/US"
+          "_link_": "{URL}/regions/US"
       },
       "locale": {
         "official": "en-US",
@@ -27,7 +27,7 @@
       },
       "timezone": {
         "name": "America/New_York",
-        "_link_": "${URL}/timezone/America/New_York"
+        "_link_": "{URL}/timezone/America/New_York"
       },
       "billing": {
         "vendor": "sapamerica",
@@ -46,13 +46,13 @@
     },
     "DE": {
       "id": "DE",
-      "_link_": "${URL}/markets/DE",
+      "_link_": "{URL}/markets/DE",
       "name": "YaaS German Market",
       "description": "SAP-Hybris YaaS Market Germany",
       "url": "https://market.yaas.io/de",
       "region": {
           "id": "EU",
-          "_link_": "${URL}/regions/EU"
+          "_link_": "{URL}/regions/EU"
       },
       "locale": {
         "official": "de-DE",
@@ -64,7 +64,7 @@
       },
       "timezone": {
         "name": "Europe/Berlin",
-        "_link_": "${URL}/timezone/Europe/Berlin"
+        "_link_": "{URL}/timezone/Europe/Berlin"
       },
       "billing": {
         "vendor": "sapgermany",
@@ -86,13 +86,13 @@
     },
     "GB": {
       "id": "GB",
-      "_link_": "${URL}/markets/GB",
+      "_link_": "{URL}/markets/GB",
       "name": "YaaS United Kingdom Market",
       "description": "SAP-Hybris YaaS Market United Kingdom",
       "url": "https://market.yaas.io/gb",
       "region": {
           "id": "EU",
-          "_link_": "${URL}/regions/EU"
+          "_link_": "{URL}/regions/EU"
       },
       "locale": {
         "official": "en-GB",
@@ -104,7 +104,7 @@
       },
       "timezone": {
         "name": "Europe/London",
-        "_link_": "${URL}/timezone/Europe/London"
+        "_link_": "{URL}/timezone/Europe/London"
       },
       "billing": {
         "vendor": "sapuk",
@@ -123,13 +123,13 @@
     },
     "CH": {
       "id": "CH",
-      "_link_": "${URL}/markets/CH",
+      "_link_": "{URL}/markets/CH",
       "name": "YaaS Swiss Market",
       "description": "SAP-Hybris YaaS Market Switzerland",
       "url": "https://market.yaas.io/ch",
       "region": {
           "id": "EU",
-          "_link_": "${URL}/regions/EU"
+          "_link_": "{URL}/regions/EU"
       },
       "locale": {
         "official": "de-CH",
@@ -141,7 +141,7 @@
       },
       "timezone": {
         "name": "Europe/Zurich",
-        "_link_": "${URL}/timezone/Europe/Zurich"
+        "_link_": "{URL}/timezone/Europe/Zurich"
       },
       "billing": {
         "vendor": "sapswitzerland",
@@ -160,13 +160,13 @@
     },
     "AT": {
       "id": "AT",
-      "_link_": "${URL}/markets/AT",
+      "_link_": "{URL}/markets/AT",
       "name": "YaaS Austria Market",
       "description": "SAP-Hybris YaaS Market Austria",
       "url": "https://market.yaas.io/at",
       "region": {
           "id": "EU",
-          "_link_": "${URL}/regions/EU"
+          "_link_": "{URL}/regions/EU"
       },
       "locale": {
         "official": "de-AT",
@@ -178,7 +178,7 @@
       },
       "timezone": {
         "name": "Europe/Vienna",
-        "_link_": "${URL}/timezone/Europe/Vienna"
+        "_link_": "{URL}/timezone/Europe/Vienna"
       },
       "billing": {
         "vendor": "sapaustria",
@@ -197,13 +197,13 @@
     },
     "_beta_": {
       "id": "_beta_",
-      "_link_": "${URL}/markets/_beta_",
+      "_link_": "{URL}/markets/_beta_",
       "name": "YaaS BETA Market",
       "description": "SAP-Hybris YaaS Market BETA",
       "url": "https://market.yaas.io/beta",
       "region": {
           "id": "_beta_",
-          "_link_": "${URL}/regions/_beta_"
+          "_link_": "{URL}/regions/_beta_"
       },
       "locale": {
         "official": "en-US",
@@ -215,7 +215,7 @@
       },
       "timezone": {
         "name": "America/New_York",
-        "_link_": "${URL}/timezone/America/New_York"
+        "_link_": "{URL}/timezone/America/New_York"
       },
       "billing": {
         "vendor": "_sapbeta_",

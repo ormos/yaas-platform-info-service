@@ -9,21 +9,21 @@
   "regions": {
     "US": {
       "id": "US",
-      "_link_": "${URL}/regions/US",
+      "_link_": "{URL}/regions/US",
       "name": "YaaS United States Region",
       "description": "SAP-Hybris YaaS United States of America Region",
       "domain": "us.yaas.io"
     },
     "EU": {
       "id": "EU",
-      "_link_": "${URL}/regions/EU",
+      "_link_": "{URL}/regions/EU",
       "name": "YaaS Europe Region",
       "description": "SAP-Hybris YaaS Europe Region",
       "domain": "eu.yaas.io"
     },
     "_beta_": {
       "id": "_beta_",
-      "_link_": "${URL}/regions/_beta_",
+      "_link_": "{URL}/regions/_beta_",
       "name": "YaaS BETA Region",
       "description": "SAP-Hybris YaaS BETA Region",
       "domain": "beta.yaas.io"

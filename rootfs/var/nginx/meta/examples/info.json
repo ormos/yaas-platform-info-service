@@ -1,0 +1,37 @@
+{
+  "country": {
+    "code": "DE",
+    "name": "Germany"
+  },
+  "city": {
+    "name": "Hamburg",
+    "postal": "20099"
+  },
+  "network": {
+    "ip": "91.32.146.214",
+    "access": "unrestricted"
+  },
+  "position": {
+    "latitude": 53.5553,
+    "longitude": 9.995
+  },
+  "yaas": {
+    "market": {
+      "id": "DE",
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/markets/DE",
+      "_redirect_": "https://market.yaas.io/de"
+    },
+    "language": {
+      "preferred": "de",
+      "official": "de-DE",
+      "default": "de"
+    }
+  },
+  "region": {
+    "name": "Hamburg",
+    "timezone": {
+      "name": "Europe/Berlin",
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/timezone/Europe/Berlin"
+    }
+  }
+}

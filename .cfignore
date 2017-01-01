@@ -6,5 +6,6 @@ tools/
 .dockerignore
 .gitignore
 .git/
+tags/
 Dockerfile
 README.md

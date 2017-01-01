@@ -1,0 +1,86 @@
+{
+  "unrestricted": {
+    "AT": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/AT",
+      "name": "Austria",
+      "id": "AT"
+    },
+    "BE": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/BE",
+      "name": "Belgium",
+      "id": "BE"
+    },
+    "AU": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/AU",
+      "name": "Australia",
+      "id": "AU"
+    },
+    "US": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/US",
+      "name": "United States",
+      "id": "US"
+    },
+    "ES": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/ES",
+      "name": "Spain",
+      "id": "ES"
+    },
+    "GB": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/GB",
+      "name": "United Kingdom",
+      "id": "GB"
+    },
+    "CH": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/CH",
+      "name": "Switzerland",
+      "id": "CH"
+    },
+    "PL": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/PL",
+      "name": "Poland",
+      "id": "PL"
+    },
+    "BR": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/BR",
+      "name": "Brazil",
+      "id": "BR"
+    },
+    "FR": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/FR",
+      "name": "France",
+      "id": "FR"
+    },
+    "DE": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/DE",
+      "name": "Germany",
+      "id": "DE"
+    },
+    "SE": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/SE",
+      "name": "Sweden",
+      "id": "SE"
+    },
+    "CA": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/CA",
+      "name": "Canada",
+      "id": "CA"
+    },
+    "CZ": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/CZ",
+      "name": "Czechia",
+      "id": "CZ"
+    },
+    "JP": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/JP",
+      "name": "Japan",
+      "id": "JP"
+    }
+  },
+  "blocked": {
+    "KP": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/networks/KP",
+      "name": "North Korea",
+      "id": "KP"
+    }
+  }
+}

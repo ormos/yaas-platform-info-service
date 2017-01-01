@@ -1,0 +1,6 @@
+{
+  "id": "sapgermany",
+  "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/vendors/sapgermany",
+  "region": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+  "market": "https://api.eu.yaas.io/hybris/ypi/v1/markets/DE"
+}

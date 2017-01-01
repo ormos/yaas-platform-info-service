@@ -1,23 +1,23 @@
 {
-    "_beta_": {
-        "domain": "beta.yaas.io",
-        "_link_": "http://localhost:8089\/regions\/_beta_",
-        "id": "_beta_",
-        "name": "YaaS BETA Region",
-        "description": "SAP-Hybris YaaS BETA Region"
-    },
-    "EU": {
-        "domain": "eu.yaas.io",
-        "_link_": "http://localhost:8089\/regions\/EU",
-        "id": "EU",
-        "name": "YaaS Europe Region",
-        "description": "SAP-Hybris YaaS Europe Region"
-    },
-    "US": {
-        "domain": "us.yaas.io",
-        "_link_": "http://localhost:8089\/regions\/US",
-        "id": "US",
-        "name": "YaaS United States Region",
-        "description": "SAP-Hybris YaaS United States of America Region"
-    }
+  "_beta_": {
+    "id": "_beta_",
+    "name": "YaaS BETA Region",
+    "description": "SAP-Hybris YaaS BETA Region",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/_beta_",
+    "domain": "beta.yaas.io"
+  },
+  "EU": {
+    "id": "EU",
+    "name": "YaaS Europe Region",
+    "description": "SAP-Hybris YaaS Europe Region",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+    "domain": "eu.yaas.io"
+  },
+  "US": {
+    "id": "US",
+    "name": "YaaS United States Region",
+    "description": "SAP-Hybris YaaS United States of America Region",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/US",
+    "domain": "us.yaas.io"
+  }
 }

@@ -1,7 +1,7 @@
 {
-    "domain": "eu.yaas.io",
-    "_link_": "http:\/\/localhost:8089\/regions\/EU",
-    "id": "EU",
-    "name": "YaaS Europe Region",
-    "description": "SAP-Hybris YaaS Europe Region"
+  "id": "EU",
+  "name": "YaaS Europe Region",
+  "description": "SAP-Hybris YaaS Europe Region",
+  "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+  "domain": "eu.yaas.io"
 }

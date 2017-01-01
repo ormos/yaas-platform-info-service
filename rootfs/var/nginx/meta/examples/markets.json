@@ -1,115 +1,115 @@
 {
-    "_beta_": {
-        "timezone": {
-            "_zone_": "EST",
-            "name": "America\/New_York",
-            "_offset_": "-05:00"
-        },
-        "region": {
-            "_link_": "http://localhost:8089\/regions\/_beta_",
-            "id": "_beta_"
-        },
-        "links": {
-            "copyright": "https:\/\/go.sap.com\/about\/legal\/copyright.html",
-            "privacy": "https:\/\/go.sap.com\/about\/legal\/privacy.html",
-            "terms": "https:\/\/www.yaas.io\/legal\/terms-of-use.html",
-            "contract": "https:\/\/www.yaas.io\/legal\/yaas-framecontract-commercial.html",
-            "impressum": "https:\/\/go.sap.com\/about\/legal\/impressum.html",
-            "api": "https:\/\/api.beta.yaas.io"
-        },
-        "billing": {
-            "currency": "USD",
-            "pricing": "betaPriceGroup",
-            "vendor": "_sapbeta_"
-        },
-        "_link_": "http://localhost:8089\/markets\/_beta_",
-        "id": "_beta_",
-        "url": "https:\/\/market.yaas.io\/beta",
-        "name": "YaaS BETA Market",
-        "locale": {
-            "languages": [
-                "en",
-                "de"
-            ],
-            "official": "en-US",
-            "default": "en"
-        },
-        "description": "SAP-Hybris YaaS Market BETA"
+  "DE": {
+    "id": "DE",
+    "name": "YaaS German Market",
+    "description": "SAP-Hybris YaaS Market Germany",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/markets/DE",
+    "url": "https://market.yaas.io/de",
+    "locale": {
+      "languages": [
+        "de",
+        "en"
+      ],
+      "official": "de-DE",
+      "default": "de"
     },
-    "US": {
-        "timezone": {
-            "_zone_": "EST",
-            "name": "America\/New_York",
-            "_offset_": "-05:00"
-        },
-        "region": {
-            "_link_": "http://localhost:8089\/regions\/US",
-            "id": "US"
-        },
-        "links": {
-            "copyright": "https:\/\/go.sap.com\/about\/legal\/copyright.html",
-            "dpa": "https:\/\/www.yaas.io\/germany\/legal\/sap-hybris-as-a-service-cloud-data-processing-agreement_v1.html",
-            "privacy": "https:\/\/go.sap.com\/about\/legal\/privacy.html",
-            "terms": "https:\/\/www.yaas.io\/legal\/sap-hybris-as-a-service-account-terms-of-use_v2.html",
-            "contract": "https:\/\/www.yaas.io\/legal\/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
-            "impressum": "https:\/\/go.sap.com\/about\/legal\/impressum.html",
-            "api": "https:\/\/api.us.yaas.io"
-        },
-        "billing": {
-            "currency": "USD",
-            "pricing": "usPriceGroup",
-            "vendor": "sapamerica"
-        },
-        "_link_": "http://localhost:8089\/markets\/US",
-        "id": "US",
-        "url": "https:\/\/market.yaas.io\/us",
-        "name": "YaaS United States Market",
-        "locale": {
-            "languages": [
-                "en",
-                "de"
-            ],
-            "official": "en-US",
-            "default": "en"
-        },
-        "description": "SAP-Hybris YaaS Market United States of America"
+    "timezone": {
+      "name": "Europe/Berlin",
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/timezone/Europe/Berlin"
     },
-    "DE": {
-        "timezone": {
-            "_zone_": "CET",
-            "name": "Europe\/Berlin",
-            "_offset_": "+01:00"
-        },
-        "region": {
-            "_link_": "http://localhost:8089\/regions\/EU",
-            "id": "EU"
-        },
-        "links": {
-            "copyright": "https:\/\/go.sap.com\/germany\/about\/legal\/copyright.html",
-            "dpa": "https:\/\/www.yaas.io\/germany\/legal\/sap-hybris-as-a-service-cloud-data-processing-agreement_v1.html",
-            "privacy": "https:\/\/go.sap.com\/germany\/about\/legal\/privacy.html",
-            "terms": "https:\/\/www.yaas.io\/germany\/legal\/sap-hybris-as-a-service-account-terms-of-use_v1.html",
-            "contract": "https:\/\/www.yaas.io\/germany\/legal\/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
-            "impressum": "https:\/\/go.sap.com\/germany\/about\/legal\/impressum.html",
-            "api": "https:\/\/api.eu.yaas.io"
-        },
-        "billing": {
-            "currency": "EUR",
-            "pricing": "dePriceGroup",
-            "vendor": "sapgermany"
-        },
-        "_link_": "http://localhost:8089\/markets\/DE",
-        "id": "DE",
-        "url": "https:\/\/market.yaas.io\/de",
-        "name": "YaaS German Market",
-        "locale": {
-            "languages": [
-                "de",
-                "en"
-            ],
-            "official": "de-DE",
-            "default": "de"
-        },
-        "description": "SAP-Hybris YaaS Market Germany"
+    "region": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/EU",
+      "id": "EU"
+    },
+    "billing": {
+      "currency": "EUR",
+      "pricing": "dePriceGroup",
+      "vendor": "sapgermany"
+    },
+    "links": {
+      "dpa": "https://www.yaas.io/germany/legal/data-processing-agreement-for-sap-cloud-services-german-v5-2016.pdf",
+      "privacy": "https://go.sap.com/germany/about/legal/privacy.html",
+      "terms": "https://www.yaas.io/germany/legal/sap-hybris-as-a-service-account-terms-of-use_v1.html",
+      "contract": "https://www.yaas.io/germany/legal/SAP_Hybris_as_a_Service_Framework_Agreement_deDE_v10-2016.pdf",
+      "agreement_terms": "https://www.yaas.io/germany/legal/SAP_Hybris_as_a_Service_Vertragsbestandteile_deDE_v10-2016.pdf",
+      "sla": "https://www.yaas.io/germany/legal/Service_Level_Agreement_for_SAP_Hybris_as_a_Service_deDE_v10-2016.pdf",
+      "assistance": "https://www.yaas.io/germany/legal/SAP_Customer_Assistance_Policy_for_SAP_Cloud_Services_deDE_v10-2016.pdf",
+      "copyright": "https://go.sap.com/germany/about/legal/copyright.html",
+      "api": "https://api.eu.yaas.io",
+      "impressum": "https://go.sap.com/germany/about/legal/impressum.html"
     }
+  },
+  "US": {
+    "id": "US",
+    "name": "YaaS United States Market",
+    "description": "SAP-Hybris YaaS Market United States of America",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/markets/US",
+    "url": "https://market.yaas.io/us",
+    "locale": {
+      "languages": [
+        "en",
+        "de"
+      ],
+      "official": "en-US",
+      "default": "en"
+    },
+    "timezone": {
+      "name": "America/New_York",
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/timezone/America/New_York"
+    },
+    "region": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/US",
+      "id": "US"
+    },
+    "billing": {
+      "currency": "USD",
+      "pricing": "usPriceGroup",
+      "vendor": "sapamerica"
+    },
+    "links": {
+      "impressum": "https://go.sap.com/about/legal/impressum.html",
+      "copyright": "https://go.sap.com/about/legal/copyright.html",
+      "privacy": "https://go.sap.com/about/legal/privacy.html",
+      "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
+      "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
+      "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf",
+      "api": "https://api.us.yaas.io"
+    }
+  },
+  "_beta_": {
+    "id": "_beta_",
+    "name": "YaaS BETA Market",
+    "description": "SAP-Hybris YaaS Market BETA",
+    "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/markets/_beta_",
+    "url": "https://market.yaas.io/beta",
+    "locale": {
+      "languages": [
+        "en",
+        "de"
+      ],
+      "official": "en-US",
+      "default": "en"
+    },
+    "timezone": {
+      "name": "America/New_York",
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/timezone/America/New_York"
+    },
+    "region": {
+      "_link_": "https://api.eu.yaas.io/hybris/ypi/v1/regions/_beta_",
+      "id": "_beta_"
+    },
+    "billing": {
+      "currency": "USD",
+      "pricing": "betaPriceGroup",
+      "vendor": "_sapbeta_"
+    },
+    "links": {
+      "copyright": "https://go.sap.com/about/legal/copyright.html",
+      "privacy": "https://go.sap.com/about/legal/privacy.html",
+      "terms": "https://www.yaas.io/legal/terms-of-use.html",
+      "contract": "https://www.yaas.io/legal/yaas-framecontract-commercial.html",
+      "impressum": "https://go.sap.com/about/legal/impressum.html",
+      "api": "https://api.beta.yaas.io"
+    }
+  }
 }

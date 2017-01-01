@@ -12,14 +12,14 @@ local function _substitute(s, tbl)
         function subst(f)
             local s = tbl[f]
             if not s then
-                return '${'..f..'}'
+                return '{'..f..'}'
             else
                 return s
             end
         end
     end
 
-    return (string.gsub(s, '%${([%w_]+)}', subst))
+    return (string.gsub(s, '{([%w_]+)}', subst))
 end
 
 return {
