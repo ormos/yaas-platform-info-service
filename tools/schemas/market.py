@@ -10,7 +10,7 @@ from region import RegionSchemata
 BETA_ID = '_beta_'
 
 def region_ids():
-    # Region based on ICANN defintion
+    # Region based on ICANN definition
     return [ 'AF', # Africa
              'AN', # Antarctica
              'AS', # Asia / Australia / Pacific

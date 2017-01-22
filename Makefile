@@ -5,7 +5,7 @@ include $(ENV_FILE)
 endif
 
 NS = elvido
-VERSION ?= 1.5.1
+VERSION ?= 1.6.1
 TAGS ?= latest
 
 REPO = yaas-platform-info-service
@@ -27,6 +27,7 @@ $(API_CONSOLE): TMP_FOLDER := $(shell mktemp -d)
 $(API_CONSOLE):
 	mkdir -p $@
 	cd $(TMP_FOLDER) ; wget -qO- https://github.com/mulesoft/api-console/archive/master.zip | bsdtar -xvf- api-console-master/dist/
+	rm -rf $(TMP_FOLDER)/api-console-master/dist/examples
 	cp -r $(TMP_FOLDER)/api-console-master/dist/* $@
 	rm -rf $(TMP_FOLDER)
 	uglifyjs --compress --source-map $@/scripts/api-console.min.js.map --output $@/scripts/api-console.min.js -- $@/scripts/api-console.js
