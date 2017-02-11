@@ -84,11 +84,7 @@ local function add_location_info(table, var, section, item)
         if table[section] == nil then
             table[section] = {}
         end
-        if type(var) == 'string' then
-            table[section][item] = cd:iconv(var)
-        else
-            table[section][item] = var
-        end
+        table[section][item] = var
     end
 end
 
@@ -117,7 +113,7 @@ end
 local markets = cjson.decode(res.body)
 
 -- prepare the country information (uppercase 2-letter)
-local country = ngx.var.geoip_city_country_code
+local country = ngx.var.geoip_country_code
 if country ~= nil and country:len() >= 2 then
     country = country:gsub(' *(%S%S)', string.upper)
 else
@@ -149,26 +145,28 @@ local info = {
 }
 
 -- add optional location specific information
-add_location_info(info, ngx.var.geoip_city_country_code, 'country', 'code')
-add_location_info(info, ngx.var.geoip_city_country_name, 'country', 'name')
-add_location_info(info, ngx.var.geoip_region_code,       'region',  'code')
-add_location_info(info, ngx.var.geoip_region_name,       'region',  'name')
-add_location_info(info, ngx.var.geoip_city,              'city',    'name')
-add_location_info(info, ngx.var.geoip_postal_code,       'city',    'postal')
+add_location_info(info, ngx.var.geoip_continent_code, 'continent', 'code')
+add_location_info(info, ngx.var.geoip_continent_name, 'continent', 'name')
+add_location_info(info, ngx.var.geoip_country_code,   'country',   'code')
+add_location_info(info, ngx.var.geoip_country_name,   'country',   'name')
+add_location_info(info, ngx.var.geoip_region_code,    'region',    'code')
+add_location_info(info, ngx.var.geoip_region_name,    'region',    'name')
+add_location_info(info, ngx.var.geoip_city_name,      'city',      'name')
+add_location_info(info, ngx.var.geoip_city_postal,    'city',      'postal')
 
-if ngx.var.geoip_timezone ~= nil and ngx.var.geoip_timezone ~= '' then
+if ngx.var.geoip_time_zone ~= nil and ngx.var.geoip_time_zone ~= '' then
     local time_zone_info = {
-        name   = ngx.var.geoip_timezone,
-        _link_ = utils.base_url()..'/timezone/'..ngx.var.geoip_timezone
+        name   = ngx.var.geoip_time_zone,
+        _link_ = utils.base_url()..'/timezone/'..ngx.var.geoip_time_zone
     }
     add_location_info(info, time_zone_info, 'region', 'timezone')
 end
 
 -- Convert latitude and longitude to numeric values
-if ngx.var.geoip_latitude ~= nil and ngx.var.geoip_longitude ~= nil then
+if ngx.var.geoip_location_latitude ~= nil and ngx.var.geoip_location_longitude ~= nil then
     info['position'] = {
-        latitude  = tonumber(ngx.var.geoip_latitude),
-        longitude = tonumber(ngx.var.geoip_longitude)
+        latitude  = tonumber(ngx.var.geoip_location_latitude),
+        longitude = tonumber(ngx.var.geoip_location_longitude)
     }
 end
 

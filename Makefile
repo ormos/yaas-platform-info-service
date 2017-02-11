@@ -15,7 +15,7 @@ INSTANCE = default
 API_CONSOLE = ./rootfs/var/nginx/assets/api-console
 DATA_CONSOLE = ./rootfs/var/nginx/assets/data-console
 
-GEOIP_NETWORKS = ./rootfs/var/nginx/data/geoip-networks.db
+GEOIP_NETWORKS = ./rootfs/var/nginx/data/geoip/networks.db
 
 .PHONY: clean build push shell run start stop rm release tag api-console data-console geoip-networks $(TAGS)
 

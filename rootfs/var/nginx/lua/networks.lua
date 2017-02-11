@@ -34,7 +34,7 @@ local function get_networks(db, network_type, country_id)
 end
 
 
-local db = sqlite.open("/var/nginx/data/geoip-networks.db", sqlite.OPEN_READONLY + sqlite.OPEN_SHAREDCACHE)
+local db = sqlite.open("/var/nginx/data/geoip/networks.db", sqlite.OPEN_READONLY + sqlite.OPEN_SHAREDCACHE)
 
 local country_info = get_country_info(db, country)
 
