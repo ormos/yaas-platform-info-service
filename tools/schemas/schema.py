@@ -6,7 +6,7 @@ DocumentRole = 'document'
 def createDocumentId(document):
     return 'YPI://{URL}/meta-data/schemas/' + document
 
-# link field class - with special handling for ${UR} variable
+# link field class - with special handling for {URL} variable
 class LinkField(jsl.UriField):
     """A link field."""
 
