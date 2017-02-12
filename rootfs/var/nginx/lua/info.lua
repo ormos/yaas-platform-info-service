@@ -168,6 +168,7 @@ if ngx.var.geoip_location_latitude ~= nil and ngx.var.geoip_location_longitude ~
         latitude  = tonumber(ngx.var.geoip_location_latitude),
         longitude = tonumber(ngx.var.geoip_location_longitude)
     }
+    info['position']['_map_'] = 'https://www.google.com/maps/@'..ngx.var.geoip_location_latitude..','..ngx.var.geoip_location_longitude..',10z'
 end
 
 local json = cjson.encode(info)
