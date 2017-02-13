@@ -53,9 +53,12 @@ provide_geoip_file()
 {
   command -v curl >/dev/null 2>&1 || _error_exit "curl needs to be installed for downloading GeoIP data"
 
-  local MMDB_META MMDB_UID MMDB_GID MMDB_URL MMDB_TMP
+  local MMDB_FILE MMDB_FORCE MMDB_META MMDB_UID MMDB_GID MMDB_URL MMDB_TMP MMDB_TIME
 
-  MMDB_META="$1"
+  MMDB_FILE="$1"        # mmdb file path
+  MMDB_FORCE="${2:-0}"  # flag to force mmdb update
+
+  MMDB_META="${MMDB_FILE}"
 
   [ -f "${MMDB_META}" ] || MMDB_META="$(dirname -- "${MMDB_META}")"
 
@@ -63,7 +66,7 @@ provide_geoip_file()
   MMDB_GID="$(stat -c %g "${MMDB_META}")"
 
   MMDB_URL="${GEOIP_BASE_URL}/${GEOIP_DATA_CITY}"
-  if [ "$2" -eq 0 ] && [ -f "$1" ] && [ "$(curl -kSLIs -z"$1" -w "%{http_code}" "${MMDB_URL}" | tail -1)" = "304" ]; then
+  if [ "${MMDB_FORCE}" -eq 0 ] && [ -f "${MMDB_FILE}" ] && [ "$(curl -kSLIs -z"${MMDB_FILE}" -w "%{http_code}" "${MMDB_URL}" | tail -1)" = "304" ]; then
       _message -s -i "GeoIP network database '$1' is already up-to-date..."
     return
   fi
@@ -72,14 +75,15 @@ provide_geoip_file()
   MMDB_TMP="$(_make_temp)"."${GEOIP_DATA_CITY#*.}"
 
   _message -s -i "downloading GeoIP network database from url: '${MMDB_URL}'..."
-  if curl -jkSL "${MMDB_URL}" -o "${MMDB_TMP}"; then
-    command -v curl >/dev/null 2>&1 || _error_exit "gunzip needs to be installed for downloading GeoIP data"
+  if curl -jkSLR -# "${MMDB_URL}" -o "${MMDB_TMP}"; then
+    command -v gunzip >/dev/null 2>&1 || _error_exit "gunzip needs to be installed for downloading GeoIP data"
+    MMDB_TIME="$(stat -c %Y "${MMDB_TMP}")" # save timestamp because gunzip is resetting it
     if gunzip "${MMDB_TMP}"; then
-      mv -f "${MMDB_TMP%.*}" "$1"
-      chown "${MMDB_UID}":"${MMDB_GID}" "$1"
-      chmod a+r "$1"
-      touch "$1"
-      _message -s -i "updated GeoIP network database '$1'"
+      mv -f "${MMDB_TMP%.*}" "${MMDB_FILE}"
+      touch -d@"${MMDB_TIME}" "${MMDB_FILE}"
+      chown "${MMDB_UID}":"${MMDB_GID}" "${MMDB_FILE}"
+      chmod a+r "${MMDB_FILE}"
+      _message -s -i "updated GeoIP network database '${MMDB_FILE}'"
     else
       _error_exit "failed to decompress GeoIP data file"
     fi
