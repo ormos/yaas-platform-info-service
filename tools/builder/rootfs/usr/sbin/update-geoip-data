@@ -19,8 +19,6 @@ main()
   # initialize all global variables
   _initialize
 
-  local GEOIP_FOLDER="${GEOIP_MMDB_FOLDER}"
-
   # Process command line arguments
   # Options followed by one colon indicate having required argument
   OPTSTR=$(getopt -o Fhv --long force,help,version -n "${SCRIPT_NAME}" -- "$@") || _usage
@@ -136,8 +134,9 @@ _initialize()
   umask 066
 
   # the full qualified path of the script
-  SCRIPT_NAME=$(basename -- "$0")
+  # shellcheck disable=SC2034
   SCRIPT_PATH=$(dirname -- "$($(command -v greadlink || command -v readlink) -f "$0")")
+  SCRIPT_NAME=$(basename -- "$0")
   TMP_FOLDER="${TMPDIR:-/tmp/$(id -u)}/${SCRIPT_NAME}-$$/"
 
   # make sure temp folder exists
@@ -154,7 +153,7 @@ _initialize()
 
 _message()
 {
-  local IDNX CATG LEN FMT MSG TXT_IDNX TXT_CATG TXT_PRFX TXT_MSG LEN_PRFX=0
+  local IDNX CATG LEN FMT TXT_IDNX TXT_CATG TXT_PRFX TXT_MSG LEN_PRFX=0
 
   while [ $# -gt 0 ]; do
     case $1 in
@@ -188,7 +187,7 @@ _message()
   # shellcheck disable=SC2059
   if [ -n "${FMT:-}" ]; then
     if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
-      TXT_MSG="$(printf "${FMT}" $(cat -))"
+      TXT_MSG="$(printf "${FMT}" "$(cat -)")"
     else
       TXT_MSG="$(printf "${FMT}" "$@")"
     fi
