@@ -11,7 +11,7 @@ RUN apk --no-cache upgrade --update && \
     \
     curl -L https://cpanmin.us | perl - App::cpanminus && \
     \
-    cpanm -n Devel::Refcount MaxMind::DB::Reader::XS MaxMind::DB::Writer::Tree Net::Works::Network GeoIP2 Data::Printer || : && \
+    cpanm -n Devel::Refcount MaxMind::DB::Reader::XS MaxMind::DB::Writer::Tree Net::Works::Network GeoIP2 Data::Printer DBD::SQLite || : && \
     \
     echo "Cleaning up..." >&2 && \
     rm -rf ./cpanm /root/.cpanm && \
