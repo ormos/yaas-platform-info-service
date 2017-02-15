@@ -9,7 +9,7 @@ if country_networks == nil then
 
     local sqlite = require('sqlite3')
 
-    local db = sqlite.open("/var/nginx/data/geoip/networks.db", sqlite.OPEN_READONLY + sqlite.OPEN_SHAREDCACHE)
+    local db = sqlite.open("/var/nginx/data/geoip/Country-Networks.db", sqlite.OPEN_READONLY + sqlite.OPEN_SHAREDCACHE)
 
     local networks_list = {}
 

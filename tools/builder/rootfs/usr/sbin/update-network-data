@@ -1,0 +1,554 @@
+#!/usr/bin/env sh
+
+readonly VERSION='1.0.0'
+readonly AUTHOR='Ralf Hofmann'
+readonly CONTACT='<r.hofmann@sap.com>'
+
+readonly GEOIP_BASE_URL='http://geolite.maxmind.com/download/geoip/database'
+readonly GEOIP_DATA_ARCHIVE='GeoLite2-Country-CSV.zip'
+readonly GEOIP_DATA_SUBFOLDER='GeoLite2-Country-CSV_*'
+readonly GEOIP_DATA_COUNTRY='GeoLite2-Country-Locations-en.csv'
+readonly GEOIP_DATA_IPV4='GeoLite2-Country-Blocks-IPv4.csv'
+readonly GEOIP_DATA_IPV6='GeoLite2-Country-Blocks-IPv6.csv'
+
+readonly GEOIP_NETWORK_FILE='Country-Networks.db'
+readonly GEOIP_NETWORK_FOLDER="${DATA_FOLDER}"
+
+###########################################################################
+# main functionality of the script
+###########################################################################
+main()
+{
+  # initialize all global variables
+  _initialize
+
+  # Process command line arguments
+  # Options followed by one colon indicate having required argument
+  OPTSTR=$(getopt -o Fhv --long force,help,version -n "${SCRIPT_NAME}" -- "$@") || _usage
+  eval set -- "$OPTSTR"
+  while true ; do
+    case "$1" in
+      '-F'|'--force')   FORCE=1  ; shift ;;
+      '-h'|'--help')    _help    ; exit  ;;
+      '-v'|'--version') _version ; exit  ;;
+      '--')             shift    ; break ;;
+      *)                _usage           ;;
+    esac
+  done
+
+  if [ $# -gt 1 ]; then
+    _usage; _error_exit "too many command line parameter"
+  fi
+
+  local GEOIP_NETWORK_PATH="${GEOIP_NETWORK_FOLDER}/${GEOIP_NETWORK_FILE}"
+  if [ $# -eq 1 ]; then
+    GEOIP_NETWORK_PATH="$1"
+    shift
+  fi
+
+  [ -d "$(dirname -- "${GEOIP_NETWORK_PATH}")" ] || mkdir -p "$(dirname -- "${GEOIP_NETWORK_PATH}")"
+
+  provide_network_database "${GEOIP_NETWORK_PATH}" "${FORCE:-0}"
+}
+
+
+provide_network_database()
+{
+  command -v curl >/dev/null 2>&1 || _error_exit "curl needs to be installed for downloading GeoIP data"
+
+  local DB_FILE DB_FORCE DB_META DB_UID DB_GID DB_URL DB_TMP DB_TIME DB_DATA
+
+  DB_FILE="$1"        # db file path
+  DB_FORCE="${2:-0}"  # flag to force db update
+
+  DB_META="${DB_FILE}"
+
+  [ -f "${DB_META}" ] || DB_META="$(dirname -- "${DB_META}")"
+
+  DB_UID="$(stat -c %u "${DB_META}")"
+  DB_GID="$(stat -c %g "${DB_META}")"
+
+  DB_URL="${GEOIP_BASE_URL}/${GEOIP_DATA_ARCHIVE}"
+  if [ "${DB_FORCE}" -eq 0 ] && [ -f "${DB_FILE}" ] && [ "$(curl -kSLIs -z"${DB_FILE}" -w "%{http_code}" "${DB_URL}" | tail -1)" = "304" ]; then
+    _message -s -i "GeoIP network database '${DB_FILE}' is already up-to-date..."
+    return
+  fi
+
+  # shellcheck disable=SC2119
+  DB_TMP="$(_make_temp)"."${GEOIP_DATA_ARCHIVE#*.}"
+
+  _message -s -i "downloading GeoIP network data file from url: '${DB_URL}'..."
+  if curl -jkSLR -# "${DB_URL}" -o "${DB_TMP}"; then
+    command -v bsdtar >/dev/null 2>&1 || _error_exit "bsdtar needs to be installed for extracting GeoIP data"
+    DB_TIME="$(stat -c %Y "${DB_TMP}")" # save timestamp for resetting
+    if bsdtar -xf "${DB_TMP}" --strip-components=1 -C "${TMP_FOLDER}" \
+        "${GEOIP_DATA_SUBFOLDER}/${GEOIP_DATA_COUNTRY}" \
+        "${GEOIP_DATA_SUBFOLDER}/${GEOIP_DATA_IPV4}"    \
+        "${GEOIP_DATA_SUBFOLDER}/${GEOIP_DATA_IPV6}"    ; then
+
+      # shellcheck disable=SC2119
+      DB_DATA="$(_make_temp)"
+
+      if import_network_data_files "${DB_DATA}" "${TMP_FOLDER}"; then
+        mv -f "${DB_DATA}" "${DB_FILE}"
+        touch -d@"${DB_TIME}" "${DB_FILE}"
+        chown "${DB_UID}":"${DB_GID}" "${DB_FILE}"
+        chmod a+r "${DB_FILE}"
+        _message -s -i "updated GeoIP network database '${DB_FILE}'"
+      else
+        _error_exit "failed to import GeoIP data"
+      fi
+
+      # remove data files
+      [ "${VERBOSE:-0}" -lt 4 ] && \
+        (rm -f "${TMP_FOLDER}/${GEOIP_DATA_COUNTRY}" \
+               "${TMP_FOLDER}/${GEOIP_DATA_IPV4}"    \
+               "${TMP_FOLDER}/${GEOIP_DATA_IPV6}"    \
+               "${DB_TMP}"                           \
+               "${DB_DATA}"                          \
+        >/dev/null 2>&1 || :)
+    else
+      _error_exit "failed to decompress GeoIP data file"
+    fi
+  else
+    _error_exit "failed to download GeoIP data from url: '${DB_URL}'"
+  fi
+}
+
+import_network_data_files()
+{
+  command -v sqlite3 >/dev/null 2>&1 || _error_exit "sqlite3 needs to be installed for creating GeoIP network database"
+
+  local DATA_FILE DATA_FOLDER ECHO_DIRECTIVE
+
+  DATA_FILE="$1"
+  DATA_FOLDER="${2:-$TMP_FOLDER}"
+
+  [ -f "${DATA_FOLDER}/${GEOIP_DATA_COUNTRY}" ] || ( _message -s -e "data file '${DATA_FOLDER}/${GEOIP_DATA_COUNTRY}' is not accessible" ; return 1 )
+  [ -f "${DATA_FOLDER}/${GEOIP_DATA_IPV4}" ]    || ( _message -s -e "data file '${DATA_FOLDER}/${GEOIP_DATA_IPV4}' is not accessible"    ; return 1 )
+  [ -f "${DATA_FOLDER}/${GEOIP_DATA_IPV6}" ]    || ( _message -s -e "data file '${DATA_FOLDER}/${GEOIP_DATA_IPV6}' is not accessible"    ; return 1 )
+
+  ECHO_DIRECTIVE='.echo'
+
+  if [ "${VERBOSE:-0}" -gt 4 ]; then
+    ECHO_DIRECTIVE="${ECHO_DIRECTIVE} on"
+  else
+    ECHO_DIRECTIVE="${ECHO_DIRECTIVE} off"
+  fi
+
+  # shellcheck disable=SC2119
+  _trim << -SQL- | sqlite3 "${DATA_FILE}"
+
+    -- SQL commands begin ------------------------------------------------------
+
+    ${ECHO_DIRECTIVE}
+
+    -- create country if not existing
+
+    DROP TABLE IF EXISTS Countries;
+
+    CREATE TABLE Countries(id INTEGER PRIMARY KEY,
+                           continent_code TEXT NOT NULL CHECK(length(continent_code) = 2),
+                           continent_name TEXT NOT NULL,
+                           country_iso_code TEXT CHECK(length(country_iso_code) = 2 OR country_name IS NULL),
+                           country_name TEXT CHECK(country_name IS NULL OR length(country_name) > 3)
+                          );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS countries_import(geoname_id,
+                                                         locale_code,
+                                                         continent_code,
+                                                         continent_name,
+                                                         country_iso_code,
+                                                         country_name
+                                                        ) AS SELECT id,
+                                                                    "en" AS locale_code,
+                                                                    continent_code,
+                                                                    continent_name,
+                                                                    country_iso_code,
+                                                                    country_name
+                                                             FROM Countries;
+
+    CREATE TRIGGER IF NOT EXISTS insert_country INSTEAD OF
+      INSERT ON countries_import WHEN NEW.geoname_id GLOB '[0-9]*'
+      BEGIN
+        INSERT INTO Countries(id, continent_code, continent_name, country_iso_code, country_name)
+          VALUES(NEW.geoname_id,
+                 NEW.continent_code,
+                 NEW.continent_name,
+                 CASE NEW.country_iso_code WHEN '' THEN NULL ELSE NEW.country_iso_code END,
+                 CASE NEW.country_name     WHEN '' THEN NULL ELSE NEW.country_name     END
+                );
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${DATA_FOLDER}/${GEOIP_DATA_COUNTRY}" countries_import
+
+    DROP VIEW IF EXISTS countries_import;
+
+    -- SQL commands end --------------------------------------------------------
+
+-SQL-
+
+  # shellcheck disable=SC2119
+  _trim << -SQL- | sqlite3 "${DATA_FILE}"
+
+    -- SQL commands begin ------------------------------------------------------
+
+    ${ECHO_DIRECTIVE}
+
+    DROP TABLE IF EXISTS IPv4;
+    CREATE TABLE IPv4(network TEXT NOT NULL CHECK(length(network) > 3),
+                      country_id INTEGER DEFAULT 0 REFERENCES Countries(id),
+                      registered_country_id INTEGER NOT NULL DEFAULT 0,
+                      represented_country_id INTEGER NOT NULL DEFAULT 0,
+                      is_anonymous_proxy INTEGER NOT NULL DEFAULT 0 CHECK(is_anonymous_proxy = 0 OR is_anonymous_proxy = 1),
+                      is_satellite_provider INTEGER NOT NULL DEFAULT 0 CHECK(is_satellite_provider = 0 OR is_satellite_provider = 1)
+                     );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS ipv4_import(network,
+                                                    geoname_id,
+                                                    registered_country_geoname_id,
+                                                    represented_country_geoname_id,
+                                                    is_anonymous_proxy,
+                                                    is_satellite_provider
+                                                   ) AS SELECT network,
+                                                               country_id,
+                                                               registered_country_id,
+                                                               represented_country_id,
+                                                               is_anonymous_proxy,
+                                                               is_satellite_provider
+                                                        FROM IPv4;
+
+    CREATE TRIGGER IF NOT EXISTS insert_ipv4 INSTEAD OF
+      INSERT ON ipv4_import WHEN NEW.geoname_id GLOB '[0-9]*'
+      BEGIN
+        INSERT INTO IPv4(network, country_id,
+                        registered_country_id, represented_country_id,
+                        is_anonymous_proxy, is_satellite_provider
+                       )
+          VALUES(NEW.network,
+                 NEW.geoname_id,
+                 CASE NEW.registered_country_geoname_id  WHEN '' THEN 0 ELSE NEW.registered_country_geoname_id  END,
+                 CASE NEW.represented_country_geoname_id WHEN '' THEN 0 ELSE NEW.represented_country_geoname_id END,
+                 CASE NEW.is_anonymous_proxy    WHEN '' THEN 0 ELSE NEW.is_anonymous_proxy    END,
+                 CASE NEW.is_satellite_provider WHEN '' THEN 0 ELSE NEW.is_satellite_provider END
+                );
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${DATA_FOLDER}/${GEOIP_DATA_IPV4}" ipv4_import
+
+    DROP VIEW IF EXISTS ipv4_import;
+
+    DROP TABLE IF EXISTS IPv6;
+    CREATE TABLE IPv6(network TEXT NOT NULL CHECK(length(network) > 3),
+                      country_id INTEGER DEFAULT 0 REFERENCES Countries(id),
+                      registered_country_id INTEGER NOT NULL DEFAULT 0,
+                      represented_country_id INTEGER NOT NULL DEFAULT 0,
+                      is_anonymous_proxy INTEGER NOT NULL DEFAULT 0 CHECK(is_anonymous_proxy = 0 OR is_anonymous_proxy = 1),
+                      is_satellite_provider INTEGER NOT NULL DEFAULT 0 CHECK(is_satellite_provider = 0 OR is_satellite_provider = 1)
+                     );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS ipv6_import(network,
+                                                    geoname_id,
+                                                    registered_country_geoname_id,
+                                                    represented_country_geoname_id,
+                                                    is_anonymous_proxy,
+                                                    is_satellite_provider
+                                                   ) AS SELECT network,
+                                                               country_id,
+                                                               registered_country_id,
+                                                               represented_country_id,
+                                                               is_anonymous_proxy,
+                                                               is_satellite_provider
+                                                        FROM IPv6;
+
+    CREATE TRIGGER IF NOT EXISTS insert_ipv6 INSTEAD OF
+      INSERT ON ipv6_import WHEN NEW.geoname_id GLOB '[0-9]*'
+      BEGIN
+        INSERT INTO IPv6(network, country_id,
+                        registered_country_id, represented_country_id,
+                        is_anonymous_proxy, is_satellite_provider
+                       )
+          VALUES(NEW.network,
+                 NEW.geoname_id,
+                 CASE NEW.registered_country_geoname_id  WHEN '' THEN 0 ELSE NEW.registered_country_geoname_id  END,
+                 CASE NEW.represented_country_geoname_id WHEN '' THEN 0 ELSE NEW.represented_country_geoname_id END,
+                 CASE NEW.is_anonymous_proxy    WHEN '' THEN 0 ELSE NEW.is_anonymous_proxy    END,
+                 CASE NEW.is_satellite_provider WHEN '' THEN 0 ELSE NEW.is_satellite_provider END
+                );
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${DATA_FOLDER}/${GEOIP_DATA_IPV6}" ipv6_import
+
+    DROP VIEW IF EXISTS ipv6_import;
+
+    -- SQL commands end --------------------------------------------------------
+
+-SQL-
+}
+
+
+###########################################################################
+# customized functions
+###########################################################################
+_usage() {
+	printf >&2 'usage: %s [-h|--help] [-v|--version] [-F|--force] [<db file>]\n' "${SCRIPT_NAME}" && exit 1
+}
+
+_help() {
+cat <<- -EOF-
+
+  ${SCRIPT_NAME} Version ${VERSION}
+  by ${AUTHOR} ${CONTACT}
+
+  Simple script to country specific public ip network database file
+
+  ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force] [<db file>]
+
+    <db file>  network database as full path [${GEOIP_NETWORK_FOLDER}/GEOIP_NETWORK_FILE]
+
+  Options:
+
+    -h, --help      Display this help message and exit.
+    -v, --version   Display version and exit.
+    -F, --force     Force update of the database.
+
+-EOF-
+}
+
+###########################################################################
+# utility functions
+###########################################################################
+_version() {
+  _message -s -f "Version %s by %s %s\n" "${VERSION}" "${AUTHOR}" "${CONTACT}"
+}
+
+_initialize()
+{
+  set -o nounset -o errexit -eo pipefail; [ -n "${TRACE:-}" ] && set -x
+
+  # Set file creation mask so that all files are created with 600 permissions.
+  # This will help protect temp files.
+  umask 066
+
+  # the full qualified path of the script
+  # shellcheck disable=SC2034
+  SCRIPT_PATH=$(dirname -- "$($(command -v greadlink || command -v readlink) -f "$0")")
+  SCRIPT_NAME=$(basename -- "$0")
+  TMP_FOLDER="${TMPDIR:-/tmp/$(id -u)}/${SCRIPT_NAME}-$$"
+
+  # make sure temp folder exists
+  [ -d "${TMP_FOLDER}" ] || mkdir -p "${TMP_FOLDER}"
+
+  # verbose level
+  VERBOSE=${VERBOSE:-0}
+
+  # Trap TERM, HUP, and INT signals and properly exit
+  trap -- '__exit_handler' EXIT
+  trap -- '__terminate_handler' TERM HUP
+  trap -- '__abort_handler' INT
+}
+
+_message()
+{
+  local IDNX CATG LEN FMT TXT_IDNX TXT_CATG TXT_PRFX TXT_MSG LEN_PRFX=0
+
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -s ) IDNX="${SCRIPT_NAME}"; shift ;;
+      -e ) CATG='ERROR'         ; shift ;;
+      -w ) CATG='WARNING'       ; shift ;;
+      -i ) CATG='INFO'          ; shift ;;
+      -f ) FMT=$2 ; shift       ; shift ;;
+      -- ) break                ; shift ;;
+      * )  break                          ;;
+    esac
+  done
+
+  if [ -n "${IDNX:-}" ]; then
+    TXT_IDNX="$(printf '%s - ' "$IDNX")"
+#    LEN_PRFX=$(expr ${#IDNX} + 3)
+    LEN_PRFX=$((${#IDNX} + 3))
+    TXT_PRFX="$TXT_IDNX"
+  fi
+  if [ -n "${CATG:-}" ]; then
+    TXT_CATG="$(printf '%s: ' "$CATG")"
+#    LEN_PRFX=$(expr ${#CATG} + 2)
+    LEN_PRFX=$((${#CATG} + 2))
+    TXT_PRFX="${TXT_PRFX:-}$TXT_CATG"
+  fi
+
+  # check if we should indent
+  [ "${LEN:-0}" -lt $LEN_PRFX ] || LEN_PRFX=${LEN:-0}
+
+  # format the output using the format string or default
+  # shellcheck disable=SC2059
+  if [ -n "${FMT:-}" ]; then
+    if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
+      TXT_MSG="$(printf "${FMT}" "$(cat -)")"
+    else
+      TXT_MSG="$(printf "${FMT}" "$@")"
+    fi
+  else
+    if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
+      TXT_MSG="$(cat -)"
+    else
+      TXT_MSG="$(printf "$@")"
+    fi
+  fi
+
+  printf '%*s%s\n' "$LEN_PRFX" "${TXT_PRFX:-}" "$TXT_MSG"
+}
+
+# shellcheck disable=SC2120
+_indent()
+{
+  local INDENT='    '
+
+  if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
+    sed -e "s/^/${INDENT}/g"
+  else
+    # shellcheck disable=SC2001
+    echo "$@" | sed -e "s/^/${INDENT}/g"
+  fi
+}
+
+#
+# returns lowercase string
+#
+# shellcheck disable=SC2120
+_tolower()
+{
+  if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
+    tr '[:upper:]' '[:lower:]'
+  else
+    echo "$@" | tr '[:upper:]' '[:lower:]'
+  fi
+}
+
+#
+# returns uppercase string
+#
+# shellcheck disable=SC2120
+_toupper()
+{
+  if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
+    tr '[:lower:]' '[:upper:]'
+  else
+    echo "$@" | tr '[:lower:]' '[:upper:]'
+  fi
+}
+
+#
+# Trims any leading and trailing tabs or spaces
+#
+# shellcheck disable=SC2120
+_trim()
+{
+  # local VAR="$@"
+  # VAR="${VAR#"${VAR%%[![:space:]]*}"}" # remove leading whitespace characters
+  # VAR="${VAR%"${VAR##*[![:space:]]}"}" # remove trailing whitespace characters
+  # echo "${VAR}"
+
+  if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = '-' ]); then
+    sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//'
+  else
+    echo "$@" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//'
+  fi
+}
+
+_time_stamp()
+{
+  #####
+  # Function for outputting a time stamp
+  # No arguments
+  #####
+
+  date -u +%Y-%m-%dT%H:%M:%S%z
+}
+
+_error_exit()
+{
+  #####
+  # Function for exit due to fatal program error
+  # Accepts 1 argument:
+  #   - string containing descriptive error message
+  #####
+  local MESSAGE
+
+  if [ "${1:-}" = '-' ]; then
+    MESSAGE="$(cat -)"
+  else
+    MESSAGE="${1:-}"
+  fi
+
+  _message -s -e "${MESSAGE:-Unknown Error}"  >&2
+
+  exit "${2:-1}"
+}
+
+__exit_handler()
+{
+  #####
+  # Function to perform action on script exit
+  # No arguments
+  #####
+
+  __do_cleanup
+}
+
+__terminate_handler()
+{
+  #####
+  # Function to perform exit if termination signal is trapped
+  # No arguments
+  #####
+
+  _message -s -w "Terminated" >&2
+
+  exit
+}
+
+__abort_handler()
+{
+  #####
+  # Function to perform exit if interrupt signal is trapped
+  # No arguments
+  #####
+
+  _message -s -w "Aborted by user" >&2
+
+  exit
+}
+
+__do_cleanup()
+{
+  #####
+  # Function to remove temporary files and other housekeeping
+  # No arguments
+  #####
+
+  # remove the temp folder
+  [ "${VERBOSE:-0}" -lt 3 ] && [ -d "${TMP_FOLDER}" ] && \
+    (rm -rf "${TMP_FOLDER}" >/dev/null 2>&1 || :)
+
+  return 0
+}
+
+# shellcheck disable=SC2120
+_make_temp()
+{
+  local TMPMASK="${1:-${SCRIPT_NAME}-XXXXXX}"
+
+  mktemp -p "${TMP_FOLDER}" "${TMPMASK}"
+}
+
+###########################################################################
+# Execution starts here
+###########################################################################
+main "$@"

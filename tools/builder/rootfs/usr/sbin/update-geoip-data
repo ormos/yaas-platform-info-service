@@ -40,6 +40,7 @@ main()
   local GEOIP_MMDB_PATH="${GEOIP_MMDB_FOLDER}/${GEOIP_MMDB_FILE}"
   if [ $# -eq 1 ]; then
     GEOIP_MMDB_PATH="$1"
+    shift
   fi
 
   [ -d "$(dirname -- "${GEOIP_MMDB_PATH}")" ] || mkdir -p "$(dirname -- "${GEOIP_MMDB_PATH}")"
@@ -65,7 +66,7 @@ provide_geoip_file()
 
   MMDB_URL="${GEOIP_BASE_URL}/${GEOIP_DATA_CITY}"
   if [ "${MMDB_FORCE}" -eq 0 ] && [ -f "${MMDB_FILE}" ] && [ "$(curl -kSLIs -z"${MMDB_FILE}" -w "%{http_code}" "${MMDB_URL}" | tail -1)" = "304" ]; then
-      _message -s -i "GeoIP network database '$1' is already up-to-date..."
+    _message -s -i "GeoIP network database '${MMDB_FILE}' is already up-to-date..."
     return
   fi
 
@@ -94,7 +95,7 @@ provide_geoip_file()
 # customized functions
 ###########################################################################
 _usage() {
-	printf >&2 'usage: %s [-h|--help] [-v|--version] [-F|--force] [<mmdb>]\n' "${SCRIPT_NAME}" && exit 1
+	printf >&2 'usage: %s [-h|--help] [-v|--version] [-F|--force] [<mmdb file>]\n' "${SCRIPT_NAME}" && exit 1
 }
 
 _help() {
@@ -105,9 +106,9 @@ cat <<- -EOF-
 
   Simple script to automate the udpate maxmid GeoIP database files
 
-  ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force] [<mmdb>]
+  ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force] [<mmdb file>]
 
-    <mmdb>  mmdb database as full path [${GEOIP_MMDB_FOLDER}/GEOIP_MMDB_FILE]
+    <mmdb file>  mmdb database as full path [${GEOIP_MMDB_FOLDER}/GEOIP_MMDB_FILE]
 
   Options:
 
@@ -137,7 +138,7 @@ _initialize()
   # shellcheck disable=SC2034
   SCRIPT_PATH=$(dirname -- "$($(command -v greadlink || command -v readlink) -f "$0")")
   SCRIPT_NAME=$(basename -- "$0")
-  TMP_FOLDER="${TMPDIR:-/tmp/$(id -u)}/${SCRIPT_NAME}-$$/"
+  TMP_FOLDER="${TMPDIR:-/tmp/$(id -u)}/${SCRIPT_NAME}-$$"
 
   # make sure temp folder exists
   [ -d "${TMP_FOLDER}" ] || mkdir -p "${TMP_FOLDER}"

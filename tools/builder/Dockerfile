@@ -5,7 +5,7 @@ MAINTAINER elvido <ralf.hofmann@elvido.net>
 ENV DATA_FOLDER="/mnt/geoip"
 
 RUN apk --no-cache upgrade --update && \
-    apk --no-cache add --quiet ca-certificates g++ libxml2 libxml2-dev openssl openssl-dev tar curl wget make zlib sqlite libmaxminddb perl perl-dev perl-net-ssleay perl-net-ip perl-net-cidr perl-net-dns perl-net-ipv4addr build-base gnupg expat expat-dev && \
+    apk --no-cache add --quiet ca-certificates g++ libxml2 libxml2-dev openssl openssl-dev tar curl wget libarchive-tools make zlib sqlite libmaxminddb perl perl-dev perl-net-ssleay perl-net-ip perl-net-cidr perl-net-dns perl-net-ipv4addr build-base gnupg expat expat-dev && \
     \
     mkdir -p "${DATA_FOLDER}" && \
     \
