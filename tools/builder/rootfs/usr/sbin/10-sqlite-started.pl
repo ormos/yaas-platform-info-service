@@ -6,7 +6,7 @@ use feature qw( say );
 
 use DBI;
 
-my $dbfile = '/mnt/geoip/networks.db';
+my $dbfile = '/mnt/geoip/Country-Networks.db';
 
 use DBD::SQLite::Constants qw/:file_open/;
 

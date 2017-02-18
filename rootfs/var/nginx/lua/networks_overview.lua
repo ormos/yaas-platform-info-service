@@ -30,7 +30,8 @@ if country_networks == nil then
     if res.status == 200 then
         local blocked_countries = cjson.decode(res.body)
         for _ , entry in ipairs(blocked_countries) do
-            if networks_list[entry['id']] ~= nil then
+            if (networks_list[entry['id']] ~= nil) and
+               utils.active_time_range(entry['active-from'], entry['active-till']) then
                 blocked_networks[entry['id']] = networks_list[entry['id']]
                 networks_list[entry['id']]    = nil
             end

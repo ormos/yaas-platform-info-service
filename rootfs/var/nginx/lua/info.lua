@@ -68,7 +68,8 @@ local function get_access_status(country)
     if res.status == 200 then
         local blocked_countries = cjson.decode(res.body)
         for _ , entry in ipairs(blocked_countries) do
-            if entry['id'] == country then
+            if (entry['id'] == country) and
+               utils.active_time_range(entry['active-from'], entry['active-till']) then
                 ngx.log(ngx.INFO, 'Network access blocked for country: '..entry['id']..' - '..entry['country'])
                 return "blocked"
             end

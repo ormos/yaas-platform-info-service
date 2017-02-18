@@ -10,32 +10,38 @@
     {
       "id": "KP",
       "name": "North Korea",
-      "comment": "Access block due to export control policies"
+      "comment": "Access blocked due to export control policies"
     },
     {
       "id": "SY",
       "country": "Syria",
-      "comment": "Access block due to export control policies"
+      "comment": "Access blocked due to export control policies",
+      "active-from": "2017-01-01"
     },
     {
       "id": "IR",
       "country": "Iran",
-      "comment": "Access block due to export control policies"
+      "comment": "Access blocked due to export control policies",
+      "active-from": "2017-01-01"
     },
     {
       "id": "UA",
       "country": "Ukraine",
-      "comment": "Access block due to export control policies"
+      "comment": "Access blocked due to export control policies",
+      "active-from": "2017-01-01"
     },
     {
       "id": "SD",
       "country": "Sudan",
-      "comment": "Access block due to export control policies"
+      "comment": "Access blocked due to export control policies",
+      "active-from": "2017-01-01"
     },
     {
       "id": "CU",
       "country": "Cuba",
-      "comment": "Access block due to export control policies"
+      "comment": "Access blocked due to export control policies",
+      "active-from": "2017-01-01",
+      "active-till": "2017-12-31"
     }
   ]
 }
