@@ -47,11 +47,7 @@ sub main {
 		$embargo_mmdb = $ARGV[0];
 	}
 
-	say "database=$opt{database}";
-	say "countries=$opt{countries}";
-	say "embargo=$embargo_mmdb";
-
-	if (! ("$opt{countries}" eq "-")) {
+	if ("$opt{countries}" ne "-") {
 		die(ERROR."Countries data file '$opt{countries}' is not accessible: [$!]\n") unless (-f $opt{countries});
     if ((-f $embargo_mmdb) and
         ((stat($embargo_mmdb))[9] > (stat($opt{database}))[9]) and
@@ -93,23 +89,21 @@ sub deploy_embargo_mmdb {
   my $dbh = DBI->connect("dbi:SQLite:dbname=$_[1]", undef, undef,
                          { sqlite_open_flags => SQLITE_OPEN_READONLY, });
 
-  my $sth = $dbh->prepare('SELECT network FROM ipv4 WHERE country_id=(SELECT id FROM countries WHERE country_iso_code=?)');
+  my $sth_ipv4 = $dbh->prepare('SELECT network FROM ipv4 WHERE country_id=(SELECT id FROM countries WHERE country_iso_code=?)');
+  my $sth_ipv6 = $dbh->prepare('SELECT network FROM ipv6 WHERE country_id=(SELECT id FROM countries WHERE country_iso_code=?)');
 
-  my %types = (
-    country  => 'utf8_string',
-    from     => 'uint32',
-    until    => 'uint32',
-  );
-
-  my %data_info = (
-    country  => 'Germany',
-    from     => 0,
-    until    => 0,
+  # MMDB entry data types for embargo
+  # The MMDB format is strongly typed.  Describe your data types here.
+  # See https://metacpan.org/pod/MaxMind::DB::Writer::Tree#DATA-TYPES
+  my %mmdb_types = (
+    country_name => 'utf8_string',
+    country_iso  => 'utf8_string',
+    active_from  => 'int32',
+    active_till  => 'int32',
   );
 
   my $tree = MaxMind::DB::Writer::Tree->new(
     # "database_type" is some arbitrary string describing the database.  At
-    # MaxMind we use strings like 'GeoIP2-City', 'GeoIP2-Country', etc.
     database_type => 'Embargo-Networks',
 
     # "description" is a hashref where the keys are language names and the
@@ -118,25 +112,65 @@ sub deploy_embargo_mmdb {
         { en => 'Public IP networks of countries under embargo', },
 
     # "ip_version" can be either 4 or 6
-    ip_version => 4,
+    ip_version => 6,
 
     # add a callback to validate data going in to the database
-    map_key_type_callback => sub { $types{ $_[0] } },
+    map_key_type_callback => sub { $mmdb_types{ $_[0] } },
 
     # "record_size" is the record size in bits.  Either 24, 28 or 32.
     record_size => 24,
   );
 
   for my $item (@countries) {
-    print " ---------- country $item->{'id'} --------------\n";
+    my $country_iso  = $item->{'id'};
+    my $country_name = $item->{'name'};
 
-    $sth->execute($item->{'id'});
+    my $active_from = 0;
+    $active_from = (DateTime::Format::ISO8601->parse_datetime($item->{'active-from'}))->epoch() if ($item->{'active-from'});
+    my $active_till = hex '0x7FFFFFFF'; # maximum linux epoch value - 32bit started at 1-JAN-1970
+    if ($item->{'active-till'}) {
+      my $dt = DateTime::Format::ISO8601->parse_datetime($item->{'active-till'});
+      # if no time was given set the time to end of the day
+      if ((index($item->{'active-till'}, 'T') == -1) and
+          ($dt->hour == 0) and ($dt->minute == 0) and ($dt->second == 0)) {
+        $dt->set_hour(23);
+        $dt->set_minute(59);
+        $dt->set_second(59);
+      }
+      $active_till = $dt->epoch();
+    }
 
-    while (my @row = $sth->fetchrow_array) {
-      say "$item->{'id'} - network: $row[0]";
-
-      my $network = Net::Works::Network->new_from_string(string => $row[0]);
-      $tree->insert_network( $network, \%data_info );
+    # skip already inactive embargos
+    if (time() < $active_till) {
+      # process IPv4 networks
+      $sth_ipv4->execute($country_iso);
+      while (my @row = $sth_ipv4->fetchrow_array) {
+        my $network_cidr = $row[0];
+        my %data_entry = (
+          country_name => $country_name,
+          country_iso  => $country_iso,
+          active_from  => $active_from,
+          active_till  => $active_till,
+        );
+        my $network = Net::Works::Network->new_from_string((string => $network_cidr, version => 6));
+        $tree->insert_network($network, \%data_entry);
+      }
+      # process IPv6 networks
+      $sth_ipv6->execute($country_iso);
+      while (my @row = $sth_ipv6->fetchrow_array) {
+        my $network_cidr = $row[0];
+        my %data_entry = (
+          country_name => $country_name,
+          country_iso  => $country_iso,
+          active_from  => $active_from,
+          active_till  => $active_till,
+        );
+        my $network = Net::Works::Network->new_from_string((string => $network_cidr, version => 6));
+        $tree->insert_network($network, \%data_entry);
+      }
+    }
+    else {
+      say "skipped $country_name";
     }
   }
 
@@ -151,10 +185,6 @@ sub deploy_embargo_mmdb {
   my $file_gid=(stat(dirname($_[2])))[5];
   chown $file_uid, $file_gid, $_[2];
   say "'$_[2]' has now been created";
-
-  my $str ="2017-01-01";
-  my $dt = DateTime::Format::ISO8601->parse_datetime( $str );
-  say $dt
 }
 
 exit main(\@ARGV) if ( !caller(0) );

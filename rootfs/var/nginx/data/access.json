@@ -14,31 +14,31 @@
     },
     {
       "id": "SY",
-      "country": "Syria",
+      "name": "Syria",
       "comment": "Access blocked due to export control policies",
       "active-from": "2017-01-01"
     },
     {
       "id": "IR",
-      "country": "Iran",
+      "name": "Iran",
       "comment": "Access blocked due to export control policies",
       "active-from": "2017-01-01"
     },
     {
       "id": "UA",
-      "country": "Ukraine",
+      "name": "Ukraine",
       "comment": "Access blocked due to export control policies",
       "active-from": "2017-01-01"
     },
     {
       "id": "SD",
-      "country": "Sudan",
+      "name": "Sudan",
       "comment": "Access blocked due to export control policies",
       "active-from": "2017-01-01"
     },
     {
       "id": "CU",
-      "country": "Cuba",
+      "name": "Cuba",
       "comment": "Access blocked due to export control policies",
       "active-from": "2017-01-01",
       "active-till": "2017-12-31"

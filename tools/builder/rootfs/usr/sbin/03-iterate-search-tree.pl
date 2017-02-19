@@ -18,7 +18,7 @@ $reader->iterate_search_tree(
 
         my $address = Net::Works::Address->new_from_integer(
             integer => $ip_as_integer );
-        say join '/', $address->as_ipv4_string, $mask_length;
+        say join '/', $address->as_string, $mask_length;
         say np $data;
     }
 );
