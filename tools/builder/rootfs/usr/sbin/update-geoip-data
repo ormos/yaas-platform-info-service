@@ -9,7 +9,7 @@ readonly GEOIP_DATA_COUNTRY='GeoLite2-Country.mmdb.gz'
 readonly GEOIP_DATA_CITY='GeoLite2-City.mmdb.gz'
 
 readonly GEOIP_MMDB_FILE='GeoIP-City.mmdb'
-readonly GEOIP_MMDB_FOLDER="${DATA_FOLDER}"
+readonly GEOIP_MMDB_FOLDER="${DATA_FOLDER}/geoip"
 
 ###########################################################################
 # main functionality of the script
@@ -43,7 +43,11 @@ main()
     shift
   fi
 
-  [ -d "$(dirname -- "${GEOIP_MMDB_PATH}")" ] || mkdir -p "$(dirname -- "${GEOIP_MMDB_PATH}")"
+  [ -d "$(dirname -- "${GEOIP_MMDB_PATH}")" ] || \
+    (MMDB_FOLDER="$(dirname -- "${GEOIP_MMDB_PATH}")" ; \
+     mkdir -p "${MMDB_FOLDER}" ; \
+     MMDB_PARENT="$(dirname -- "${MMDB_FOLDER}")" ; \
+     chown "$(stat -c %u "${MMDB_PARENT}")":"$(stat -c %g "${MMDB_PARENT}")" "${MMDB_FOLDER}")
 
   provide_geoip_file "${GEOIP_MMDB_PATH}" "${FORCE:-0}"
 }
@@ -170,13 +174,11 @@ _message()
 
   if [ -n "${IDNX:-}" ]; then
     TXT_IDNX="$(printf '%s - ' "$IDNX")"
-#    LEN_PRFX=$(expr ${#IDNX} + 3)
     LEN_PRFX=$((${#IDNX} + 3))
     TXT_PRFX="$TXT_IDNX"
   fi
   if [ -n "${CATG:-}" ]; then
     TXT_CATG="$(printf '%s: ' "$CATG")"
-#    LEN_PRFX=$(expr ${#CATG} + 2)
     LEN_PRFX=$((${#CATG} + 2))
     TXT_PRFX="${TXT_PRFX:-}$TXT_CATG"
   fi

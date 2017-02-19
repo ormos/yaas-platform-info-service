@@ -1,9 +1,9 @@
 # configuration parameters
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-GEOIP_DIR=$(realpath $(ROOT_DIR)/../../rootfs/var/nginx/data/geoip)
+DATA_DIR=$(realpath $(ROOT_DIR)/../../rootfs/var/nginx/data)
 
 # docker options
 VOLUMES = \
-  -v $(GEOIP_DIR):/mnt/geoip \
+  -v $(DATA_DIR):/mnt/data \
   -v $(ROOT_DIR)/rootfs:/mnt/overlay
 

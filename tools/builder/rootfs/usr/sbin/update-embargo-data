@@ -1,0 +1,221 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use feature qw(say);
+use Getopt::Long qw(GetOptionsFromArray);
+use Pod::Usage;
+use File::Basename;
+use File::chown;
+use Env qw(DATA_FOLDER);
+use JSON;
+use DBI;
+use DBD::SQLite::Constants qw(:file_open);
+use DateTime::Format::ISO8601;
+use MaxMind::DB::Writer::Tree;
+use Net::Works::Network;
+
+use constant SCRIPT  => basename($0);
+use constant INFO    => SCRIPT." - INFO: ";
+use constant WARNING => SCRIPT." - WARNING: ";
+use constant ERROR   => SCRIPT." - ERROR: ";
+
+use constant GEOIP_NETWORK_DATABASE => "$DATA_FOLDER/geoip/Country-Networks.db";
+use constant GEOIP_EMBARGO_MMDB     => "$DATA_FOLDER/geoip/Embargo-Networks.mmdb";
+use constant GEOIP_EMBARGO_CONFIG   => "$DATA_FOLDER/access.json";
+
+sub main {
+	my ($argv) = @_;
+	my %opt = (
+		database  => GEOIP_NETWORK_DATABASE,
+		countries => GEOIP_EMBARGO_CONFIG,
+	);
+	GetOptionsFromArray($argv, \%opt,
+		'help|h',
+		'version|v',
+		'force|F',
+		'database|d:s',
+		'countries|c:s',
+	) or pod2usage(-verbose => 0, -exitval => 255);
+	pod2usage(-verbose => 1, -exitval => 0) if $opt{help};
+	pod2usage(-verbose => 99, -exitval => 0, -sections => qw(VERSION)) if $opt{version};
+	pod2usage(-verbose => 0, -exitval => 255, -message => ERROR."Too many arguments given.\n") if (@ARGV > 1);
+
+	die(ERROR."Network database file '$opt{database}' is not accessible: [$!]\n") unless (-f $opt{database});
+
+	my $embargo_mmdb = GEOIP_EMBARGO_MMDB;
+	if ($ARGV[0]) {
+		$embargo_mmdb = $ARGV[0];
+	}
+
+	say "database=$opt{database}";
+	say "countries=$opt{countries}";
+	say "embargo=$embargo_mmdb";
+
+	if (! ("$opt{countries}" eq "-")) {
+		die(ERROR."Countries data file '$opt{countries}' is not accessible: [$!]\n") unless (-f $opt{countries});
+    if ((-f $embargo_mmdb) and
+        ((stat($embargo_mmdb))[9] > (stat($opt{database}))[9]) and
+        ((stat($embargo_mmdb))[9] > (stat($opt{countries}))[9]) and
+        (! $opt{force} )) {
+      say(INFO."Embargo network database '$embargo_mmdb' is already up-to-date...");
+      return 0;
+    }
+  }
+
+  my $embargo_contries = load_countries($opt{countries});
+
+  deploy_embargo_mmdb($embargo_contries, $opt{database}, $embargo_mmdb);
+
+	return 0;
+}
+
+sub load_countries {
+  my $fh = undef;
+  if ("$_[0]" ne "-") {
+    open($fh, '<:encoding(UTF-8)', $_[0]) or die(ERROR."Could not open file '$_[0]': $!");
+  }
+  else
+  {
+    $fh = *STDIN;
+  }
+  my $json_data = do {
+    local $/;
+    <$fh>
+  };
+  close($fh) unless ($fh->fileno == 0);
+
+  return (decode_json($json_data) or die(ERROR."Could not parse json data"));
+}
+
+sub deploy_embargo_mmdb {
+  my @countries = @{$_[0]->{'blocked'}};
+
+  my $dbh = DBI->connect("dbi:SQLite:dbname=$_[1]", undef, undef,
+                         { sqlite_open_flags => SQLITE_OPEN_READONLY, });
+
+  my $sth = $dbh->prepare('SELECT network FROM ipv4 WHERE country_id=(SELECT id FROM countries WHERE country_iso_code=?)');
+
+  my %types = (
+    country  => 'utf8_string',
+    from     => 'uint32',
+    until    => 'uint32',
+  );
+
+  my %data_info = (
+    country  => 'Germany',
+    from     => 0,
+    until    => 0,
+  );
+
+  my $tree = MaxMind::DB::Writer::Tree->new(
+    # "database_type" is some arbitrary string describing the database.  At
+    # MaxMind we use strings like 'GeoIP2-City', 'GeoIP2-Country', etc.
+    database_type => 'Embargo-Networks',
+
+    # "description" is a hashref where the keys are language names and the
+    # values are descriptions of the database in that language.
+    description =>
+        { en => 'Public IP networks of countries under embargo', },
+
+    # "ip_version" can be either 4 or 6
+    ip_version => 4,
+
+    # add a callback to validate data going in to the database
+    map_key_type_callback => sub { $types{ $_[0] } },
+
+    # "record_size" is the record size in bits.  Either 24, 28 or 32.
+    record_size => 24,
+  );
+
+  for my $item (@countries) {
+    print " ---------- country $item->{'id'} --------------\n";
+
+    $sth->execute($item->{'id'});
+
+    while (my @row = $sth->fetchrow_array) {
+      say "$item->{'id'} - network: $row[0]";
+
+      my $network = Net::Works::Network->new_from_string(string => $row[0]);
+      $tree->insert_network( $network, \%data_info );
+    }
+  }
+
+  $dbh->disconnect();
+
+  # Write the database to disk.
+  open my $fh, '>:raw', $_[2];
+  $tree->write_tree($fh);
+  close $fh;
+
+  my $file_uid=(stat(dirname($_[2])))[4];
+  my $file_gid=(stat(dirname($_[2])))[5];
+  chown $file_uid, $file_gid, $_[2];
+  say "'$_[2]' has now been created";
+
+  my $str ="2017-01-01";
+  my $dt = DateTime::Format::ISO8601->parse_datetime( $str );
+  say $dt
+}
+
+exit main(\@ARGV) if ( !caller(0) );
+
+1;
+
+__END__
+
+=head1 NAME
+
+update-embargo-data
+
+=head1 VERSION
+
+1.0.0 by Ralf Hofmann <r.hofmann@sap.com>
+
+=head1 SYNOPSIS
+
+update-embargo-data [-h|--help] [-v|--version] [-F|--force] [-d|--database F<S<<database file>>>] [-c|--countries -|F<S<<json file>>>] [F<S<<mmdb file>>>]
+
+=head1 ARGUMENTS
+
+=over 2
+
+=item F<<mmdb file>>
+
+mmdb database as full path [F</mnt/data/geoip/Embargo-Networks.mmdb>]
+
+=back
+
+=head1 OPTIONS
+
+=over 2
+
+=item B<-h>|B<--help>
+
+Display this help message and exit.
+
+=item B<-v>|B<--version>
+
+Display version and exit.
+
+=item B<-F>|B<--force>
+
+Force update of the database
+
+=item B<-d>|B<--database> F<<database file>>
+
+Network database as full path [F</mnt/data/geoip/Country-Networks.db>]
+
+=item B<-c>|B<--countries> -|F<<json file>>
+
+Json data defining the list of countries under embargo [F</mnt/data/access.json>]
+
+=back
+
+=head1 DESCRIPTION
+
+The countries specified through ISO codes in the json data will be interpreted
+as under embargo, and therefore there public ip networks taken from the network
+database file will be inserted into a mmdb (I<Maxmind DB format>). This mmdb file
+can be used for efficient geo-ip detection and access blocking.
+
+=cut

@@ -8,7 +8,7 @@ use Data::Printer;
 use MaxMind::DB::Reader;
 use Net::Works::Address;
 
-my $reader = MaxMind::DB::Reader->new( file => '/mnt/geoip/Embargo-Networks.mmdb' );
+my $reader = MaxMind::DB::Reader->new( file => '/mnt/data/geoip/Embargo-Networks.mmdb' );
 
 $reader->iterate_search_tree(
     sub {

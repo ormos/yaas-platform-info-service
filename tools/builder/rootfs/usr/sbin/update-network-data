@@ -12,7 +12,7 @@ readonly GEOIP_DATA_IPV4='GeoLite2-Country-Blocks-IPv4.csv'
 readonly GEOIP_DATA_IPV6='GeoLite2-Country-Blocks-IPv6.csv'
 
 readonly GEOIP_NETWORK_FILE='Country-Networks.db'
-readonly GEOIP_NETWORK_FOLDER="${DATA_FOLDER}"
+readonly GEOIP_NETWORK_FOLDER="${DATA_FOLDER}/geoip"
 
 ###########################################################################
 # main functionality of the script
@@ -46,7 +46,11 @@ main()
     shift
   fi
 
-  [ -d "$(dirname -- "${GEOIP_NETWORK_PATH}")" ] || mkdir -p "$(dirname -- "${GEOIP_NETWORK_PATH}")"
+  [ -d "$(dirname -- "${GEOIP_NETWORK_PATH}")" ] || \
+    (GEOIP_FOLDER="$(dirname -- "${GEOIP_NETWORK_PATH}")" ; \
+     mkdir -p "${GEOIP_FOLDER}" ; \
+     GEOIP_PARENT="$(dirname -- "${GEOIP_FOLDER}")" ; \
+     chown "$(stat -c %u "${GEOIP_PARENT}")":"$(stat -c %g "${GEOIP_PARENT}")" "${GEOIP_FOLDER}")
 
   provide_network_database "${GEOIP_NETWORK_PATH}" "${FORCE:-0}"
 }
@@ -119,14 +123,14 @@ import_network_data_files()
 {
   command -v sqlite3 >/dev/null 2>&1 || _error_exit "sqlite3 needs to be installed for creating GeoIP network database"
 
-  local DATA_FILE DATA_FOLDER ECHO_DIRECTIVE
+  local DB_FILE SRC_FOLDER ECHO_DIRECTIVE
 
-  DATA_FILE="$1"
-  DATA_FOLDER="${2:-$TMP_FOLDER}"
+  DB_FILE="$1"
+  SRC_FOLDER="${2:-$TMP_FOLDER}"
 
-  [ -f "${DATA_FOLDER}/${GEOIP_DATA_COUNTRY}" ] || ( _message -s -e "data file '${DATA_FOLDER}/${GEOIP_DATA_COUNTRY}' is not accessible" ; return 1 )
-  [ -f "${DATA_FOLDER}/${GEOIP_DATA_IPV4}" ]    || ( _message -s -e "data file '${DATA_FOLDER}/${GEOIP_DATA_IPV4}' is not accessible"    ; return 1 )
-  [ -f "${DATA_FOLDER}/${GEOIP_DATA_IPV6}" ]    || ( _message -s -e "data file '${DATA_FOLDER}/${GEOIP_DATA_IPV6}' is not accessible"    ; return 1 )
+  [ -f "${SRC_FOLDER}/${GEOIP_DATA_COUNTRY}" ] || ( _message -s -e "data file '${SRC_FOLDER}/${GEOIP_DATA_COUNTRY}' is not accessible" ; return 1 )
+  [ -f "${SRC_FOLDER}/${GEOIP_DATA_IPV4}" ]    || ( _message -s -e "data file '${SRC_FOLDER}/${GEOIP_DATA_IPV4}' is not accessible"    ; return 1 )
+  [ -f "${SRC_FOLDER}/${GEOIP_DATA_IPV6}" ]    || ( _message -s -e "data file '${SRC_FOLDER}/${GEOIP_DATA_IPV6}' is not accessible"    ; return 1 )
 
   ECHO_DIRECTIVE='.echo'
 
@@ -137,7 +141,7 @@ import_network_data_files()
   fi
 
   # shellcheck disable=SC2119
-  _trim << -SQL- | sqlite3 "${DATA_FILE}"
+  _trim << -SQL- | sqlite3 "${DB_FILE}"
 
     -- SQL commands begin ------------------------------------------------------
 
@@ -182,7 +186,7 @@ import_network_data_files()
 
     .mode csv
     .separator ','
-    .import "${DATA_FOLDER}/${GEOIP_DATA_COUNTRY}" countries_import
+    .import "${SRC_FOLDER}/${GEOIP_DATA_COUNTRY}" countries_import
 
     DROP VIEW IF EXISTS countries_import;
 
@@ -191,7 +195,7 @@ import_network_data_files()
 -SQL-
 
   # shellcheck disable=SC2119
-  _trim << -SQL- | sqlite3 "${DATA_FILE}"
+  _trim << -SQL- | sqlite3 "${DB_FILE}"
 
     -- SQL commands begin ------------------------------------------------------
 
@@ -238,7 +242,7 @@ import_network_data_files()
 
     .mode csv
     .separator ','
-    .import "${DATA_FOLDER}/${GEOIP_DATA_IPV4}" ipv4_import
+    .import "${SRC_FOLDER}/${GEOIP_DATA_IPV4}" ipv4_import
 
     DROP VIEW IF EXISTS ipv4_import;
 
@@ -283,7 +287,7 @@ import_network_data_files()
 
     .mode csv
     .separator ','
-    .import "${DATA_FOLDER}/${GEOIP_DATA_IPV6}" ipv6_import
+    .import "${SRC_FOLDER}/${GEOIP_DATA_IPV6}" ipv6_import
 
     DROP VIEW IF EXISTS ipv6_import;
 
