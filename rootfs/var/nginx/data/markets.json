@@ -3,8 +3,8 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2016-10-29",
-    "version": "0.3.0"
+    "last-modified": "2017-02-20",
+    "version": "0.4.0"
   },
   "markets": {
     "US": {
@@ -113,12 +113,15 @@
       },
       "links": {
         "api": "https://api.eu.yaas.io",
-        "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
-        "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
-        "privacy": "https://go.sap.com/about/legal/privacy.html",
-        "impressum": "https://go.sap.com/about/legal/impressum.html",
-        "copyright": "https://go.sap.com/about/legal/copyright.html",
-        "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
+        "terms": "https://www.yaas.io/uk/legal/sap-hybris-as-a-service-account-terms-of-use_v1.html",
+        "contract": "https://www.yaas.io/uk/legal/SAP_Hybris_as_a_Service_Framework_Agreement_enGB_v1-2017.pdf",
+        "privacy": "https://www.sap.com/uk/about/legal/privacy.html",
+        "dpa": "https://www.yaas.io/uk/legal/data-processing-agreement-for-sap-cloud-services-english-v1-2017.pdf",
+        "impressum": "https://www.sap.com/uk/about/legal/impressum.html",
+        "copyright": "https://www.sap.com/uk/about/legal/copyright.html",
+        "sla": "https://www.yaas.io/uk/legal/Service_Level_Agreement_for_SAP_Hybris_as_a_Service_enGB_v1-2017.pdf",
+        "assistance": "https://www.yaas.io/uk/legal/SAP_Customer_Assistance_Policy_for_SAP_Cloud_Services_enGB_v1-2017.pdf",
+        "agreement_terms": "https://www.yaas.io/uk/legal/SAP_Hybris_as_a_Service_Framework_Agreement_enGB_v1-2017.pdf"
        }
     },
     "CH": {
@@ -150,12 +153,15 @@
       },
       "links": {
         "api": "https://api.eu.yaas.io",
-        "terms": "https://www.yaas.io/legal/sap-hybris-as-a-service-account-terms-of-use_v2.html",
-        "contract": "https://www.yaas.io/legal/sap-hybris-as-a-service-organization-terms-of-use_v1.html",
-        "privacy": "https://go.sap.com/about/legal/privacy.html",
-        "impressum": "https://go.sap.com/about/legal/impressum.html",
-        "copyright": "https://go.sap.com/about/legal/copyright.html",
-        "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
+        "terms": "https://www.yaas.io/swiss/legal/sap-hybris-as-a-service-account-terms-of-use_v1.html",
+        "contract": "https://www.yaas.io/swiss/legal/SAP_Hybris_as_a_Service_Framework_Agreement_deCH_v1-2017.pdf",
+        "privacy": "https://www.sap.com/swiss/about/legal/privacy.html",
+        "dpa": "https://www.yaas.io/swiss/legal/data-processing-agreement-for-sap-cloud-services-german-v5-2016.pdf",
+        "impressum": "https://www.sap.com/swiss/about/legal/impressum.html",
+        "copyright": "https://www.sap.com/swiss/about/legal/copyright.html",
+        "sla": "https://www.yaas.io/swiss/legal/Service_Level_Agreement_for_SAP_Hybris_as_a_Service_deCH_v1-2017.pdf",
+        "assistance": "https://www.yaas.io/swiss/legal/SAP_Customer_Assistance_Policy_for_SAP_Cloud_Services_deCH_v1-2017.pdf",
+        "agreement_terms": "https://www.yaas.io/swiss/legal/SAP_Hybris_as_a_Service_Vertragsbestandteile_deCH_v1-2017.pdf"
        }
     },
     "AT": {
