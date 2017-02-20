@@ -1,4 +1,4 @@
-local country = ngx.unescape_uri(ngx.var.request_uri):match('^.+/(.+)$')
+local country = ngx.unescape_uri(ngx.var.request_uri):match('^.*/networks/(.+)$')
 
 local sqlite = require('sqlite3')
 

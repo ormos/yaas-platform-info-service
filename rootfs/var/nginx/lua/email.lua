@@ -5,7 +5,7 @@ local request_args =  ngx.req.get_uri_args()
 if request_args['address'] ~= nil then
     email_address = request_args['address']
 else
-    email_address = ngx.unescape_uri(ngx.var.request_uri):match('^.+/%s*(.+)%s*$')
+    email_address = ngx.unescape_uri(ngx.var.request_uri):match('^.*/email/(.+)$')
 end
 
 -- if no args are provided we can just cancel here

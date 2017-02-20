@@ -1,4 +1,4 @@
-local zone, city = ngx.unescape_uri(ngx.var.request_uri):match('^.+/(.+)/(.+)$')
+local zone, city = ngx.unescape_uri(ngx.var.request_uri):match('^.*/timezone/(.+)/(.+)$')
 
 local luatz = require('luatz')
 

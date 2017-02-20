@@ -1,4 +1,4 @@
-local country, vatin = ngx.unescape_uri(ngx.var.request_uri):match('^.+/(.+)/(.+)$')
+local country, vatin = ngx.unescape_uri(ngx.var.request_uri):match('^.*/vatin/(.+)/(.+)$')
 
 if country == nil or vatin == nil or string.len(country) ~= 2 then
     ngx.exit(ngx.HTTP_FORBIDDEN)
