@@ -23,6 +23,10 @@ use constant GEOIP_NETWORK_DATABASE => "$DATA_FOLDER/geoip/Country-Networks.db";
 use constant GEOIP_EMBARGO_MMDB     => "$DATA_FOLDER/geoip/Embargo-Networks.mmdb";
 use constant GEOIP_EMBARGO_CONFIG   => "$DATA_FOLDER/access.json";
 
+use constant GEOIP_EMBARGO_MMDB_VERSION => '1.0.1';
+use constant GEOIP_EMBARGO_MMDB_TITLE   => 'Embargo-Country-Network - Version ' . GEOIP_EMBARGO_MMDB_VERSION;
+use constant GEOIP_EMBARGO_MMDB_COMMENT => 'Public IP networks of countries under embargo - Release ' . DateTime->now()->iso8601();
+
 sub main {
 	my ($argv) = @_;
 	my %opt = (
@@ -103,13 +107,16 @@ sub deploy_embargo_mmdb {
   );
 
   my $tree = MaxMind::DB::Writer::Tree->new(
-    # "database_type" is some arbitrary string describing the database.  At
-    database_type => 'Embargo-Networks',
+    # "database_type" is some arbitrary string describing the database.
+    database_type => GEOIP_EMBARGO_MMDB_TITLE,
+
+    # "languages" is an arrray of the languages use in the database
+    languages => [ 'en' ],
 
     # "description" is a hashref where the keys are language names and the
     # values are descriptions of the database in that language.
     description =>
-        { en => 'Public IP networks of countries under embargo', },
+        { en => GEOIP_EMBARGO_MMDB_COMMENT, },
 
     # "ip_version" can be either 4 or 6
     ip_version => 6,
@@ -127,10 +134,10 @@ sub deploy_embargo_mmdb {
 
     my $active_from = 0;
     $active_from = (DateTime::Format::ISO8601->parse_datetime($item->{'active-from'}))->epoch() if ($item->{'active-from'});
-    my $active_till = hex '0x7FFFFFFF'; # maximum linux epoch value - 32bit started at 1-JAN-1970
+    my $active_till = hex '0x7FFFFFFF'; # maximum linux epoch value - 32bit, started at 1-JAN-1970
     if ($item->{'active-till'}) {
       my $dt = DateTime::Format::ISO8601->parse_datetime($item->{'active-till'});
-      # if no time was given set the time to end of the day
+      # if no time was given, set the time to end of the day
       if ((index($item->{'active-till'}, 'T') == -1) and
           ($dt->hour == 0) and ($dt->minute == 0) and ($dt->second == 0)) {
         $dt->set_hour(23);
@@ -184,7 +191,7 @@ sub deploy_embargo_mmdb {
   my $file_uid=(stat(dirname($_[2])))[4];
   my $file_gid=(stat(dirname($_[2])))[5];
   chown $file_uid, $file_gid, $_[2];
-  say "'$_[2]' has now been created";
+  say(INFO."updated Embargo network database '$_[2]'");
 }
 
 exit main(\@ARGV) if ( !caller(0) );
