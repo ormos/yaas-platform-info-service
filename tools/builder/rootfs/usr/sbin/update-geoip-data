@@ -1,12 +1,23 @@
 #!/usr/bin/env sh
 
-readonly VERSION='1.0.0'
+readonly VERSION='1.0.1'
 readonly AUTHOR='Ralf Hofmann'
 readonly CONTACT='<r.hofmann@sap.com>'
 
-readonly GEOIP_BASE_URL='http://geolite.maxmind.com/download/geoip/database'
-readonly GEOIP_DATA_COUNTRY='GeoLite2-Country.mmdb.gz'
-readonly GEOIP_DATA_CITY='GeoLite2-City.mmdb.gz'
+if [ -z "${MAXMIND_LICENSE_KEY}" ]; then
+  # GeoIP2-Lite download
+  readonly GEOIP_BASE_URL='http://geolite.maxmind.com/download/geoip/database'
+  readonly GEOIP_DATA_CITY='GeoLite2-City.mmdb'
+  readonly GEOIP_ARCH_CITY='gz'
+  readonly GEOIP_URL_CITY="${GEOIP_BASE_URL}/${GEOIP_DATA_CITY}.${GEOIP_ARCH_CITY}"
+else
+  # GeoIP2  download
+  readonly GEOIP_LICENSE_KEY="${MAXMIND_LICENSE_KEY}"
+  readonly GEOIP_BASE_URL='https://download.maxmind.com/app/geoip_download'
+  readonly GEOIP_DATA_CITY='GeoIP2-City.mmdb'
+  readonly GEOIP_ARCH_CITY='tar.gz'
+  readonly GEOIP_URL_CITY="${GEOIP_BASE_URL}?license_key=${GEOIP_LICENSE_KEY}&edition_id=GeoIP2-City&suffix=${GEOIP_ARCH_CITY}"
+fi
 
 readonly GEOIP_MMDB_FILE='GeoIP-City.mmdb'
 readonly GEOIP_MMDB_FOLDER="${DATA_FOLDER}/geoip"
@@ -68,28 +79,35 @@ provide_geoip_file()
   MMDB_UID="$(stat -c %u "${MMDB_META}")"
   MMDB_GID="$(stat -c %g "${MMDB_META}")"
 
-  MMDB_URL="${GEOIP_BASE_URL}/${GEOIP_DATA_CITY}"
+  MMDB_URL="${GEOIP_URL_CITY}"
   if [ "${MMDB_FORCE}" -eq 0 ] && [ -f "${MMDB_FILE}" ] && [ "$(curl -kSLIs -z"${MMDB_FILE}" -w "%{http_code}" "${MMDB_URL}" | tail -1)" = "304" ]; then
     _message -s -i "GeoIP network database '${MMDB_FILE}' is already up-to-date..."
     return
   fi
 
   # shellcheck disable=SC2119
-  MMDB_TMP="$(_make_temp)"."${GEOIP_DATA_CITY#*.}"
+  MMDB_TMP="$(_make_temp)"."${GEOIP_ARCH_CITY}"
 
   _message -s -i "downloading GeoIP network database from url: '${MMDB_URL}'..."
   if curl -jkSLR -# "${MMDB_URL}" -o "${MMDB_TMP}"; then
-    command -v gunzip >/dev/null 2>&1 || _error_exit "gunzip needs to be installed for downloading GeoIP data"
     MMDB_TIME="$(stat -c %Y "${MMDB_TMP}")" # save timestamp because gunzip is resetting it
-    if gunzip "${MMDB_TMP}"; then
-      mv -f "${MMDB_TMP%.*}" "${MMDB_FILE}"
-      touch -d@"${MMDB_TIME}" "${MMDB_FILE}"
-      chown "${MMDB_UID}":"${MMDB_GID}" "${MMDB_FILE}"
-      chmod a+r "${MMDB_FILE}"
-      _message -s -i "updated GeoIP network database '${MMDB_FILE}'"
-    else
-      _error_exit "failed to decompress GeoIP data file"
+    if [ "${MMDB_TMP##*.}" = 'gz' ]; then
+      command -v gunzip >/dev/null 2>&1 || _error_exit "gunzip needs to be installed for downloading GeoIP data"
+      gunzip -f "${MMDB_TMP}" || _error_exit "failed to decompress GeoIP data archive"
+      MMDB_TMP=${MMDB_TMP%.*}
     fi
+    if [ "${MMDB_TMP##*.}" = 'tar' ]; then
+      command -v tar >/dev/null 2>&1 || _error_exit "tar needs to be installed for downloading GeoIP data"
+      tar -Oxf "${MMDB_TMP}" --wildcards "*/${GEOIP_DATA_CITY}" >"${TMP_FOLDER}/${GEOIP_DATA_CITY}" \
+        || _error_exit "failed untar GeoIP data archive"
+      MMDB_TMP="${TMP_FOLDER}/${GEOIP_DATA_CITY}"
+    fi
+    [ -s "${MMDB_TMP}" ] || _error_exit "failed to extract GeoIP data file"
+    mv -f "${MMDB_TMP}" "${MMDB_FILE}"
+    touch -d@"${MMDB_TIME}" "${MMDB_FILE}"
+    chown "${MMDB_UID}":"${MMDB_GID}" "${MMDB_FILE}"
+    chmod a+r "${MMDB_FILE}"
+    _message -s -i "updated GeoIP network database '${MMDB_FILE}'"
   else
     _error_exit "failed to download GeoIP data from url: '${MMDB_URL}'"
   fi

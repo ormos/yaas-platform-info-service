@@ -1,15 +1,29 @@
 #!/usr/bin/env sh
 
-readonly VERSION='1.0.0'
+readonly VERSION='1.0.1'
 readonly AUTHOR='Ralf Hofmann'
 readonly CONTACT='<r.hofmann@sap.com>'
 
-readonly GEOIP_BASE_URL='http://geolite.maxmind.com/download/geoip/database'
-readonly GEOIP_DATA_ARCHIVE='GeoLite2-Country-CSV.zip'
-readonly GEOIP_DATA_SUBFOLDER='GeoLite2-Country-CSV_*'
-readonly GEOIP_DATA_COUNTRY='GeoLite2-Country-Locations-en.csv'
-readonly GEOIP_DATA_IPV4='GeoLite2-Country-Blocks-IPv4.csv'
-readonly GEOIP_DATA_IPV6='GeoLite2-Country-Blocks-IPv6.csv'
+if [ -z "${MAXMIND_LICENSE_KEY}" ]; then
+  # GeoIP2-Lite download
+  readonly GEOIP_BASE_URL='http://geolite.maxmind.com/download/geoip/database'
+  readonly GEOIP_DATA_ARCHIVE='GeoLite2-Country-CSV.zip'
+  readonly GEOIP_DATA_URL="${GEOIP_BASE_URL}/${GEOIP_DATA_ARCHIVE}"
+  readonly GEOIP_DATA_SUBFOLDER='GeoLite2-Country-CSV_*'
+  readonly GEOIP_DATA_COUNTRY='GeoLite2-Country-Locations-en.csv'
+  readonly GEOIP_DATA_IPV4='GeoLite2-Country-Blocks-IPv4.csv'
+  readonly GEOIP_DATA_IPV6='GeoLite2-Country-Blocks-IPv6.csv'
+else
+  # GeoIP2  download
+  readonly GEOIP_LICENSE_KEY="${MAXMIND_LICENSE_KEY}"
+  readonly GEOIP_BASE_URL='https://download.maxmind.com/app/geoip_download'
+  readonly GEOIP_DATA_ARCHIVE='GeoIP2-Country-CSV.zip'
+  readonly GEOIP_DATA_URL="${GEOIP_BASE_URL}?license_key=${GEOIP_LICENSE_KEY}&edition_id=GeoIP2-Country-CSV&suffix=zip"
+  readonly GEOIP_DATA_SUBFOLDER='GeoIP2-Country-CSV_*'
+  readonly GEOIP_DATA_COUNTRY='GeoIP2-Country-Locations-en.csv'
+  readonly GEOIP_DATA_IPV4='GeoIP2-Country-Blocks-IPv4.csv'
+  readonly GEOIP_DATA_IPV6='GeoIP2-Country-Blocks-IPv6.csv'
+fi
 
 readonly GEOIP_NETWORK_FILE='Country-Networks.db'
 readonly GEOIP_NETWORK_FOLDER="${DATA_FOLDER}/geoip"
@@ -72,7 +86,7 @@ provide_network_database()
   DB_UID="$(stat -c %u "${DB_META}")"
   DB_GID="$(stat -c %g "${DB_META}")"
 
-  DB_URL="${GEOIP_BASE_URL}/${GEOIP_DATA_ARCHIVE}"
+  DB_URL="${GEOIP_DATA_URL}"
   if [ "${DB_FORCE}" -eq 0 ] && [ -f "${DB_FILE}" ] && [ "$(curl -kSLIs -z"${DB_FILE}" -w "%{http_code}" "${DB_URL}" | tail -1)" = "304" ]; then
     _message -s -i "GeoIP network database '${DB_FILE}' is already up-to-date..."
     return
