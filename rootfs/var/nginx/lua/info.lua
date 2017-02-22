@@ -130,7 +130,7 @@ ngx.log(ngx.INFO, 'Detected country='..country..':market='..market['id']..' for 
 local info = {
     network = {
         ip     = ngx.var.remote_addr,
-        access = get_access_status(country)
+        access = utils.access_policy.get(country)
     },
     yaas = { language = {
                 preferred = get_prefered_language(market['locale']['languages']),

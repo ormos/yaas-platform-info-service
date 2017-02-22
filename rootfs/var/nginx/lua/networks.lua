@@ -1,7 +1,7 @@
-local country = ngx.unescape_uri(ngx.var.request_uri):match('^.*/networks/(.+)$')
-
+local utils = require('utils')
 local sqlite = require('sqlite3')
 
+local country = ngx.unescape_uri(ngx.var.request_uri):match('^.*/networks/(.+)$')
 
 -- check if access should be blocked because of export restrictions
 local function get_country_info(db, country)
@@ -33,7 +33,6 @@ local function get_networks(db, network_type, country_id)
     return networks
 end
 
-
 local db = sqlite.open("/var/nginx/data/geoip/Country-Networks.db", sqlite.OPEN_READONLY + sqlite.OPEN_SHAREDCACHE)
 
 local country_info = get_country_info(db, country)
@@ -50,6 +49,7 @@ local networks_info = {
         id   = country_info['continent_code'],
         name = country_info['continent_name']
     },
+    policy = utils.access_policy.info(country),
     networks = {
     }
 }

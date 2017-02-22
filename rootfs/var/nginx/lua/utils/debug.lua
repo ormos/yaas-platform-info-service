@@ -10,7 +10,7 @@ function _debug.start()
     end
 end
 
-function _debug:stop()
+function _debug.stop()
     if _debug.debugger ~= nil then
         _debug.debugger.done()
     end

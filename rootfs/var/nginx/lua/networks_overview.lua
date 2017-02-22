@@ -23,18 +23,13 @@ if country_networks == nil then
 
     db:close()
 
+    -- re-arrange the countries with export control restrictions policies
     local blocked_networks = {}
-
-    -- re-arrange the countries with export control restrictions
-    local res = ngx.location.capture('/access')
-    if res.status == 200 then
-        local blocked_countries = cjson.decode(res.body)
-        for _ , entry in ipairs(blocked_countries) do
-            if (networks_list[entry['id']] ~= nil) and
-               utils.active_time_range(entry['active-from'], entry['active-till']) then
-                blocked_networks[entry['id']] = networks_list[entry['id']]
-                networks_list[entry['id']]    = nil
-            end
+    local blocked_countries = utils.access_policy.get_blocked_countries()
+    for _ , country in ipairs(blocked_countries) do
+        if (networks_list[country] ~= nil) then
+            blocked_networks[country] = networks_list[country]
+            networks_list[country]    = nil
         end
     end
 
