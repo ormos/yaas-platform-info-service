@@ -25,7 +25,7 @@ if country_networks == nil then
 
     -- re-arrange the countries with export control restrictions policies
     local blocked_networks = {}
-    local blocked_countries = utils.access_policy.get_blocked_countries()
+    local blocked_countries = utils.policy.get_blocked_countries()
     for _ , country in ipairs(blocked_countries) do
         if (networks_list[country] ~= nil) then
             blocked_networks[country] = networks_list[country]

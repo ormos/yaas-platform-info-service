@@ -3,7 +3,7 @@ local sqlite = require('sqlite3')
 
 local country = ngx.unescape_uri(ngx.var.request_uri):match('^.*/networks/(.+)$')
 
--- check if access should be blocked because of export restrictions
+-- load country info data from db
 local function get_country_info(db, country)
 
     local select_stmt = db:prepare('SELECT id, country_iso_code, country_name, continent_code, continent_name FROM Countries WHERE country_iso_code = $country_code LIMIT 1')
@@ -49,7 +49,7 @@ local networks_info = {
         id   = country_info['continent_code'],
         name = country_info['continent_name']
     },
-    policy = utils.access_policy.info(country),
+    policy = utils.policy.info(country),
     networks = {
     }
 }

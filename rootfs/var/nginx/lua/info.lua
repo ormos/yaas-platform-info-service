@@ -60,25 +60,6 @@ local function get_prefered_language(provided_languages, accepted_languages)
     return prefered_language
 end
 
--- check if access should be blocked because of export restrictions
-local function get_access_status(country)
-
-    -- use the access information if we got one
-    local res = ngx.location.capture('/access')
-    if res.status == 200 then
-        local blocked_countries = cjson.decode(res.body)
-        for _ , entry in ipairs(blocked_countries) do
-            if (entry['id'] == country) and
-               utils.active_time_range(entry['active-from'], entry['active-till']) then
-                ngx.log(ngx.INFO, 'Network access blocked for country: '..entry['id']..' - '..entry['country'])
-                return "blocked"
-            end
-        end
-    end
-
-    return "unrestricted"
-end
-
 -- add optional location information
 local function add_location_info(table, var, section, item)
     if var ~=  nil and var ~= '' then
@@ -130,7 +111,7 @@ ngx.log(ngx.INFO, 'Detected country='..country..':market='..market['id']..' for 
 local info = {
     network = {
         ip     = ngx.var.remote_addr,
-        access = utils.access_policy.get(country)
+        access = utils.policy.get(country)
     },
     yaas = { language = {
                 preferred = get_prefered_language(market['locale']['languages']),

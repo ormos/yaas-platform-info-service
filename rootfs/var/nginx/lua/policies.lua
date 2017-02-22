@@ -23,10 +23,10 @@ local function _get_datetime(str, expand)
     return date.diff(dt, date.epoch()):spanseconds()
 end
 
-local access_data = ngx.shared.cache:get('access-data')
+local policies_data = ngx.shared.cache:get('policies-data')
 
-if access_data == nil then
-    local res = ngx.location.capture('/data/access')
+if policies_data == nil then
+    local res = ngx.location.capture('/data/policies')
     if res.status ~= 200 then
         ngx.exit(res.status)
     end
@@ -34,18 +34,18 @@ if access_data == nil then
     local data = cjson.decode(res.body)
 
     -- convert the array into a hash for later usage
-    local access_info = {}
+    local policies_info = {}
     for _ , entry in ipairs(data.blocked) do
         entry['_begin'] = _get_datetime(entry['active-from'], false)
         entry['_end']   = _get_datetime(entry['active-till'], true)
-        access_info[entry['id']] = entry
+        policies_info[entry['id']] = entry
     end
 
-    access_data = cjson.encode(access_info)
+    policies_data = cjson.encode(policies_info)
 
-    ngx.shared.cache:set('access-data', access_data, 3600)
+    ngx.shared.cache:set('policies-data', policies_data, 3600)
 else
-    ngx.log(ngx.INFO, 'Cache hit for access')
+    ngx.log(ngx.INFO, 'Cache hit for policies')
 end
 
-ngx.print(access_data)
+ngx.print(policies_data)

@@ -21,7 +21,7 @@ use constant ERROR   => SCRIPT." - ERROR: ";
 
 use constant GEOIP_NETWORK_DATABASE => "$DATA_FOLDER/geoip/Country-Networks.db";
 use constant GEOIP_EMBARGO_MMDB     => "$DATA_FOLDER/geoip/Embargo-Networks.mmdb";
-use constant GEOIP_EMBARGO_CONFIG   => "$DATA_FOLDER/access.json";
+use constant GEOIP_EMBARGO_CONFIG   => "$DATA_FOLDER/policies.json";
 
 use constant GEOIP_EMBARGO_MMDB_VERSION => '1.0.1';
 use constant GEOIP_EMBARGO_MMDB_TITLE   => 'Embargo-Country-Network - Version ' . GEOIP_EMBARGO_MMDB_VERSION;

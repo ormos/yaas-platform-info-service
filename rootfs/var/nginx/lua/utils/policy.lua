@@ -1,8 +1,8 @@
 local date = require('date')
 
 local function _load_policies()
-    -- use the access information if we got one
-    local res = ngx.location.capture('/access')
+    -- use the policy information if we got one
+    local res = ngx.location.capture('/policies')
     if res.status == 200 then
         return cjson.decode(res.body)
     end
