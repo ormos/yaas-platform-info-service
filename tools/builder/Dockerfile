@@ -22,3 +22,5 @@ RUN apk --no-cache upgrade --update && \
 COPY rootfs /
 
 VOLUME ["${DATA_FOLDER}"]
+
+CMD ["/usr/sbin/update-all-data"]
