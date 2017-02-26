@@ -130,7 +130,7 @@ cat <<- -EOF-
 
   ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force] [<mmdb file>]
 
-    <mmdb file>  mmdb database as full path [${GEOIP_MMDB_FOLDER}/GEOIP_MMDB_FILE]
+    <mmdb file>  mmdb database as full path [${GEOIP_MMDB_FOLDER}/${GEOIP_MMDB_FILE}]
 
   Options:
 
@@ -150,7 +150,7 @@ _version() {
 
 _initialize()
 {
-  set -o nounset -o errexit -eo pipefail; [ -n "${TRACE:-}" ] && set -x
+  set -o nounset -o errexit -eo pipefail; [ -n "${_TRACE_:-}" ] && set -x
 
   # Set file creation mask so that all files are created with 600 permissions.
   # This will help protect temp files.
@@ -166,7 +166,7 @@ _initialize()
   [ -d "${TMP_FOLDER}" ] || mkdir -p "${TMP_FOLDER}"
 
   # verbose level
-  VERBOSE=${VERBOSE:-0}
+  _VERBOSE_=${_VERBOSE_:-0}
 
   # Trap TERM, HUP, and INT signals and properly exit
   trap -- '__exit_handler' EXIT
@@ -352,7 +352,7 @@ __do_cleanup()
   #####
 
   # remove the temp folder
-  [ "${VERBOSE:-0}" -lt 3 ] && [ -d "${TMP_FOLDER}" ] && \
+  [ "${_VERBOSE_:-0}" -lt 3 ] && [ -d "${TMP_FOLDER}" ] && \
     (rm -rf "${TMP_FOLDER}" >/dev/null 2>&1 || :)
 
   return 0
