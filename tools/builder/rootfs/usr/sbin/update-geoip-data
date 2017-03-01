@@ -141,16 +141,26 @@ cat <<- -EOF-
 -EOF-
 }
 
+### begin -- elvido/utility : 1.1.0 / 27-FEB-2017
 ###########################################################################
 # utility functions
 ###########################################################################
+
+#
+# Output version information
+#
+# shellcheck disable=SC2120
 _version() {
   _message -s -f "Version %s by %s %s\n" "${VERSION}" "${AUTHOR}" "${CONTACT}"
 }
 
+#
+# Intialize global settings
+#
+# shellcheck disable=SC2120
 _initialize()
 {
-  set -o nounset -o errexit -eo pipefail; [ -n "${_TRACE_:-}" ] && set -x
+  set -o nounset -o errexit ; [ -n "${BASH:-}" ] && set -eo pipefail ; [ -n "${_TRACE_:-}" ] && set -x
 
   # Set file creation mask so that all files are created with 600 permissions.
   # This will help protect temp files.
@@ -158,7 +168,7 @@ _initialize()
 
   # the full qualified path of the script
   # shellcheck disable=SC2034
-  SCRIPT_PATH=$(dirname -- "$($(command -v greadlink || command -v readlink) -f "$0")")
+  SCRIPT_PATH=$(dirname -- "$(_real_path "$0")")
   SCRIPT_NAME=$(basename -- "$0")
   TMP_FOLDER="${TMPDIR:-/tmp/$(id -u)}/${SCRIPT_NAME}-$$"
 
@@ -174,6 +184,21 @@ _initialize()
   trap -- '__abort_handler' INT
 }
 
+#
+# Output formatted error or text messages
+#
+# Options:
+#   -s Script name used prefix.
+#   -e Output error message
+#   -w Output warning message
+#   -i Output information message
+#   -f Printf like format string
+#
+# Arguments:
+#   '-' read message from stdin
+#   <*> string holding text message as parameter
+#
+# shellcheck disable=SC2120
 _message()
 {
   local IDNX CATG LEN FMT TXT_IDNX TXT_CATG TXT_PRFX TXT_MSG LEN_PRFX=0
@@ -223,6 +248,13 @@ _message()
   printf '%*s%s\n' "$LEN_PRFX" "${TXT_PRFX:-}" "$TXT_MSG"
 }
 
+#
+# Returns string indented by 4 spaces
+#
+# Arguments:
+#   '-' read string from stdin
+#   <*> string as parameter
+#
 # shellcheck disable=SC2120
 _indent()
 {
@@ -237,7 +269,11 @@ _indent()
 }
 
 #
-# returns lowercase string
+# Returns lowercase string
+#
+# Arguments:
+#   '-' read string from stdin
+#   <*> string as parameter
 #
 # shellcheck disable=SC2120
 _tolower()
@@ -250,7 +286,11 @@ _tolower()
 }
 
 #
-# returns uppercase string
+# Returns uppercase string
+#
+# Arguments:
+#   '-' read string from stdin
+#   <*> string as parameter
 #
 # shellcheck disable=SC2120
 _toupper()
@@ -264,6 +304,10 @@ _toupper()
 
 #
 # Trims any leading and trailing tabs or spaces
+#
+# Arguments:
+#   '-' read string from stdin
+#   <*> string as parameter
 #
 # shellcheck disable=SC2120
 _trim()
@@ -280,23 +324,26 @@ _trim()
   fi
 }
 
+#
+# Function for outputting a time stamp
+#
+# shellcheck disable=SC2120
 _time_stamp()
 {
-  #####
-  # Function for outputting a time stamp
-  # No arguments
-  #####
-
   date -u +%Y-%m-%dT%H:%M:%S%z
 }
 
+#
+# Function for exit due to fatal program error
+#
+# Arguments:
+#   '-' read message from stdin
+#   <1> string holding text message as parameter
+#   <2> exit code
+#
+# shellcheck disable=SC2120
 _error_exit()
 {
-  #####
-  # Function for exit due to fatal program error
-  # Accepts 1 argument:
-  #   - string containing descriptive error message
-  #####
   local MESSAGE
 
   if [ "${1:-}" = '-' ]; then
@@ -310,47 +357,39 @@ _error_exit()
   exit "${2:-1}"
 }
 
+#
+# Function to perform action on script exit
+#
 __exit_handler()
 {
-  #####
-  # Function to perform action on script exit
-  # No arguments
-  #####
-
   __do_cleanup
 }
 
+#
+# Function to perform exit if termination signal is trapped
+#
 __terminate_handler()
 {
-  #####
-  # Function to perform exit if termination signal is trapped
-  # No arguments
-  #####
-
   _message -s -w "Terminated" >&2
 
   exit
 }
 
-__abort_handler()
+#
+# Function to perform exit if interrupt signal is trapped
+#
+ __abort_handler()
 {
-  #####
-  # Function to perform exit if interrupt signal is trapped
-  # No arguments
-  #####
-
   _message -s -w "Aborted by user" >&2
 
   exit
 }
 
+#
+# Function to remove temporary files and other housekeeping
+#
 __do_cleanup()
 {
-  #####
-  # Function to remove temporary files and other housekeeping
-  # No arguments
-  #####
-
   # remove the temp folder
   [ "${_VERBOSE_:-0}" -lt 3 ] && [ -d "${TMP_FOLDER}" ] && \
     (rm -rf "${TMP_FOLDER}" >/dev/null 2>&1 || :)
@@ -358,15 +397,68 @@ __do_cleanup()
   return 0
 }
 
+# Function to create a temporary files or folder
+#
+# Options:
+#   -d Create directory instead og file
+#
+# Arguments:
+#   <1> Name mask pattern to use
+#
 # shellcheck disable=SC2120
 _make_temp()
 {
+  local TMPOPTS='-p'
+
+  if [ "${1:-}" = '-d' ]; then
+    TMPOPTS="-d ${TMPOPTS}" ; shift;
+  fi
   local TMPMASK="${1:-${SCRIPT_NAME}-XXXXXX}"
 
-  mktemp -p "${TMP_FOLDER}" "${TMPMASK}"
+  # shellcheck disable=SC2086
+  mktemp ${TMPOPTS} "${TMP_FOLDER}" "${TMPMASK}"
+}
+
+# Function to retrieve a full filesystem path
+#
+# Arguments:
+#   <1> Absolute or relative filesystem path
+#
+# shellcheck disable=SC2120
+_real_path()
+{
+  local PTH="${1:-.}"
+
+  if [ -d "$(dirname -- "${PTH}")" ]; then
+    # shellcheck disable=SC2155
+    local _readlink="$(command -v greadlink || command -v readlink || :)"
+    ([ "${_readlink}" ] && "${_readlink}" -f "${PTH}") || \
+    ([ -d "${PTH}" ] && (cd "${PTH}"; pwd)) || \
+    (cd "$(dirname -- "${PTH}")"; case "${PWD}" in */) echo "${PWD}$(basename -- "${PTH}")"  ;;
+                                                    *) echo "${PWD}/$(basename -- "${PTH}")" ;;
+                              esac )
+  else
+    case "${PTH}" in /*) echo "${PTH}" ;; *) echo "${PWD}/${PTH}" ;; esac | \
+      (
+        local PTS ; IFS=/
+        # shellcheck disable=SC2013
+        for P in $(cat); do
+          case "${P}" in
+            ''|'.') ;;
+              '..') PTS="$(dirname -- "${PTS}")" ;;
+                 *) case "${PTS}" in */) PTS="${PTS}${P}"  ;;
+                                      *) PTS="${PTS}/${P}" ;;
+                    esac ;;
+          esac
+        done
+        echo "${PTS:-}"
+      )
+  fi
 }
 
 ###########################################################################
 # Execution starts here
 ###########################################################################
 main "$@"
+
+### end -- elvido/utility : 1.1.0 / 27-FEB-2017
