@@ -5,17 +5,17 @@ include $(ENV_FILE)
 endif
 
 NS = elvido
-VERSION ?= 1.9.2
+VERSION ?= 1.9.3
 TAGS ?= latest
 
 REPO = yaas-platform-info-service
 NAME = yaas-platform-info-service
 INSTANCE = default
 
-API_CONSOLE = ./rootfs/var/nginx/assets/api-console
-DATA_CONSOLE = ./rootfs/var/nginx/assets/data-console
+API_CONSOLE = $(ROOT_DIR)/rootfs/var/nginx/assets/api-console
+DATA_CONSOLE = $(ROOT_DIR)/rootfs/var/nginx/assets/data-console
 
-GEOIP_NETWORKS = ./rootfs/var/nginx/data/geoip/networks.db
+GEOIP_NETWORKS = $(ROOT_DIR)/rootfs/var/nginx/data/geoip
 
 .PHONY: clean build push shell run start stop rm release tag api-console data-console geoip-networks $(TAGS)
 
@@ -48,8 +48,9 @@ $(DATA_CONSOLE):
 geoip-networks: $(GEOIP_NETWORKS)
 
 $(GEOIP_NETWORKS):
-	./tools/deploy-geoip-data $(GEOIP_NETWORKS)
-	chmod g+r,o+r $(GEOIP_NETWORKS)
+	mkdir -p $@
+	make -C $(ROOT_DIR)/tools/builder --no-print-directory build
+	make -C $(ROOT_DIR)/tools/builder --no-print-directory run
 
 clean:
 	rm -rf $(API_CONSOLE)
