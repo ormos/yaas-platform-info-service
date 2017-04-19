@@ -3,7 +3,7 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2016-12-20",
+    "last-modified": "2017-04-19",
     "version": "0.1.0"
   },
   "blocked": [
@@ -21,12 +21,6 @@
     {
       "id": "IR",
       "name": "Iran",
-      "comment": "Access blocked due to export control policies",
-      "active-from": "2017-01-01"
-    },
-    {
-      "id": "UA",
-      "name": "Ukraine",
       "comment": "Access blocked due to export control policies",
       "active-from": "2017-01-01"
     },
