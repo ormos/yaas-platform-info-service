@@ -82,6 +82,26 @@
         "sla": "https://www.yaas.io/germany/legal/Service_Level_Agreement_for_SAP_Hybris_as_a_Service_deDE_v10-2016.pdf",
         "assistance": "https://www.yaas.io/germany/legal/SAP_Customer_Assistance_Policy_for_SAP_Cloud_Services_deDE_v10-2016.pdf",
         "agreement_terms": "https://www.yaas.io/germany/legal/SAP_Hybris_as_a_Service_Vertragsbestandteile_deDE_v10-2016.pdf"
+      },
+      "supplements": {
+        "confirmation": {
+          "id": "confirmation",
+          "name": "Order confirmation",
+          "description": "Order confirmation supplemental documents",
+          "_link_": "{URL}/markets/DE/supplements/confirmation",
+          "items": [
+            {
+              "name": "Data Processing Agreement",
+              "description": "Data processing aggrement for SAP cloud services",
+              "content": "{URL}/markets/DE/dpa"
+            },
+            {
+              "name": "Contract Agreement and Terms",
+              "description": "SAP Hybris as Service contractual agreement and terms",
+              "content": "{URL}/markets/DE/agreement_terms"
+            }
+          ]
+        }
       }
     },
     "GB": {
