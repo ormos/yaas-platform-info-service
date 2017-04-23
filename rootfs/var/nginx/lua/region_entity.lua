@@ -10,13 +10,13 @@ local region = ngx.shared.cache:get('region.'..continent..'-'..server_id)
 
 if region == nil then
     local res = ngx.location.capture('/regions')
-    if res.status ~= 200 then
+    if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
     local regions = cjson.decode(res.body)
     if regions[continent] == nil then
-        ngx.exit(404)
+        ngx.exit(ngx.HTTP_NOT_FOUND)
     end
 
     region = cjson.encode(regions[continent])

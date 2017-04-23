@@ -8,7 +8,7 @@ RUN echo "Updating system and installing prerequisites..." >&2 && \
     echo "Deploying optional LUA packages..." >&2 && \
     # There is an issue with luatz 0.3-1 regarding tzfile format 3.x \
     # newer sources got injected via copy - see: rootfs/usr/lib/lua/5.1/luatz
-    luarocks-deploy add "luatz" "luasocket" "luasec" "luaexpat" "luasoap" "lua-resty-http" "sqlite3" "date" "libcidr-ffi" && \
+    luarocks-deploy add "luatz" "luasocket" "luasec" "luaexpat" "luasoap" "lua-resty-http" "lua-resty-jwt" "sqlite3" "date" "libcidr-ffi" && \
     # "mobdebug" && \
     \
     echo "Cleaning up temporary files..." >&2 && \

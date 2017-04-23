@@ -3,7 +3,7 @@ local date = require('date')
 local function _load_policies()
     -- use the policy information if we got one
     local res = ngx.location.capture('/policies')
-    if res.status == 200 then
+    if res.status == ngx.HTTP_OK then
         return cjson.decode(res.body)
     end
 end

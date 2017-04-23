@@ -7,7 +7,7 @@ local regions = ngx.shared.cache:get('regions-'..server_id)
 
 if regions == nil then
     local res = ngx.location.capture('/data/regions')
-    if res.status ~= 200 then
+    if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 

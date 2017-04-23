@@ -62,9 +62,9 @@ sub main {
     }
   }
 
-  my $embargo_contries = load_countries($opt{countries});
+  my $embargo_countries = load_countries($opt{countries});
 
-  deploy_embargo_mmdb($embargo_contries, $opt{database}, $embargo_mmdb);
+  deploy_embargo_mmdb($embargo_countries, $opt{database}, $embargo_mmdb);
 
 	return 0;
 }

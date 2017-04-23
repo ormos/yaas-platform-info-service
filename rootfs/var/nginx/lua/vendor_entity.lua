@@ -9,13 +9,13 @@ local vendor = ngx.shared.cache:get('vendor.'..vendor_id..'-'..server_id)
 
 if vendor == nil then
     local res = ngx.location.capture('/vendors')
-    if res.status ~= 200 then
+    if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
     local vendors = cjson.decode(res.body)
     if vendors[vendor_id] == nil then
-        ngx.exit(404)
+        ngx.exit(ngx.HTTP_NOT_FOUND)
     end
 
     vendor = cjson.encode(vendors[vendor_id])

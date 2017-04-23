@@ -15,13 +15,13 @@ local market = ngx.shared.cache:get('market.'..country..'-'..server_id)
 
 if market == nil then
     local res = ngx.location.capture('/markets')
-    if res.status ~= 200 then
+    if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
     local markets = cjson.decode(res.body)
     if markets[country] == nil then
-        ngx.exit(404)
+        ngx.exit(ngx.HTTP_NOT_FOUND)
     end
 
     market = cjson.encode(markets[country])
@@ -50,7 +50,7 @@ if resource ~= nil then
         end
     end
 
-    ngx.exit(404)
+    ngx.exit(ngx.HTTP_NOT_FOUND)
 else
     ngx.print(market)
 end

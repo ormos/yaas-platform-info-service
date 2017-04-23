@@ -7,7 +7,7 @@ local vendors = ngx.shared.cache:get('vendors-'..server_id)
 
 if vendors == nil then
     local res = ngx.location.capture('/markets')
-    if res.status ~= 200 then
+    if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
@@ -25,7 +25,7 @@ if vendors == nil then
             if market['region'] ~= nil then
                 info['region'] = market['region']['_link_']
             end
-            
+
             data[info['id']] = info
         end
     end

@@ -27,7 +27,7 @@ local policies_data = ngx.shared.cache:get('policies-data')
 
 if policies_data == nil then
     local res = ngx.location.capture('/data/policies')
-    if res.status ~= 200 then
+    if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
