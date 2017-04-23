@@ -191,6 +191,8 @@ sub deploy_embargo_mmdb {
   my $file_uid=(stat(dirname($_[2])))[4];
   my $file_gid=(stat(dirname($_[2])))[5];
   chown $file_uid, $file_gid, $_[2];
+  my $perm = (stat $_[2])[2] & 07777;
+  chmod $perm | 0444, $_[2];
   say(INFO."updated Embargo network database '$_[2]'");
 }
 
