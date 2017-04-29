@@ -39,7 +39,7 @@ local function verify_email_address(email_address)
         -- query mogelmail.de about the status of the mail domain
         local http = require('resty.http')
         local client = http.new()
-        local res, err = client:request_uri('https://www.mogelmail.de/q/'..domain, { method = 'GET', ssl_verify = false } )
+        local res, err = client:request_uri('https://www.mogelmail.de/q/'..domain)
 
         if res == nil then
             ngx.log(ngx.INFO, 'Failed to query mogelmail.de for domain='..domain..' - error: '..err)

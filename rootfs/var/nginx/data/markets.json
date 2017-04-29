@@ -93,12 +93,17 @@
             {
               "name": "Data Processing Agreement",
               "description": "Data processing aggrement for SAP cloud services",
-              "content": "{URL}/markets/DE/dpa"
+              "content": {
+                "data": "https://www.yaas.io/germany/legal/data-processing-agreement-for-sap-cloud-services-german-v2-2017.pdf",
+                "datx": "{URL}/markets/DE/dpa"
+              }
             },
             {
               "name": "Contract Agreement and Terms",
               "description": "SAP Hybris as Service contractual agreement and terms",
-              "content": "{URL}/markets/DE/agreement_terms"
+              "content": {
+                "data": "{URL}/markets/DE/agreement_terms"
+              }
             }
           ]
         }
