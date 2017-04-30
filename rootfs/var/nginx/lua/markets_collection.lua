@@ -6,15 +6,9 @@ local server_id = ngx.md5(base_url)
 local markets = ngx.shared.cache:get('markets-'..server_id)
 
 if markets == nil then
-    local res = ngx.location.capture('/data/markets')
-    if res.status ~= ngx.HTTP_OK then
-        ngx.exit(res.status)
-    end
+    local data, _ = utils.markets.load(base_url)
 
-    local data = cjson.decode(res.body)
-    markets = cjson.encode(data.markets)
-
-    markets = utils.substitute(markets, { URL = base_url })
+    markets = cjson.encode(data)
 
     ngx.shared.cache:set('markets-'..server_id, markets, 3600)
 else

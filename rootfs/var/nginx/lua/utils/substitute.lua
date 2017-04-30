@@ -3,7 +3,7 @@ local function _is_callable(obj)
     return type(obj) == 'function' or getmetatable(obj) and getmetatable(obj).__call and true
 end
 
-local function _substitute(s, tbl)
+local function _substitute(str, tbl)
     local subst
 
     if _is_callable(tbl) then
@@ -19,7 +19,7 @@ local function _substitute(s, tbl)
         end
     end
 
-    return (string.gsub(s, '{([%w_]+)}', subst))
+    return (str:gsub('{([%w_]+)}', subst))
 end
 
 return {

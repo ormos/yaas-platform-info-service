@@ -4,11 +4,11 @@ local base_url  = utils.base_url()
 local server_id = ngx.md5(base_url)
 
 -- check if we got a request with ../<country>/<resource> pattern
-local country, resource = ngx.unescape_uri(ngx.var.request_uri):match('^.*/markets/(.[^/]+)/(.+)$')
+local country, resource = ngx.var.uri:match('^.*/markets/(.[^/]+)/(.+)$')
 
 if country == nil and resource == nil then
     -- we got an request with ../<country> pattern
-    country = ngx.unescape_uri(ngx.var.request_uri):match('^.*/markets/(.+)$')
+    country = ngx.var.uri:match('^.*/markets/(.+)$')
 end
 
 local market = ngx.shared.cache:get('market.'..country..'-'..server_id)
@@ -38,49 +38,18 @@ if resource == nil then
 end
 
 -- provide enriched supplement data by resolving links and adding mimetypes
-local function retrieve_content_info(content_url)
-
-    if content_url:sub(1, base_url:len()) ~= base_url then
-        local http = require('resty.http')
-        local client = http.new()
-        local res, err = client:request_uri(content_url, { method = "HEAD" })
-
-        if res == nil then
-            ngx.log(ngx.INFO, 'Failed to query supplement content at url "'..content_url..'" - Error: '..err)
-        else
-            if res.status == ngx.HTTP_OK then
-                if res.headers['Content-Type'] then
-                    return content_uri, res.headers['Content-Type']
-                end
-            else
-                ngx.log(ngx.INFO, 'Returned status from supplements for - status: '..res.status)
-            end
-        end
-    --else
-        --local res = ngx.location.capture(content_url:sub(base_url:len() + 1))
-        --ngx.log(ngx.INFO, 'status: '..res.status..' - Body: '..res.body)
-        -- if res.status ~= ngx.HTTP_OK then
-    end
-
-    return content_url
-end
-
--- provide enriched supplement data by resolving links and adding mimetypes
 local function provide_supplement(supplement_name, market_data)
 
-    for _ , item in ipairs(market_data['supplements'][supplement_name]['items']) do
-        ngx.log(ngx.INFO, 'Item: '..item['name'])
+    local supplement = ngx.shared.cache:get('market.'..market_data['id']..'.supplements.'..supplement_name..'-'..server_id)
 
-        local content_url, content_type = retrieve_content_info(item['content']['data'])
-        if content_url then
-            item['content']['data'] = content_url
-        end
-        if content_type then
-            item['content']['type'] = content_type
-        end
+    if supplement == nil then
+        supplement = cjson.encode(utils.supplements.get(market_data['id'], supplement_name, base_url))
+        ngx.shared.cache:set('market.'..market_data['id']..'.supplements.'..supplement_name..'-'..server_id, supplement, 3600)
+    else
+        ngx.log(ngx.INFO, 'Cache hit for supplement="'..supplement_name..'" at market='..market_data['id'])
     end
 
-    return cjson.encode(market_data['supplements'][supplement_name])
+    return supplement
 end
 
 local market_data = cjson.decode(market)

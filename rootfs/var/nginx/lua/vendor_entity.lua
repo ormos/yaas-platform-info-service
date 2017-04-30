@@ -3,7 +3,7 @@ local utils = require('utils')
 local base_url  = utils.base_url()
 local server_id = ngx.md5(base_url)
 
-local vendor_id = ngx.unescape_uri(ngx.var.request_uri):match('^.*/vendors/(.+)$')
+local vendor_id = ngx.var.uri:match('^.*/vendors/(.+)$')
 
 local vendor = ngx.shared.cache:get('vendor.'..vendor_id..'-'..server_id)
 

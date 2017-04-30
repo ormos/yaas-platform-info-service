@@ -1,7 +1,7 @@
 local utils = require('utils')
 local sqlite = require('sqlite3')
 
-local country = ngx.unescape_uri(ngx.var.request_uri):match('^.*/networks/(.+)$')
+local country = ngx.var.uri:match('^.*/networks/(.+)$')
 
 -- load country info data from db
 local function get_country_info(db, country)

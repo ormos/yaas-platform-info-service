@@ -94,8 +94,7 @@
               "name": "Data Processing Agreement",
               "description": "Data processing aggrement for SAP cloud services",
               "content": {
-                "data": "https://www.yaas.io/germany/legal/data-processing-agreement-for-sap-cloud-services-german-v2-2017.pdf",
-                "datx": "{URL}/markets/DE/dpa"
+                "data": "{URL}/markets/DE/dpa"
               }
             },
             {
