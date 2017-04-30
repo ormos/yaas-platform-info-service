@@ -17,6 +17,4 @@ if url:sub(1, #base_url) == base_url then
     url = ngx.var.scheme..'://'..ngx.var.server_addr..url:sub(1 + #base_url)
 end
 
-local res = ngx.location.capture('/proxy/'..ngx.escape_uri(url))
-
-ngx.exit(ngx.HTTP_NOT_FOUND)
+ngx.var.target = url
