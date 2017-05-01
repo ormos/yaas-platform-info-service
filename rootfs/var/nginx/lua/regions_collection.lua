@@ -5,7 +5,7 @@ local server_id = ngx.md5(base_url)
 
 local regions = ngx.shared.cache:get('regions-'..server_id)
 
-if regions == nil then
+if not regions then
     local res = ngx.location.capture('/data/regions')
     if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)

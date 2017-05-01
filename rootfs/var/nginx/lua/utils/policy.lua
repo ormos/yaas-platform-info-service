@@ -12,7 +12,7 @@ end
 local function _get_policy(country)
 
     local policies = _load_policies()
-    if policies[country] ~= nil then
+    if policies[country] then
         local ts = date(true)
         if (date(policies[country]['_begin']) <= ts) and (date(policies[country]['_end']) >= ts) then
             ngx.log(ngx.INFO, 'Network access blocked for country: '..country..' - '..policies[country]['name'])
@@ -27,11 +27,11 @@ local function _get_policy_info(country)
     local policy_info = {}
 
     local policies = _load_policies()
-    if policies[country] ~= nil then
+    if policies[country] then
         policy_info['access'] = 'bocked'
         policy_info['active-from'] = date(policies[country]['_begin']):fmt("${iso}")
         policy_info['active_till'] = date(policies[country]['_end']):fmt("${iso}")
-        if policies[country]['comment'] ~= nil then
+        if policies[country]['comment'] then
             policy_info['comment'] = policies[country]['comment']
         end
     else

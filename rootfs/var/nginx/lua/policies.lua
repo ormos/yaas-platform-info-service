@@ -2,17 +2,17 @@ local date = require('date')
 
 local function _get_datetime(str, expand)
     local dt
-    if str ~= nil then
+    if str then
         dt = date(str)
         -- if no time was given, set the time to end of the day
-        if expand and (dt ~= nil) and (str:find('T') == nil) and
+        if expand and dt and (not str:find('T')) and
            (dt:gethours() == 0) and (dt:getminutes() == 0) and
            (dt:getseconds() == 0) then
            dt:sethours(23, 59, 59)
         end
     end
     -- if we have no datetime specified at all use the maximum and minimum
-    if dt == nil then
+    if not dt then
         if expand then
             dt = date(0x7FFFFFFF)
         else
@@ -25,7 +25,7 @@ end
 
 local policies_data = ngx.shared.cache:get('policies-data')
 
-if policies_data == nil then
+if not policies_data then
     local res = ngx.location.capture('/data/policies')
     if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)

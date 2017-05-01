@@ -1,14 +1,14 @@
 
 local email_address = nil
 
-if ngx.var.arg_address ~= nil then
+if ngx.var.arg_address then
     email_address = ngx.var.arg_address
 else
     email_address = ngx.var.uri:match('^.*/email/(.+)$')
 end
 
 -- if no args are provided we can just cancel here
-if email_address == nil then
+if not email_address then
     ngx.exit(ngx.HTTP_FORBIDDEN)
 end
 
@@ -18,7 +18,7 @@ local function validate_email_address(email_address)
     local regex = [[^(?=[A-Z0-9][A-Z0-9@._%+-]{5,253}+$)[A-Z0-9._%+-]{1,64}+@(?:(?=[A-Z0-9-]{1,63}+\.)[A-Z0-9]++(?:-[A-Z0-9]++)*+\.){1,8}+[A-Z]{2,63}+$]]
     local m = ngx.re.match(email_address, regex, 'ix')
 
-    if m == nil then
+    if not m then
         return false
     end
 
@@ -32,7 +32,7 @@ local function verify_email_address(email_address)
 
     local status = ngx.shared.cache:get('email-'..domain)
 
-    if status == nil then
+    if not status then
         status = 'valid'
 
         -- query mogelmail.de about the status of the mail domain
@@ -40,7 +40,7 @@ local function verify_email_address(email_address)
         local client = http.new()
         local res, err = client:request_uri('https://www.mogelmail.de/q/'..domain)
 
-        if res == nil then
+        if not res then
             ngx.log(ngx.INFO, 'Failed to query mogelmail.de for domain='..domain..' - error: '..err)
         else
             if res.status == ngx.HTTP_OK then

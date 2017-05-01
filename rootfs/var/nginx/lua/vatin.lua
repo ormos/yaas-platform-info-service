@@ -1,14 +1,14 @@
 
 local country, vatin = ngx.var.uri:match('^.*/vatin/(.+)/(.+)$')
 
-if country == nil or vatin == nil or string.len(country) ~= 2 then
+if not country or not vatin or string.len(country) ~= 2 then
     ngx.exit(ngx.HTTP_FORBIDDEN)
 end
 
 function validate_vatin(vatin, country)
 
     -- TO do
-    if vatin ~= nil and string.len(vatin) == 11 and string.upper(string.sub(vatin, 1, 2)) == 'DE' then
+    if vatin and string.len(vatin) == 11 and string.upper(string.sub(vatin, 1, 2)) == 'DE' then
         return true
     end
 
@@ -19,7 +19,7 @@ function verify_vatin(vatin, country)
 
     local status = ngx.shared.cache:get('vatin-'..country..'.'..vatin)
 
-    if status == nil then
+    if not status then
         local soap_client = require('soap.client')
 
         local request = {
@@ -46,7 +46,7 @@ function verify_vatin(vatin, country)
 
             for _, element in ipairs(entries) do
                 local f = tags[element['tag']]
-                if f ~= nil then f(element) end
+                if f then f(element) end
             end
 
             ngx.log(ngx.INFO, 'Successfully verfified vatin='..vatin..', country='..country..' with status: ('..idn..'='..valid..')')

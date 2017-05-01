@@ -7,7 +7,7 @@ local jwt = require('resty.jwt')
 -- we use a json web token for authorization
 local jwt_token = ngx.req.get_headers()['X-Access-Token']
 
-if jwt_token ~= nil then
+if jwt_token then
     local validators = require('resty.jwt-validators')
 
     validators.set_system_leeway(120)

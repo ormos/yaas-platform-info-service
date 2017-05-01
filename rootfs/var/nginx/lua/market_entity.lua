@@ -6,21 +6,21 @@ local server_id = ngx.md5(base_url)
 -- check if we got a request with ../<country>/<resource> pattern
 local country, resource = ngx.var.uri:match('^.*/markets/(.[^/]+)/(.+)$')
 
-if country == nil and resource == nil then
+if not (country or resource) then
     -- we got an request with ../<country> pattern
     country = ngx.var.uri:match('^.*/markets/(.+)$')
 end
 
 local market = ngx.shared.cache:get('market.'..country..'-'..server_id)
 
-if market == nil then
+if not market then
     local res = ngx.location.capture('/markets')
     if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
     local markets = cjson.decode(res.body)
-    if markets[country] == nil then
+    if not markets[country] then
         ngx.exit(ngx.HTTP_NOT_FOUND)
     end
 
@@ -32,7 +32,7 @@ else
 end
 
 -- if no subelements are requested just return the market information
-if resource == nil then
+if not resource then
     ngx.print(market)
     return
 end
@@ -42,7 +42,7 @@ local function provide_supplement(supplement_name, market_data)
 
     local supplement = ngx.shared.cache:get('market.'..market_data['id']..'.supplements.'..supplement_name..'-'..server_id)
 
-    if supplement == nil then
+    if not supplement then
         supplement = cjson.encode(utils.supplements.get(market_data, supplement_name, base_url))
         ngx.shared.cache:set('market.'..market_data['id']..'.supplements.'..supplement_name..'-'..server_id, supplement, 3600)
     else
@@ -53,16 +53,16 @@ local function provide_supplement(supplement_name, market_data)
 end
 
 local market_data = cjson.decode(market)
-if market_data ~= nil then
+if market_data then
     -- see if we have a resource link for the specific market
-    if market_data['links'][resource] ~= nil then
+    if market_data['links'][resource] then
         ngx.log(ngx.INFO, 'Redirect resource='..resource..' at market='..country..' to URL: "'..market_data['links'][resource]..'"')
         ngx.redirect(market_data['links'][resource], ngx.HTTP_MOVED_TEMPORARILY)
         return
     else
         -- check for special supplements handling
         local element, name = resource:match('^([^/]+)/(.+)$')
-        if element == 'supplements' and market_data['supplements'][name] ~= nil then
+        if (element == 'supplements') and market_data['supplements'][name] then
             ngx.print(provide_supplement(name, market_data))
             return
         end

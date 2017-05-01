@@ -1,7 +1,7 @@
 
 local mapping = ngx.shared.cache:get('markets-mapping')
 
-if mapping == nil then
+if not mapping then
     local res = ngx.location.capture('/data/markets')
     if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)

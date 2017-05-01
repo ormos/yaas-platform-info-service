@@ -5,7 +5,7 @@ local server_id = ngx.md5(base_url)
 
 local vendors = ngx.shared.cache:get('vendors-'..server_id)
 
-if vendors == nil then
+if not vendors then
     local res = ngx.location.capture('/markets')
     if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
@@ -16,13 +16,13 @@ if vendors == nil then
     local data = {}
 
     for _, market in pairs(markets) do
-        if market['billing'] ~= nil and market['billing']['vendor'] ~= nil then
+        if market['billing'] and market['billing']['vendor'] then
             local info = {}
             info['id'] = market['billing']['vendor']
             info['_link_'] = utils.base_url()..'/vendors/'..market['billing']['vendor']
             info['market'] = market['_link_']
 
-            if market['region'] ~= nil then
+            if market['region'] then
                 info['region'] = market['region']['_link_']
             end
 

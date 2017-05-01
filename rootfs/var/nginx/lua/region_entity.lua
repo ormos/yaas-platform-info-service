@@ -8,14 +8,14 @@ local continent = ngx.var.uri:match('^.*/regions/(.+)$')
 
 local region = ngx.shared.cache:get('region.'..continent..'-'..server_id)
 
-if region == nil then
+if not region then
     local res = ngx.location.capture('/regions')
     if res.status ~= ngx.HTTP_OK then
         ngx.exit(res.status)
     end
 
     local regions = cjson.decode(res.body)
-    if regions[continent] == nil then
+    if not regions[continent] then
         ngx.exit(ngx.HTTP_NOT_FOUND)
     end
 

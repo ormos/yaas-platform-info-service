@@ -4,14 +4,14 @@ local _debug = {
 }
 
 function _debug.start()
-    if _debug.Host_Addr ~= nil then
+    if _debug.Host_Addr then
         _debug.debugger = require('mobdebug')
         _debug.debugger.start(_debug.Host_Addr)
     end
 end
 
 function _debug.stop()
-    if _debug.debugger ~= nil then
+    if _debug.debugger then
         _debug.debugger.done()
     end
 end

@@ -10,7 +10,7 @@ local function _load_supplements(base_url)
 
     local supplements = {}
 
-    if data == nil then
+    if not data then
         _, supplements = require('utils.markets').load(base_url)
         data = cjson.encode(supplements)
         ngx.shared.cache:set('supplements-'..server_id, data, 3600)

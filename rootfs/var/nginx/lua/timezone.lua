@@ -6,7 +6,7 @@ local luatz = require('luatz')
 -- check if zoneinfo file exists, otherwise lua will raise an exception
 local name = zone..'/'..city
 local f = io.open('/usr/share/zoneinfo/'..name, 'r')
-if f == nil then ngx.exit(ngx.HTTP_NOT_FOUND) end
+if not f then ngx.exit(ngx.HTTP_NOT_FOUND) end
 io.close(f)
 
 local tz     = luatz.get_tz(name)

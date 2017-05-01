@@ -5,7 +5,7 @@ local server_id = ngx.md5(base_url)
 
 local country_networks = ngx.shared.cache:get('country-networks-'..server_id)
 
-if country_networks == nil then
+if not country_networks then
 
     local sqlite = require('sqlite3')
 
@@ -27,7 +27,7 @@ if country_networks == nil then
     local blocked_networks = {}
     local blocked_countries = utils.policy.get_blocked_countries()
     for _ , country in ipairs(blocked_countries) do
-        if (networks_list[country] ~= nil) then
+        if networks_list[country] then
             blocked_networks[country] = networks_list[country]
             networks_list[country]    = nil
         end

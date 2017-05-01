@@ -37,7 +37,7 @@ local db = sqlite.open("/var/nginx/data/geoip/Country-Networks.db", sqlite.OPEN_
 
 local country_info = get_country_info(db, country)
 
-if country_info == nil then
+if not country_info then
     ngx.exit(ngx.HTTP_NOT_FOUND)
     db:close()
 end

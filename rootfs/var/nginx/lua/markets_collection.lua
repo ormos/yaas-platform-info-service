@@ -5,7 +5,7 @@ local server_id = ngx.md5(base_url)
 
 local markets = ngx.shared.cache:get('markets-'..server_id)
 
-if markets == nil then
+if not markets then
     local data, _ = utils.markets.load(base_url)
 
     markets = cjson.encode(data)
