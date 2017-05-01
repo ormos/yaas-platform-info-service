@@ -43,7 +43,7 @@ local function provide_supplement(supplement_name, market_data)
     local supplement = ngx.shared.cache:get('market.'..market_data['id']..'.supplements.'..supplement_name..'-'..server_id)
 
     if supplement == nil then
-        supplement = cjson.encode(utils.supplements.get(market_data['id'], supplement_name, base_url))
+        supplement = cjson.encode(utils.supplements.get(market_data, supplement_name, base_url))
         ngx.shared.cache:set('market.'..market_data['id']..'.supplements.'..supplement_name..'-'..server_id, supplement, 3600)
     else
         ngx.log(ngx.INFO, 'Cache hit for supplement="'..supplement_name..'" at market='..market_data['id'])

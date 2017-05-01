@@ -25,9 +25,9 @@ end
 local _supplements_base = '/supplements/'
 
 -- encode content url using base64
-local function _encode_url(url)
+local function _encode_url(url, language)
     local token = jwt:sign('SAP-Hybris Y##S', { header = { typ = 'JWT', alg = 'HS256'},
-                           payload = { iss = 'yaas.io', exp = ngx.time() + (60 * 60 * 24), sub = 'suppl', aud = 'ypi', link = url }})
+                           payload = { iss = 'yaas.io', exp = ngx.time() + (60 * 60 * 24), sub = 'suppl', aud = 'ypi', link = url, lng = language }})
     return _supplements_base..token
 end
 
@@ -45,45 +45,77 @@ local function _decode_url(url)
                                  sub = validators.equals('suppl') }
                               )
     if jwt_obj['valid'] and jwt_obj['verified'] then
-        return jwt_obj['payload']['link']
+        return jwt_obj['payload']['link'], jwt_obj['payload']['lng']
     end
 
     ngx.log(ngx.INFO, 'Invalid supplements token: "'..token..'"')
 end
 
-local function _get_content_info(url, base_url)
-
-    local proxy_url = _encode_url(url)
-
-    local res = ngx.location.capture(proxy_url, { method = ngx.HTTP_HEAD })
-    ngx.log(ngx.INFO, 'status: '..res.status..' - Body: '..res.body)
-
-    if res.status == ngx.HTTP_OK then
-        if res.headers['Content-Type'] then
-            return base_url..proxy_url, res.headers['Content-Type']
-        end
-    else
-        ngx.log(ngx.INFO, 'Returned status from supplements for - status: '..res.status)
+-- adjust request headers for upstream server requests
+local function _set_request_header(language)
+    local mime_types = 'application/pdf;q=0.9,'..
+                       'text/htmlapplication/xhtml+xml, application/xml;q=0.8,'..
+                       'application/rtf;q=0.6,'..
+                       'text/plain;q=0.4,'..
+                       'text/*;q=0.2,'..
+                       '*/*;q=0.1'
+    ngx.req.set_header('Accept', mime_types)
+    ngx.req.set_header('accept-encoding', 'gzip,deflate')
+    if language then
+        ngx.req.set_header('Accept-Language', language)
     end
-
-    return base_url..proxy_url
+    ngx.req.clear_header('user-agent')
+    ngx.req.clear_header('referer')
+    ngx.req.clear_header('cache-control')
 end
 
+-- retrieve the content items details info and cache them through proxy
+local function _get_content_info(url, base_url, market)
+
+    local function _retrieve_content(url, level)
+        local res = ngx.location.capture('/proxy', { args = { upstream = url },
+                                                     method = ngx.HTTP_HEAD })
+        if (res.status == HTTP_MOVED_PERMANENTLY or
+            res.status == ngx.HTTP_MOVED_TEMPORARILY) and
+           level <= 3 then
+            ngx.log(ngx.INFO, 'content request "'..url..'" redirected to "'..res.header['Location']..'" - [level:'..level..']')
+            return _retrieve_content(res.header['Location'], level + 1);
+        end
+        return res, url
+    end
+
+    _set_request_header(market['locale']['official'])
+    local res, url = _retrieve_content(url, 1)
+
+    local encoded_url = base_url.._encode_url(url, market['locale']['official'])
+
+    if res.status == ngx.HTTP_OK then
+        local content_type = res.header['Content-Type']
+        local content_length = res.header['Content-Length']
+        return encoded_url, content_type, content_length
+    else
+        ngx.log(ngx.INFO, 'Failed to retrieve supplement content "'..url..'" - status:'..res.status)
+    end
+
+    return encoded_url
+end
+
+-- enrich and return the supplement data (add items details)
 local function _get_supplement(market, name, base_url)
 
     local supplements = _load_supplements(base_url)
-
     local supplement = {}
 
-    if supplements[market] and supplements[market][name] then
-        supplement = supplements[market][name]
+    if supplements[market['id']] and supplements[market['id']][name] then
+        supplement = supplements[market['id']][name]
         for _ , item in ipairs(supplement['items']) do
-            local content_url, content_type = _get_content_info(item['content']['data'], base_url)
-            if content_url then
-                item['content']['data'] = content_url
-            end
+            local content_url, content_type, content_length = _get_content_info(item['content']['data'], base_url, market)
+            item['content']['data'] = content_url
             if content_type then
                 item['content']['type'] = content_type
+            end
+            if content_length then
+                item['content']['length'] = content_length
             end
         end
     end
@@ -91,6 +123,7 @@ local function _get_supplement(market, name, base_url)
     return supplement
 end
 
+-- create a copy of the supplements as dedicate entity aside the markets
 local function _adjust_markets(markets)
     local supplements = {}
 
@@ -109,7 +142,7 @@ end
 return {
     get_proxy_url = _encode_url,
     get_data_url = _decode_url,
-    get_content_info = _get_content_info,
     get = _get_supplement,
-    adjust_markets = _adjust_markets
+    adjust_markets = _adjust_markets,
+    set_header = _set_request_header
 }
