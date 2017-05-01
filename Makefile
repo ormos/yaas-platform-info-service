@@ -5,7 +5,7 @@ include $(ENV_FILE)
 endif
 
 NS = elvido
-VERSION ?= 1.10.0
+VERSION ?= 1.10.1
 TAGS ?= latest
 
 REPO = yaas-platform-info-service
@@ -58,7 +58,7 @@ clean:
 	rm -rf $(GEOIP_NETWORKS)
 
 build:
-	docker build -t $(NS)/$(REPO):$(VERSION) .
+	docker build $(SQUASH) -t $(NS)/$(REPO):$(VERSION) .
 
 push:
 	docker push $(NS)/$(REPO):$(VERSION)
@@ -78,7 +78,8 @@ stop:
 rm:
 	docker rm $(NAME)-$(INSTANCE)
 
-release: build
+release:
+	@make --no-print-directory build -e VERSION="$(VERSION)" -e SQUASH="--squash"
 	@make --no-print-directory tag -e VERSION="$(VERSION)" -e TAGS="$(TAGS)"
 	@make --no-print-directory push -e VERSION="$(VERSION)"
 

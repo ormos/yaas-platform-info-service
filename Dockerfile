@@ -15,5 +15,6 @@ RUN echo "Updating system and installing prerequisites..." >&2 && \
     rm -rf /tmp/* /var/cache/apk/*
 
 COPY rootfs /
+RUN  chown -R nginx:nginx ${DEPLOYMENT_FOLDER}/*
 
 EXPOSE 80
