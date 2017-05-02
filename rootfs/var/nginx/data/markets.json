@@ -84,6 +84,7 @@
         "agreement_terms": "https://www.yaas.io/germany/legal/SAP_Hybris_as_a_Service_Vertragsbestandteile_deDE_v10-2016.pdf"
       },
       "supplements": {
+        "_link_": "{URL}/markets/DE/supplements",
         "confirmation": {
           "id": "confirmation",
           "name": "Order confirmation",

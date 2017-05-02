@@ -37,6 +37,21 @@ if not resource then
     return
 end
 
+-- provide supplements
+local function provide_supplements(market_data)
+
+    local supplements = ngx.shared.cache:get('market.'..market_data['id']..'.supplements-'..server_id)
+
+    if not supplements then
+        supplements = cjson.encode(utils.supplements.collection(market_data, base_url))
+        ngx.shared.cache:set('market.'..market_data['id']..'.supplements-'..server_id, supplement, 3600)
+    else
+        ngx.log(ngx.INFO, 'Cache hit for supplements at market='..market_data['id'])
+    end
+
+    return supplements
+end
+
 -- provide enriched supplement data by resolving links and adding mimetypes
 local function provide_supplement(supplement_name, market_data)
 
@@ -58,6 +73,9 @@ if market_data then
     if market_data['links'][resource] then
         ngx.log(ngx.INFO, 'Redirect resource='..resource..' at market='..country..' to URL: "'..market_data['links'][resource]..'"')
         ngx.redirect(market_data['links'][resource], ngx.HTTP_MOVED_TEMPORARILY)
+        return
+    elseif resource == 'supplements' then
+        ngx.print(provide_supplements(market_data))
         return
     else
         -- check for special supplements handling

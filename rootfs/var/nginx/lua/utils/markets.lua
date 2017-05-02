@@ -11,7 +11,7 @@ local function _load_markets(base_url)
     -- substitute placeholder variable
     local json = substitute(res.body, { URL = base_url })
 
-    return adjust_markets(cjson.decode(json)['markets'])
+    return adjust_markets(cjson.decode(json)['markets'], base_url)
 end
 
 return {

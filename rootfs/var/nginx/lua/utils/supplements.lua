@@ -123,15 +123,35 @@ local function _get_supplement(market, name, base_url)
     return supplement
 end
 
+-- get supplements collection
+local function _get_collection(market, base_url)
+
+    local supplements = _load_supplements(base_url)
+    local collection = {}
+
+    if supplements[market['id']] then
+        collection = deep_copy(supplements[market['id']])
+        for name, supplement in pairs(collection) do
+            if name ~= '_link_' then
+                supplement['items'] = nil
+            end
+        end
+    end
+
+    return collection
+end
+
 -- create a copy of the supplements as dedicate entity aside the markets
-local function _adjust_markets(markets)
+local function _adjust_markets(markets, base_url)
     local supplements = {}
 
     for id, market in pairs(markets) do
         if market['supplements'] then
             supplements[id] = deep_copy(market['supplements'])
-            for _, supplement in pairs(market['supplements']) do
-                supplement['items'] = nil
+            for name, supplement in pairs(market['supplements']) do
+                if name ~= '_link_' then
+                    market['supplements'][name] = supplement['_link_']
+                end
             end
         end
     end
@@ -143,6 +163,7 @@ return {
     get_proxy_url = _encode_url,
     get_data_url = _decode_url,
     get = _get_supplement,
+    collection = _get_collection,
     adjust_markets = _adjust_markets,
     set_header = _set_request_header
 }
