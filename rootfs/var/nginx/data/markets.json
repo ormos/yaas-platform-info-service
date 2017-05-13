@@ -3,8 +3,8 @@
     "authors": [
       "r.hofmann@sap.com"
     ],
-    "last-modified": "2017-02-20",
-    "version": "0.4.1"
+    "last-modified": "2017-05-12",
+    "version": "0.5.1"
   },
   "markets": {
     "US": {
@@ -42,7 +42,33 @@
         "impressum": "https://go.sap.com/about/legal/impressum.html",
         "copyright": "https://go.sap.com/about/legal/copyright.html",
         "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
-       }
+       },
+       "supplements": {
+        "_link_": "{URL}/markets/US/supplements",
+        "confirmation": {
+          "id": "confirmation",
+          "name": "Order confirmation",
+          "description": "Order confirmation supplemental documents",
+          "_link_": "{URL}/markets/US/supplements/confirmation",
+          "items": [
+            {
+              "name": "Data Processing Agreement",
+              "description": "Data processing aggrement for SAP cloud services",
+              "content": {
+                "data": "{URL}/markets/US/dpa"
+              }
+            },
+            {
+              "name": "Contract Agreement and Terms",
+              "description": "SAP Hybris as Service contractual agreement and terms",
+              "content": {
+                "data": "{URL}/markets/US/agreement_terms"
+              }
+            }
+          ]
+        }
+      }
+
     },
     "DE": {
       "id": "DE",
@@ -139,15 +165,41 @@
       "links": {
         "api": "https://api.eu.yaas.io",
         "terms": "https://www.yaas.io/uk/legal/sap-hybris-as-a-service-account-terms-of-use_v1.html",
-        "contract": "https://www.yaas.io/uk/legal/SAP_Hybris_as_a_Service_Framework_Agreement_enGB_v1-2017.pdf",
+        "contract": "https://www.yaas.io/uk/legal/SAP_Hybris_as_a_Service_Framework_Agreement_enGB_v4-2017.pdf",
         "privacy": "https://www.sap.com/uk/about/legal/privacy.html",
-        "dpa": "https://www.yaas.io/uk/legal/data-processing-agreement-for-sap-cloud-services-english-v1-2017.pdf",
+        "dpa": "https://www.yaas.io/uk/legal/data-processing-agreement-for-sap-cloud-services-english-v2-2017.pdf",
         "impressum": "https://www.sap.com/uk/about/legal/impressum.html",
         "copyright": "https://www.sap.com/uk/about/legal/copyright.html",
         "sla": "https://www.yaas.io/uk/legal/Service_Level_Agreement_for_SAP_Hybris_as_a_Service_enGB_v1-2017.pdf",
         "assistance": "https://www.yaas.io/uk/legal/SAP_Customer_Assistance_Policy_for_SAP_Cloud_Services_enGB_v1-2017.pdf",
         "agreement_terms": "https://www.yaas.io/uk/legal/SAP_Hybris_as_a_Service_Contracts_enGB_v1-2017.pdf"
-       }
+       },
+       "supplements": {
+        "_link_": "{URL}/markets/GB/supplements",
+        "confirmation": {
+          "id": "confirmation",
+          "name": "Order confirmation",
+          "description": "Order confirmation supplemental documents",
+          "_link_": "{URL}/markets/GB/supplements/confirmation",
+          "items": [
+            {
+              "name": "Data Processing Agreement",
+              "description": "Data processing aggrement for SAP cloud services",
+              "content": {
+                "data": "{URL}/markets/GB/dpa"
+              }
+            },
+            {
+              "name": "Contract Agreement and Terms",
+              "description": "SAP Hybris as Service contractual agreement and terms",
+              "content": {
+                "data": "{URL}/markets/GB/agreement_terms"
+              }
+            }
+          ]
+        }
+      }
+
     },
     "CH": {
       "id": "CH",
@@ -187,7 +239,32 @@
         "sla": "https://www.yaas.io/swiss/legal/Service_Level_Agreement_for_SAP_Hybris_as_a_Service_deCH_v1-2017.pdf",
         "assistance": "https://www.yaas.io/swiss/legal/SAP_Customer_Assistance_Policy_for_SAP_Cloud_Services_deCH_v1-2017.pdf",
         "agreement_terms": "https://www.yaas.io/swiss/legal/SAP_Hybris_as_a_Service_Vertragsbestandteile_deCH_v1-2017.pdf"
-       }
+       },
+       "supplements": {
+        "_link_": "{URL}/markets/CH/supplements",
+        "confirmation": {
+          "id": "confirmation",
+          "name": "Order confirmation",
+          "description": "Order confirmation supplemental documents",
+          "_link_": "{URL}/markets/CH/supplements/confirmation",
+          "items": [
+            {
+              "name": "Data Processing Agreement",
+              "description": "Data processing aggrement for SAP cloud services",
+              "content": {
+                "data": "{URL}/markets/CH/dpa"
+              }
+            },
+            {
+              "name": "Contract Agreement and Terms",
+              "description": "SAP Hybris as Service contractual agreement and terms",
+              "content": {
+                "data": "{URL}/markets/CH/agreement_terms"
+              }
+            }
+          ]
+        }
+      }
     },
     "AT": {
       "id": "AT",
@@ -224,7 +301,32 @@
         "impressum": "https://go.sap.com/about/legal/impressum.html",
         "copyright": "https://go.sap.com/about/legal/copyright.html",
         "agreement_terms": "https://www.yaas.io/legal/SAP_Hybris_as_a_Service_Terms-of-use_usEN_v10-2016.pdf"
-       }
+       },
+       "supplements": {
+        "_link_": "{URL}/markets/AT/supplements",
+        "confirmation": {
+          "id": "confirmation",
+          "name": "Order confirmation",
+          "description": "Order confirmation supplemental documents",
+          "_link_": "{URL}/markets/AT/supplements/confirmation",
+          "items": [
+            {
+              "name": "Data Processing Agreement",
+              "description": "Data processing aggrement for SAP cloud services",
+              "content": {
+                "data": "{URL}/markets/AT/dpa"
+              }
+            },
+            {
+              "name": "Contract Agreement and Terms",
+              "description": "SAP Hybris as Service contractual agreement and terms",
+              "content": {
+                "data": "{URL}/markets/AT/agreement_terms"
+              }
+            }
+          ]
+        }
+      }
     },
     "_beta_": {
       "id": "_beta_",
@@ -260,7 +362,33 @@
         "privacy": "https://go.sap.com/about/legal/privacy.html",
         "impressum": "https://go.sap.com/about/legal/impressum.html",
         "copyright": "https://go.sap.com/about/legal/copyright.html"
+      },
+      "supplements": {
+        "_link_": "{URL}/markets/_beta_/supplements",
+        "confirmation": {
+          "id": "confirmation",
+          "name": "Order confirmation",
+          "description": "Order confirmation supplemental documents",
+          "_link_": "{URL}/markets/_beta_/supplements/confirmation",
+          "items": [
+            {
+              "name": "Contract Agreement",
+              "description": "SAP Hybris as Service contractual agreement",
+              "content": {
+                "data": "{URL}/markets/_beta_/contract"
+              }
+            },
+            {
+              "name": "Terms of use",
+              "description": "SAP Hybris as Service terms of use",
+              "content": {
+                "data": "{URL}/markets/_beta_/terms"
+              }
+            }
+          ]
+        }
       }
+
     }
   },
   "mapping": {
