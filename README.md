@@ -7,13 +7,22 @@ docker run -p 8089:80 elvido/yaas-platform-info-service
 docker push elvido/yaas-platform-info-service
 cf push -f ypi-xxx-manifest.yml --docker-image elvido/yaas-platform-info-service:1.x
 
-xdg-open https://api.eu.yaas.io/xtra/ypis/v1/regions
-xdg-open https://api.eu.yaas.io/xtra/ypis/v1/markets
-~~~~
+xdg-open https://api.eu.yaas.io/hybris/ypi/v1/regions
+xdg-open https://api.stage.yaas.io/hybris/ypi/v1/markets
+xdg-open https://api.yaas.io/hybris/ypi/v1/info?ip=123.45.67.89
+xdg-open https://api.yaas.io/hybris/ypi/v1/networks
+xdg-open https://api.yaas.io/hybris/ypi/v1/email/john.smith@objectmail.com
 
+Endpoints
+~~~~
 EU API      : https://api.eu-central.cf.yaas.io
 US API      : https://api.us-east.cf.yaas.io
 STAGE API   : https://api.us-east.stage.cf.yaas.io
+
+Examples
+~~~~
+cf login -a https://api.us-east.stage.cf.yaas.io -u r.hofmann@sap.com ; cf push -f ypi-stage-manifest.yml --docker-image elvido/yaas-platform-info-service:1.13.1
+cf login -a https://api.eu-central.cf.yaas.io -u r.hofmann@sap.com ; cf push -f ypi-prod-manifest.yml --docker-image elvido/yaas-platform-info-service:1.13.1
 
 Embargo download:
 ~~~~

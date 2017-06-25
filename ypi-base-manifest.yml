@@ -2,6 +2,6 @@
 # cf push -f ypi-base-manifest.yml --docker-image elvido/yaas-platform-info-service:1.x
 
 instances: 1
-memory: 64M
-disk_quota: 64M
+memory: 80M
+disk_quota: 80M
 health-check-type: none
