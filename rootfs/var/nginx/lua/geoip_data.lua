@@ -1,8 +1,8 @@
 local jwt = require('resty.jwt')
 
--- Token generation with expiration time (exp) : 30-JUN-2017 23:59:59
+-- Token generation with expiration time (exp) : 31-DEC-2018 23:59:59
 -- ngx.say(jwt:sign('SAP-Hybris Y##S', { header = { typ = 'JWT', alg = 'HS256'},
---                  payload = { iss = 'yaas.io', exp = 1498867199, sub = 'geoip data access', aud = 'yProfile', company = 'SAP-Hybris' }}))
+--                  payload = { iss = 'yaas.io', exp = 1546300799, sub = 'geoip data access', aud = 'yProfile', company = 'SAP-Hybris' }}))
 
 -- we use a json web token for authorization
 local jwt_token = ngx.req.get_headers()['X-Access-Token']
@@ -33,4 +33,3 @@ end
 
 ngx.status = ngx.HTTP_UNAUTHORIZED
 ngx.exit(ngx.HTTP_UNAUTHORIZED)
-
