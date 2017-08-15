@@ -18,4 +18,11 @@ VOLUMES = \
 ENV = \
   -e DEBUG_HOST_ADDR="$(HOST_IP)" \
   -e DEBUG_EXTERNAL_URL="http://localhost:$(HOST_PORT)"
-  
+
+ifneq (,$(filter run start,$(firstword $(MAKECMDGOALS))))
+  RUN_ARGS:=$(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+  $(eval $(RUN_ARGS):;@true)
+endif
+ifeq (,$(RUN_ARGS))
+  RUN_ARGS:=$(DEF_ARGS)
+endif
