@@ -1,6 +1,12 @@
 # configuration parameters
+HOST_SYS:= $(shell uname -s)
+ifeq ($(HOST_SYS),Linux)
+  HOST_IP:=$(shell ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
+endif
+ifeq ($(HOST_SYS),Darwin)
+  HOST_IP:=$(shell ipconfig getifaddr `route get 8.8.8.8 | awk '{ if ($$1 ~/interface:/) { print $$2} }'`)
+endif
 HOST_PORT:=8089
-HOST_IP:=$(shell ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
 
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
