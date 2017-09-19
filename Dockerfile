@@ -1,6 +1,6 @@
-FROM elvido/alpine-nginx-lua
+FROM elvido/alpine-nginx-lua:3.6
 
-MAINTAINER elvido <ralf.hofmann@elvido.net>
+LABEL maintainer="elvido <ralf.hofmann@elvido.net>"
 
 RUN echo "Updating system and installing prerequisites..." >&2 && \
     apk --no-cache upgrade --update && \
