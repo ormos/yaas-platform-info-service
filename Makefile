@@ -5,7 +5,7 @@ include $(ENV_FILE)
 endif
 
 NS = elvido
-VERSION ?= 1.13.3
+VERSION ?= 1.13.4
 TAGS ?= latest
 
 REPO = yaas-platform-info-service
