@@ -20,3 +20,11 @@ VOLUMES = \
 
 ENV = \
   -e MAXMIND_LICENSE_KEY="$(GEOIP_LICENSE_KEY)"
+
+ifneq (,$(filter run start,$(firstword $(MAKECMDGOALS))))
+  RUN_ARGS:=$(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+  $(eval $(RUN_ARGS):;@true)
+endif
+ifeq (,$(RUN_ARGS))
+  RUN_ARGS:=$(DEF_ARGS)
+endif

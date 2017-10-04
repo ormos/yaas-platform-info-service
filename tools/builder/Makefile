@@ -12,6 +12,8 @@ REPO = yaas-platform-info-data-builder
 NAME = yaas-platform-info-data-builder
 INSTANCE = default
 
+XSHELL ?= /bin/sh
+
 .PHONY: build push shell run start stop rm release tag $(TAGS)
 
 default: build
@@ -23,19 +25,19 @@ push:
 	docker push $(NS)/$(REPO):$(VERSION)
 
 shell:
-	docker run --rm --name $(NAME)-$(INSTANCE) -i -t $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION) /bin/sh
+	docker run --rm --name $(NAME)-$(INSTANCE) -i -t $(PORTS) $(VOLUMES) $(ENV) --entrypoint=$(XSHELL) $(NS)/$(REPO):$(VERSION)
 
 run:
-	docker run --rm --name $(NAME)-$(INSTANCE) $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION)
+	docker run --rm --name $(NAME)-$(INSTANCE) $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION) $(RUN_ARGS)
 
 start:
-	docker run -d --name $(NAME)-$(INSTANCE) $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION)
+	docker run -d --rm --name $(NAME)-$(INSTANCE) $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION) $(RUN_ARGS)
 
 stop:
 	docker stop $(NAME)-$(INSTANCE)
 
 rm:
-	docker rm $(NAME)-$(INSTANCE)
+	docker rm -f $(NAME)-$(INSTANCE)
 
 release: build
 	@make --no-print-directory tag -e VERSION="$(VERSION)" -e TAGS="$(TAGS)"
