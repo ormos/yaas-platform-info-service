@@ -5,7 +5,7 @@ include $(ENV_FILE)
 endif
 
 NS = elvido
-VERSION ?= 1.13.6
+VERSION ?= 1.14.1
 
 TAGS ?= latest
 

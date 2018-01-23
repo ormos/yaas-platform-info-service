@@ -1,4 +1,4 @@
-FROM elvido/alpine-nginx-lua:3.6
+FROM elvido/alpine-nginx-lua:3.7
 
 LABEL maintainer="elvido <ralf.hofmann@elvido.net>"
 
