@@ -6,7 +6,7 @@ local country = ngx.var.uri:match('^.*/networks/(.+)$')
 -- load country info data from db
 local function get_country_info(db, country)
 
-    local select_stmt = db:prepare('SELECT id, country_iso_code, country_name, continent_code, continent_name FROM Countries WHERE country_iso_code = $country_code LIMIT 1')
+    local select_stmt = db:prepare('SELECT id, country_iso_code, country_name, continent_code, continent_name, is_in_european_union FROM Countries WHERE country_iso_code = $country_code LIMIT 1')
 
     select_stmt:bind(country)
 
@@ -49,6 +49,7 @@ local networks_info = {
         id   = country_info['continent_code'],
         name = country_info['continent_name']
     },
+    EU = country_info['is_in_european_union'],
     policy = utils.policy.info(country),
     networks = {
     }

@@ -169,7 +169,8 @@ import_network_data_files()
                            continent_code TEXT NOT NULL CHECK(length(continent_code) = 2),
                            continent_name TEXT NOT NULL,
                            country_iso_code TEXT CHECK(length(country_iso_code) = 2 OR country_name IS NULL),
-                           country_name TEXT CHECK(country_name IS NULL OR length(country_name) > 3)
+                           country_name TEXT CHECK(country_name IS NULL OR length(country_name) > 3),
+                           is_in_european_union INTEGER NOT NULL DEFAULT 0 CHECK(is_in_european_union = 0 OR is_in_european_union = 1)
                           );
 
     CREATE TEMPORARY VIEW IF NOT EXISTS countries_import(geoname_id,
@@ -177,24 +178,27 @@ import_network_data_files()
                                                          continent_code,
                                                          continent_name,
                                                          country_iso_code,
-                                                         country_name
+                                                         country_name,
+                                                         is_in_european_union
                                                         ) AS SELECT id,
                                                                     "en" AS locale_code,
                                                                     continent_code,
                                                                     continent_name,
                                                                     country_iso_code,
-                                                                    country_name
+                                                                    country_name,
+                                                                    is_in_european_union
                                                              FROM Countries;
 
     CREATE TRIGGER IF NOT EXISTS insert_country INSTEAD OF
       INSERT ON countries_import WHEN NEW.geoname_id GLOB '[0-9]*'
       BEGIN
-        INSERT INTO Countries(id, continent_code, continent_name, country_iso_code, country_name)
+        INSERT INTO Countries(id, continent_code, continent_name, country_iso_code, country_name, is_in_european_union)
           VALUES(NEW.geoname_id,
                  NEW.continent_code,
                  NEW.continent_name,
-                 CASE NEW.country_iso_code WHEN '' THEN NULL ELSE NEW.country_iso_code END,
-                 CASE NEW.country_name     WHEN '' THEN NULL ELSE NEW.country_name     END
+                 CASE NEW.country_iso_code     WHEN '' THEN NULL ELSE NEW.country_iso_code END,
+                 CASE NEW.country_name         WHEN '' THEN NULL ELSE NEW.country_name     END,
+                 CASE NEW.is_in_european_union WHEN '' THEN 0 ELSE NEW.is_in_european_union END
                 );
       END;
 
