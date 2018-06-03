@@ -3,5 +3,5 @@
 
 instances: 1
 memory: 80M
-disk_quota: 80M
+disk_quota: 240M
 health-check-type: none
