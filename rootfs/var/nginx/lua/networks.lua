@@ -49,11 +49,13 @@ local networks_info = {
         id   = country_info['continent_code'],
         name = country_info['continent_name']
     },
-    EU = country_info['is_in_european_union'],
+    EU = false,
     policy = utils.policy.info(country),
     networks = {
     }
 }
+
+if country_info['is_in_european_union'] > 0 then networks_info['EU'] = true end
 
 local IPv4 = get_networks(db, 'IPv4', country_info['id'])
 if #IPv4 > 0 then networks_info['networks']['IPv4'] = IPv4 end
