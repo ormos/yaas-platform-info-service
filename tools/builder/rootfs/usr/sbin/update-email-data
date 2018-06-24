@@ -1,8 +1,27 @@
 #!/usr/bin/env sh
 
-readonly VERSION='1.0.0'
+readonly VERSION='1.0.1'
 readonly AUTHOR='Ralf Hofmann'
 readonly CONTACT='<r.hofmann@sap.com>'
+
+# Disposable Email Address (DEA) - data source
+# https://github.com/ivolo/disposable-email-domains
+# https://github.com/martenson/disposable-email-domains
+# https://github.com/lodow/disposable-email-domains-1
+# https://github.com/MattKetmo/EmailChecker
+readonly EMAIL_DISPOSAL_URL=https://github.com/ivolo/disposable-email-domains/raw/master/index.json
+readonly EMAIL_WILDCARD_URL=https://github.com/ivolo/disposable-email-domains/raw/master/wildcard.json
+readonly EMAIL_WHITELIST_URL=https://github.com/lodow/disposable-email-domains-1/raw/master/whitelist.conf
+
+readonly GEOIP_DATA_ARCHIVE='GeoIP2-Country-CSV.zip'
+readonly GEOIP_DATA_URL="${GEOIP_BASE_URL}?license_key=${GEOIP_LICENSE_KEY}&edition_id=GeoIP2-Country-CSV&suffix=zip"
+readonly GEOIP_DATA_SUBFOLDER='GeoIP2-Country-CSV_*'
+readonly GEOIP_DATA_COUNTRY='GeoIP2-Country-Locations-en.csv'
+readonly GEOIP_DATA_IPV4='GeoIP2-Country-Blocks-IPv4.csv'
+readonly GEOIP_DATA_IPV6='GeoIP2-Country-Blocks-IPv6.csv'
+
+readonly EMAIL_DOMAINS_FILE='Email-Domains.db'
+readonly EMAIL_DOMAINS_FOLDER="${DATA_FOLDER}/email"
 
 ###########################################################################
 # main functionality of the script
@@ -18,27 +37,198 @@ main()
   eval set -- "$OPTSTR"
   while true ; do
     case "$1" in
-      '-F'|'--force')   FORCE='-F'; shift ;;
-      '-h'|'--help')    _help     ; exit  ;;
-      '-v'|'--version') _version  ; exit  ;;
-      '--')             shift     ; break ;;
-      *)                _usage            ;;
+      '-F'|'--force')   FORCE=1  ; shift ;;
+      '-h'|'--help')    _help    ; exit  ;;
+      '-v'|'--version') _version ; exit  ;;
+      '--')             shift    ; break ;;
+      *)                _usage           ;;
     esac
   done
 
-  "${SCRIPT_PATH}/update-geoip-data" ${FORCE:-}   && \
-  "${SCRIPT_PATH}/update-network-data" ${FORCE:-} && \
-  "${SCRIPT_PATH}/update-embargo-data" ${FORCE:-} && \
-  "${SCRIPT_PATH}/update-email-data" ${FORCE:-}
+  if [ $# -gt 1 ]; then
+    _usage; _error_exit "too many command line parameter"
+  fi
+
+  local EMAIL_DOMAINS_PATH="${EMAIL_DOMAINS_FOLDER}/${EMAIL_DOMAINS_FILE}"
+  if [ $# -eq 1 ]; then
+    EMAIL_DOMAINS_PATH="$1"
+    shift
+  fi
+
+  [ -d "$(dirname -- "${EMAIL_DOMAINS_PATH}")" ] || \
+    (EMAIL_FOLDER="$(dirname -- "${EMAIL_DOMAINS_PATH}")" ; \
+     mkdir -p "${EMAIL_FOLDER}" ; \
+     EMAIL_PARENT="$(dirname -- "${EMAIL_FOLDER}")" ; \
+     chown "$(stat -c %u "${EMAIL_PARENT}")":"$(stat -c %g "${EMAIL_PARENT}")" "${EMAIL_FOLDER}")
+
+  provide_domains_database "${EMAIL_DOMAINS_PATH}" "${FORCE:-0}"
 }
 
+
+provide_domains_database()
+{
+  command -v curl >/dev/null 2>&1 || _error_exit "curl needs to be installed for downloading email data"
+
+  local DB_FILE DB_FORCE DB_META DB_UID DB_GID DB_DATA
+  local EMAIL_DATA_DISPOSAL EMAIL_DATA_WILDCARD EMAIL_DATA_WILDCARD
+
+  DB_FILE="$1"        # db file path
+  DB_FORCE="${2:-0}"  # flag to force db update
+
+  DB_META="${DB_FILE}"
+
+  [ -f "${DB_META}" ] || DB_META="$(dirname -- "${DB_META}")"
+
+  DB_UID="$(stat -c %u "${DB_META}")"
+  DB_GID="$(stat -c %g "${DB_META}")"
+
+  if [ "${DB_FORCE}" -eq 0 ] && [ -f "${DB_FILE}" ] && \
+     [ "$(curl -kSLIs -z"${DB_FILE}" -w "%{http_code}" "${EMAIL_DISPOSAL_URL}" | tail -1)" = "304" ] && \
+     [ "$(curl -kSLIs -z"${DB_FILE}" -w "%{http_code}" "${EMAIL_WILDCARD_URL}" | tail -1)" = "304" ] && \
+     [ "$(curl -kSLIs -z"${DB_FILE}" -w "%{http_code}" "${EMAIL_WHITELIST_URL}" | tail -1)" = "304" ]; then
+    _message -s -i "Email domain database '${DB_FILE}' is already up-to-date..."
+    return
+  fi
+
+  # shellcheck disable=SC2119
+  EMAIL_DATA_DISPOSAL="$(_make_temp)".'csv'
+  # shellcheck disable=SC2119
+  EMAIL_DATA_WILDCARD="$(_make_temp)".'csv'
+  # shellcheck disable=SC2119
+  EMAIL_DATA_WHITELIST="$(_make_temp)".'csv'
+
+  command -v jq >/dev/null 2>&1 || _error_exit "jq needs to be installed for process email data"
+  _message -s -i "downloading disposal email domain data file from url: '${EMAIL_DISPOSAL_URL}'..."
+  curl -jkSLR -'#' "${EMAIL_DISPOSAL_URL}" | jq -r '.|@csv' | tr , '\n' >"${EMAIL_DATA_DISPOSAL}" || _error_exit "failed to download data from url: '${EMAIL_DISPOSAL_URL}'"
+  _message -s -i "downloading wildcard email domain data file from url: '${EMAIL_WILDCARD_URL}'..."
+  curl -jkSLR -'#' "${EMAIL_WILDCARD_URL}" | jq -r '.|@csv' | tr , '\n' >"${EMAIL_DATA_WILDCARD}" || _error_exit "failed to download data from url: '${EMAIL_WILDCARD_URL}'"
+  _message -s -i "downloading whitelist email domain data file from url: '${EMAIL_WHITELIST_URL}'..."
+  curl -jkSLR -'#' "${EMAIL_WHITELIST_URL}" >"${EMAIL_DATA_WHITELIST}" || _error_exit "failed to download data from url: '${EMAIL_WHITELIST_URL}'"
+
+  # shellcheck disable=SC2119
+  DB_DATA="$(_make_temp)"
+
+  if import_domain_data_files "${DB_DATA}" "${EMAIL_DATA_DISPOSAL}" "${EMAIL_DATA_WILDCARD}" "${EMAIL_DATA_WHITELIST}"; then
+    mv -f "${DB_DATA}" "${DB_FILE}"
+    chown "${DB_UID}":"${DB_GID}" "${DB_FILE}"
+    chmod a+r "${DB_FILE}"
+    _message -s -i "updated email domain database '${DB_FILE}'"
+  else
+    _error_exit "failed to import email domain data"
+  fi
+
+  # remove data files
+  [ "${_VERBOSE_:-0}" -lt 4 ] && \
+    (rm -f "${EMAIL_DATA_DISPOSAL}"  \
+           "${EMAIL_DATA_WILDCARD}"  \
+           "${EMAIL_DATA_WHITELIST}" \
+           "${DB_DATA}"              \
+    >/dev/null 2>&1 || :)
+}
+
+import_domain_data_files()
+{
+  command -v sqlite3 >/dev/null 2>&1 || _error_exit "sqlite3 needs to be installed for creating GeoIP network database"
+
+  local DB_FILE DISPOSAL_DATA WILDCARD_DATA WHITELIST_DATA ECHO_DIRECTIVE
+
+  DB_FILE="$1"
+
+  DISPOSAL_DATA="$2"
+  WILDCARD_DATA="$3"
+  WHITELIST_DATA="$4"
+
+  [ -f "${DISPOSAL_DATA}" ]  || ( _message -s -e "disposal email domains data file '${DISPOSAL _DATA}' is not accessible" ; return 1 )
+  [ -f "${WILDCARD_DATA}" ]  || ( _message -s -e "wildcard email domains data file '${WILDCARD_DATA}' is not accessible"  ; return 1 )
+  [ -f "${WHITELIST_DATA}" ] || ( _message -s -e "whitelist email domains data file '${WHITELIST_DATA}' i t accessible"   ; return 1 )
+
+  ECHO_DIRECTIVE='.echo'
+
+  if [ "${_VERBOSE_:-0}" -gt 4 ]; then
+    ECHO_DIRECTIVE="${ECHO_DIRECTIVE} on"
+  else
+    ECHO_DIRECTIVE="${ECHO_DIRECTIVE} off"
+  fi
+
+  # shellcheck disable=SC2119
+  _trim << -SQL- | sqlite3 "${DB_FILE}"
+
+    -- SQL commands begin ------------------------------------------------------
+
+    ${ECHO_DIRECTIVE}
+
+    -- create domains if not existing
+
+    DROP TABLE IF EXISTS domains;
+
+    CREATE TABLE domains(domain TEXT NOT NULL CHECK(length(domain) > 3),
+                         is_wildcard INTEGER NOT NULL DEFAULT 0 CHECK(is_wildcard = 0 OR is_wildcard = 1)
+                        );
+
+    CREATE TEMPORARY VIEW IF NOT EXISTS domains_import(domain
+                                                      ) AS SELECT domain
+                                                        FROM Domains;
+
+    CREATE TRIGGER IF NOT EXISTS insert_domains INSTEAD OF
+      INSERT ON domains_import
+      BEGIN
+        INSERT INTO domains(domain, is_wildcard)
+          VALUES(NEW.domain, 0);
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${DISPOSAL_DATA}" domains_import
+
+    DROP TRIGGER IF EXISTS insert_domains;
+
+    CREATE TRIGGER IF NOT EXISTS insert_domains INSTEAD OF
+      INSERT ON domains_import
+      BEGIN
+        INSERT INTO domains(domain, is_wildcard)
+          VALUES(NEW.domain, 1);
+      END;
+
+    .mode csv
+    .separator ','
+    .import "${WILDCARD_DATA}" domains_import
+
+    DROP TRIGGER IF EXISTS insert_domains;
+
+    DROP VIEW IF EXISTS domains_import;
+
+    -- SQL commands end --------------------------------------------------------
+
+-SQL-
+
+  # shellcheck disable=SC2119
+  _trim << -SQL- | sqlite3 "${DB_FILE}"
+
+    -- SQL commands begin ------------------------------------------------------
+
+    ${ECHO_DIRECTIVE}
+
+    -- create whitelist if not existing
+
+    DROP TABLE IF EXISTS whitelist;
+
+    CREATE TABLE whitelist(domain TEXT NOT NULL CHECK(length(domain) > 3));
+
+    .mode csv
+    .separator ','
+    .import "${WHITELIST_DATA}" whitelist
+
+    -- SQL commands end --------------------------------------------------------
+
+-SQL-
+}
 
 
 ###########################################################################
 # customized functions
 ###########################################################################
 _usage() {
-	printf >&2 'usage: %s [-h|--help] [-v|--version] [-F|--force]\n' "${SCRIPT_NAME}" && exit 1
+	printf >&2 'usage: %s [-h|--help] [-v|--version] [-F|--force] [<db file>]\n' "${SCRIPT_NAME}" && exit 1
 }
 
 _help() {
@@ -47,9 +237,11 @@ cat <<- -EOF-
   ${SCRIPT_NAME} Version ${VERSION}
   by ${AUTHOR} ${CONTACT}
 
-  Update all GeoIP network data information
+  Simple script to provide email domain database file
 
-  ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force]
+  ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force] [<db file>]
+
+    <db file>  email domain database as full path [${EMAIL_DOMAINS_FOLDER}/${EMAIL_DOMAINS_FILE}]
 
   Options:
 
@@ -319,7 +511,7 @@ __do_cleanup()
 # Function to create a temporary files or folder
 #
 # Options:
-#   -d Create directory instead og file
+#   -d Create directory instead of file
 #
 # Arguments:
 #   <1> Name mask pattern to use

@@ -328,7 +328,7 @@ cat <<- -EOF-
   ${SCRIPT_NAME} Version ${VERSION}
   by ${AUTHOR} ${CONTACT}
 
-  Simple script to country specific public ip network database file
+  Simple script to provide country specific public ip network database file
 
   ${SCRIPT_NAME} [-h|--help] [-v|--version] [-f|--force] [<db file>]
 

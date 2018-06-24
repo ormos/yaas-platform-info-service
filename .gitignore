@@ -1,6 +1,7 @@
 rootfs/var/nginx/assets/api-console
 rootfs/var/nginx/assets/data-console
 rootfs/var/nginx/data/geoip/*
+rootfs/var/nginx/data/email/*
 tags
 .DS_Store
 keys/*
