@@ -16,6 +16,7 @@ xdg-open https://api.stage.yaas.io/hybris/ypi/v1/markets
 xdg-open https://api.yaas.io/hybris/ypi/v1/info?ip=123.45.67.89
 xdg-open https://api.yaas.io/hybris/ypi/v1/networks
 xdg-open https://api.yaas.io/hybris/ypi/v1/email/john.smith@objectmail.com
+xdg-open https://api.yaas.io/hybris/ypi/v1/vatin/DE/DE210157578
 ~~~~
 
 Endpoints:
