@@ -2,11 +2,11 @@
 
 Deployment
 ~~~~
-docker build -t elvido/yaas-platform-info-service:latest .
-docker run -p 8089:80 elvido/yaas-platform-info-service
+docker build -t ormos/yaas-platform-info-service:latest .
+docker run -p 8089:80 ormos/yaas-platform-info-service
 
-docker push elvido/yaas-platform-info-service
-cf push -f ypi-xxx-manifest.yml --docker-image elvido/yaas-platform-info-service:1.x
+docker push ormos/yaas-platform-info-service
+cf push -f ypi-xxx-manifest.yml --docker-image ormos/yaas-platform-info-service:1.x
 ~~~~
 
 Smoke tests:
@@ -28,8 +28,8 @@ STAGE API   : https://api.us-east.stage.cf.yaas.io
 
 Examples commands:
 ~~~~
-cf login -a https://api.us-east.stage.cf.yaas.io -u r.hofmann@sap.com ; cf push -f ypi-stage-manifest.yml --docker-image elvido/yaas-platform-info-service:1.13.1
-cf login -a https://api.eu-central.cf.yaas.io -u r.hofmann@sap.com ; cf push -f ypi-prod-manifest.yml --docker-image elvido/yaas-platform-info-service:1.13.1
+cf login -a https://api.us-east.stage.cf.yaas.io -u r.hofmann@sap.com ; cf push -f ypi-stage-manifest.yml --docker-image ormos/yaas-platform-info-service:1.13.1
+cf login -a https://api.eu-central.cf.yaas.io -u r.hofmann@sap.com ; cf push -f ypi-prod-manifest.yml --docker-image ormos/yaas-platform-info-service:1.13.1
 ~~~~
 
 Embargo download:

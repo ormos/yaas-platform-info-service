@@ -4,8 +4,8 @@ ifneq ("$(wildcard $(ENV_FILE))","")
 include $(ENV_FILE)
 endif
 
-NS = elvido
-VERSION ?= 1.15.2
+NS = ormos
+VERSION ?= 1.16.1
 
 TAGS ?= latest
 

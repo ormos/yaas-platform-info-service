@@ -1,6 +1,6 @@
-FROM elvido/alpine:3.7
+FROM ormos/alpine:3.8
 
-LABEL maintainer="elvido <ralf.hofmann@elvido.net>"
+LABEL maintainer="ormos <r.hofmann@sap.com>"
 
 ENV DATA_FOLDER="/mnt/data"
 
@@ -12,7 +12,7 @@ RUN apk --no-cache upgrade --update && \
     \
     curl -jkSL -# https://cpanmin.us | perl - App::cpanminus && \
     \
-    cpanm -n Devel::Refcount MaxMind::DB::Reader::XS MaxMind::DB::Writer::Tree@0.300001 Net::Works::Network GeoIP2 Data::Printer \
+    cpanm -n Devel::Refcount MaxMind::DB::Reader::XS MaxMind::DB::Writer::Tree Net::Works::Network GeoIP2 Data::Printer \
         File::Basename File::chown DateTime::Format::ISO8601 DBD::SQLite JSON || : && \
     \
     echo "Cleaning up..." >&2 && \

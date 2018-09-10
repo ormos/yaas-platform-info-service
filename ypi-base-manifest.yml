@@ -1,5 +1,5 @@
 ---
-# cf push -f ypi-base-manifest.yml --docker-image elvido/yaas-platform-info-service:1.x
+# cf push -f ypi-base-manifest.yml --docker-image ormos/yaas-platform-info-service:1.x
 
 instances: 1
 memory: 80M

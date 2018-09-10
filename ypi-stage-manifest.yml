@@ -1,5 +1,5 @@
 ---
-# cf push -f ypi-stage-manifest.yml --docker-image elvido/yaas-platform-info-service:1.x
+# cf push -f ypi-stage-manifest.yml --docker-image ormos/yaas-platform-info-service:1.x
 
 inherit: ypi-base-manifest.yml
 applications:
@@ -7,4 +7,4 @@ applications:
   routes:
   - route: yaas-platform-info-service.us-east.stage.cf.yaas.io
   - route: yaas-platform-info-service.us-east.stage.internal.yaas.io
-  docker-image: elvido/yaas-platform-info-service
+  docker-image: ormos/yaas-platform-info-service
