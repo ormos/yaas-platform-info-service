@@ -1,4 +1,4 @@
-FROM ormos/alpine:3.8
+FROM ormos/alpine
 
 LABEL maintainer="ormos <r.hofmann@sap.com>"
 

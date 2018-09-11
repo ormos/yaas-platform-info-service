@@ -1,4 +1,4 @@
-FROM ormos/alpine-nginx-lua:3.8
+FROM ormos/alpine-nginx-lua
 
 LABEL maintainer="ormos <r.hofmann@sap.com>"
 
