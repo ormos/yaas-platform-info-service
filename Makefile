@@ -5,7 +5,7 @@ include $(ENV_FILE)
 endif
 
 NS = ormos
-VERSION ?= 1.16.1
+VERSION ?= 1.16.2
 
 TAGS ?= latest
 
